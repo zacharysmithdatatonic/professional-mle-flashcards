@@ -1,0 +1,23 @@
+# Build artifacts
+build/
+dist/
+node_modules/
+
+# Package files
+package-lock.json
+yarn.lock
+
+# Generated files
+*.min.js
+*.min.css
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Public folder (often contains static assets)
+public/ 
