@@ -141,7 +141,9 @@ export const parseJSON = (jsonContent: string): Question[] => {
 
 export const loadQuestionsFromJSON = async (): Promise<Question[]> => {
     try {
-        const response = await fetch('/dataset.json');
+        // Use PUBLIC_URL environment variable to get the correct base path
+        const baseUrl = process.env.PUBLIC_URL || '';
+        const response = await fetch(`${baseUrl}/dataset.json`);
         if (!response.ok) {
             throw new Error(
                 `Failed to load dataset: ${response.status} ${response.statusText}`
