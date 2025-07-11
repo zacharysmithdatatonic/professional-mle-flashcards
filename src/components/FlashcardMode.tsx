@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Question, QuestionPerformance } from '../types';
 import {
     CheckCircle,
@@ -10,8 +10,14 @@ import {
     RotateCcw,
     HelpCircle,
     BookOpen,
+    Keyboard,
 } from 'lucide-react';
 import { formatText } from '../utils/textFormatting';
+
+// Helper function to check if explanation has meaningful content
+const hasExplanation = (explanation: string): boolean => {
+    return explanation.trim().replace(/\n/g, '').length > 0;
+};
 
 interface FlashcardModeProps {
     questions: Question[];
@@ -32,32 +38,102 @@ export const FlashcardMode: React.FC<FlashcardModeProps> = ({
 }) => {
     const [showAnswer, setShowAnswer] = useState(false);
     const [hasAnswered, setHasAnswered] = useState(false);
+    const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 
     const currentQuestion = questions[currentIndex];
     const currentPerformance = performance.get(currentQuestion?.id);
 
-    const handleRevealAnswer = () => {
+    const handleRevealAnswer = useCallback(() => {
         setShowAnswer(true);
-    };
+    }, []);
 
-    const handleAnswerResponse = (isCorrect: boolean) => {
-        setHasAnswered(true);
-        onAnswer(isCorrect);
-    };
+    const handleAnswerResponse = useCallback(
+        (isCorrect: boolean) => {
+            setHasAnswered(true);
+            onAnswer(isCorrect);
+        },
+        [onAnswer]
+    );
 
-    const handleNext = () => {
+    const handleNext = useCallback(() => {
         setShowAnswer(false);
         setHasAnswered(false);
         onNext();
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+    }, [onNext]);
 
-    const handlePrevious = () => {
+    const handlePrevious = useCallback(() => {
         setShowAnswer(false);
         setHasAnswered(false);
         onPrevious();
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+    }, [onPrevious]);
+
+    // Add keyboard event listeners
+    useEffect(() => {
+        const handleKeyPress = (event: KeyboardEvent) => {
+            // Prevent keyboard shortcuts when user is typing in an input
+            if (
+                event.target instanceof HTMLInputElement ||
+                event.target instanceof HTMLTextAreaElement
+            ) {
+                return;
+            }
+
+            switch (event.key) {
+                case 'ArrowLeft':
+                    event.preventDefault();
+                    if (currentIndex > 0) {
+                        handlePrevious();
+                    }
+                    break;
+                case 'ArrowRight':
+                    event.preventDefault();
+                    if (currentIndex < questions.length - 1) {
+                        handleNext();
+                    }
+                    break;
+                case 'Enter':
+                case ' ':
+                    event.preventDefault();
+                    if (!showAnswer) {
+                        handleRevealAnswer();
+                    } else if (hasAnswered) {
+                        handleNext();
+                    }
+                    break;
+                case '1':
+                    event.preventDefault();
+                    if (showAnswer && !hasAnswered) {
+                        handleAnswerResponse(false);
+                    }
+                    break;
+                case '2':
+                    event.preventDefault();
+                    if (showAnswer && !hasAnswered) {
+                        handleAnswerResponse(true);
+                    }
+                    break;
+                case '?':
+                    event.preventDefault();
+                    setShowKeyboardHelp(!showKeyboardHelp);
+                    break;
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyPress);
+        return () => window.removeEventListener('keydown', handleKeyPress);
+    }, [
+        currentIndex,
+        questions.length,
+        showAnswer,
+        hasAnswered,
+        showKeyboardHelp,
+        handleNext,
+        handlePrevious,
+        handleRevealAnswer,
+        handleAnswerResponse,
+    ]);
 
     if (!currentQuestion) {
         return (
@@ -91,12 +167,47 @@ export const FlashcardMode: React.FC<FlashcardModeProps> = ({
                 />
             </div>
 
+            {/* Keyboard shortcuts display */}
+            <div className="keyboard-shortcuts">
+                <button
+                    onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
+                    className="keyboard-help-toggle"
+                    title="Toggle keyboard shortcuts"
+                >
+                    <Keyboard size={16} />
+                </button>
+                {showKeyboardHelp && (
+                    <div className="keyboard-help">
+                        <div className="shortcut-item">
+                            <span className="key">←→</span>
+                            <span>Navigate questions</span>
+                        </div>
+                        <div className="shortcut-item">
+                            <span className="key">Space/Enter</span>
+                            <span>Reveal answer</span>
+                        </div>
+                        <div className="shortcut-item">
+                            <span className="key">1</span>
+                            <span>Mark incorrect</span>
+                        </div>
+                        <div className="shortcut-item">
+                            <span className="key">2</span>
+                            <span>Mark correct</span>
+                        </div>
+                        <div className="shortcut-item">
+                            <span className="key">?</span>
+                            <span>Toggle help</span>
+                        </div>
+                    </div>
+                )}
+            </div>
+
             <div className="question-header">
                 <button
                     onClick={handlePrevious}
                     disabled={currentIndex === 0}
                     className="nav-arrow"
-                    title="Previous question"
+                    title="Previous question (←)"
                 >
                     <ChevronLeft size={20} />
                 </button>
@@ -112,7 +223,7 @@ export const FlashcardMode: React.FC<FlashcardModeProps> = ({
                     onClick={handleNext}
                     disabled={currentIndex === questions.length - 1}
                     className="nav-arrow"
-                    title="Next question"
+                    title="Next question (→)"
                 >
                     <ChevronRight size={20} />
                 </button>
@@ -155,9 +266,11 @@ export const FlashcardMode: React.FC<FlashcardModeProps> = ({
                                 {formatText(currentQuestion.answer)}
                             </strong>
                         </p>
-                        <div className="explanation">
-                            <p>{formatText(currentQuestion.explanation)}</p>
-                        </div>
+                        {hasExplanation(currentQuestion.explanation) && (
+                            <div className="explanation">
+                                <p>{formatText(currentQuestion.explanation)}</p>
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -166,6 +279,7 @@ export const FlashcardMode: React.FC<FlashcardModeProps> = ({
                         <button
                             onClick={handleRevealAnswer}
                             className="btn btn-primary"
+                            title="Reveal answer (Space/Enter)"
                         >
                             <Eye size={16} />
                             Reveal Answer
@@ -177,6 +291,7 @@ export const FlashcardMode: React.FC<FlashcardModeProps> = ({
                                 <button
                                     onClick={() => handleAnswerResponse(false)}
                                     className="btn btn-incorrect"
+                                    title="Mark as incorrect (1)"
                                 >
                                     <XCircle size={20} />
                                     Incorrect
@@ -184,6 +299,7 @@ export const FlashcardMode: React.FC<FlashcardModeProps> = ({
                                 <button
                                     onClick={() => handleAnswerResponse(true)}
                                     className="btn btn-correct"
+                                    title="Mark as correct (2)"
                                 >
                                     <CheckCircle size={20} />
                                     Correct
@@ -194,6 +310,7 @@ export const FlashcardMode: React.FC<FlashcardModeProps> = ({
                         <button
                             onClick={handleNext}
                             className="btn btn-primary"
+                            title="Next question (→)"
                         >
                             <ArrowRight size={20} />
                             Next Question

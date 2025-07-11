@@ -15,7 +15,12 @@ export interface QuestionPerformance {
     scheduledNext: number | null; // For spaced repetition
 }
 
-export type StudyMode = 'flashcard' | 'quiz' | 'review' | 'memorise';
+export type StudyMode =
+    | 'flashcard'
+    | 'quiz'
+    | 'review'
+    | 'memorise'
+    | 'fill-in-blank';
 
 export interface AppState {
     questions: Question[];

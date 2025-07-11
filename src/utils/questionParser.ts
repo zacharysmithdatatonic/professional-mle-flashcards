@@ -12,10 +12,17 @@ const parseOptions = (possibleAnswers: string): string[] => {
     const lines = possibleAnswers.split('\n').filter(line => line.trim());
     const options: string[] = [];
 
+    // Debug logging
+    console.log('Parsing options from:', possibleAnswers);
+
     for (const line of lines) {
-        const match = line.match(/^([A-D])\)\s*(.+)/);
+        // Match the entire line after the letter and parenthesis
+        const match = line.match(/^([A-D])\)(.*)/);
         if (match) {
-            options.push(match[2].trim());
+            // Keep the full text including any commas, but remove any trailing comma
+            const optionText = match[2].trim().replace(/,$/, '');
+            options.push(optionText);
+            console.log(`Parsed option ${match[1]}: "${optionText}"`);
         }
     }
 

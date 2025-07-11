@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Question, QuestionPerformance } from '../types';
 import {
     TrendingUp,
@@ -14,8 +14,14 @@ import {
     Calendar,
     BarChart3,
     ListChecks,
+    Keyboard,
 } from 'lucide-react';
 import { formatText } from '../utils/textFormatting';
+
+// Helper function to check if explanation has meaningful content
+const hasExplanation = (explanation: string): boolean => {
+    return explanation.trim().replace(/\n/g, '').length > 0;
+};
 
 interface MemoriseModeProps {
     questions: Question[];
@@ -31,6 +37,52 @@ export const MemoriseMode: React.FC<MemoriseModeProps> = ({
     const [sortBy, setSortBy] = useState<'index' | 'performance' | 'accuracy'>(
         'index'
     );
+    const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
+
+    // Add keyboard event listeners
+    useEffect(() => {
+        const handleKeyPress = (event: KeyboardEvent) => {
+            // Prevent keyboard shortcuts when user is typing in an input
+            if (
+                event.target instanceof HTMLInputElement ||
+                event.target instanceof HTMLTextAreaElement
+            ) {
+                return;
+            }
+
+            switch (event.key) {
+                case 'h':
+                case 'H':
+                    event.preventDefault();
+                    setShowAnswers(!showAnswers);
+                    break;
+                case '/':
+                    event.preventDefault();
+                    (
+                        document.querySelector(
+                            '.search-input'
+                        ) as HTMLInputElement
+                    )?.focus();
+                    break;
+                case 'Escape':
+                    event.preventDefault();
+                    setSearchTerm('');
+                    (
+                        document.querySelector(
+                            '.search-input'
+                        ) as HTMLInputElement
+                    )?.blur();
+                    break;
+                case '?':
+                    event.preventDefault();
+                    setShowKeyboardHelp(!showKeyboardHelp);
+                    break;
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyPress);
+        return () => window.removeEventListener('keydown', handleKeyPress);
+    }, [showAnswers, showKeyboardHelp]);
 
     const filteredQuestions = questions.filter(
         q =>
@@ -97,12 +149,43 @@ export const MemoriseMode: React.FC<MemoriseModeProps> = ({
                 <p>Review all questions and answers to reinforce learning</p>
             </div>
 
+            {/* Keyboard shortcuts display */}
+            <div className="keyboard-shortcuts">
+                <button
+                    onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
+                    className="keyboard-help-toggle"
+                    title="Toggle keyboard shortcuts"
+                >
+                    <Keyboard size={16} />
+                </button>
+                {showKeyboardHelp && (
+                    <div className="keyboard-help">
+                        <div className="shortcut-item">
+                            <span className="key">H</span>
+                            <span>Toggle answers</span>
+                        </div>
+                        <div className="shortcut-item">
+                            <span className="key">/</span>
+                            <span>Focus search</span>
+                        </div>
+                        <div className="shortcut-item">
+                            <span className="key">Esc</span>
+                            <span>Clear search</span>
+                        </div>
+                        <div className="shortcut-item">
+                            <span className="key">?</span>
+                            <span>Toggle help</span>
+                        </div>
+                    </div>
+                )}
+            </div>
+
             <div className="memorise-controls">
                 <div className="search-container">
                     <Search size={18} />
                     <input
                         type="text"
-                        placeholder="Search questions, answers, or explanations..."
+                        placeholder="Search questions, answers, or explanations... (Press / to focus)"
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
                         className="search-input"
@@ -113,6 +196,7 @@ export const MemoriseMode: React.FC<MemoriseModeProps> = ({
                     <button
                         onClick={() => setShowAnswers(!showAnswers)}
                         className="btn btn-secondary"
+                        title="Toggle answers (H)"
                     >
                         {showAnswers ? <EyeOff size={16} /> : <Eye size={16} />}
                         {showAnswers ? 'Hide' : 'Show'} Answers
@@ -226,13 +310,17 @@ export const MemoriseMode: React.FC<MemoriseModeProps> = ({
                                                 {formatText(question.answer)}
                                             </strong>
                                         </p>
-                                        <div className="explanation">
-                                            <p>
-                                                {formatText(
-                                                    question.explanation
-                                                )}
-                                            </p>
-                                        </div>
+                                        {hasExplanation(
+                                            question.explanation
+                                        ) && (
+                                            <div className="explanation">
+                                                <p>
+                                                    {formatText(
+                                                        question.explanation
+                                                    )}
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>

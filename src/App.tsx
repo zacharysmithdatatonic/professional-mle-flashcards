@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Question, QuestionPerformance, StudyMode } from './types';
 import { loadQuestionsFromJSON } from './utils/questionParser';
 import {
@@ -14,9 +14,11 @@ import { FlashcardMode } from './components/FlashcardMode';
 import { QuizMode } from './components/QuizMode';
 import { ReviewMode } from './components/ReviewMode';
 import { MemoriseMode } from './components/MemoriseMode';
+import { FillInTheBlankMode } from './components/FillInTheBlankMode';
 import {
     BookOpen,
     Brain,
+    XCircle,
     RotateCcw,
     List,
     BarChart3,
@@ -27,6 +29,7 @@ import {
     FileText,
     TrendingUp,
     Heart,
+    Edit3,
 } from 'lucide-react';
 import './App.css';
 
@@ -51,10 +54,13 @@ const AccuracyDisplay: React.FC<{
     return (
         <div className="header-accuracy">
             <BarChart3 size={16} />
-            <span className="accuracy-title">Accuracy:</span>
+            <span className="accuracy-title">Average Accuracy:</span>
             <span className="accuracy-percentage">{accuracy}%</span>
             <span className="accuracy-details">
-                ({totalCorrect}/{totalAttempts})
+                ({totalCorrect}{' '}
+                <CheckCircle className="correct-icon" size={16} /> /{' '}
+                {totalAttempts} <XCircle className="incorrect-icon" size={16} />
+                )
             </span>
         </div>
     );
@@ -84,6 +90,28 @@ const ProgressBar: React.FC<{
     );
 };
 
+// URL parameter utilities
+const getModeFromURL = (): StudyMode | null => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode') as StudyMode;
+    return mode &&
+        ['flashcard', 'quiz', 'review', 'memorise', 'fill-in-blank'].includes(
+            mode
+        )
+        ? mode
+        : null;
+};
+
+const setModeInURL = (mode: StudyMode | null) => {
+    const url = new URL(window.location.href);
+    if (mode) {
+        url.searchParams.set('mode', mode);
+    } else {
+        url.searchParams.delete('mode');
+    }
+    window.history.replaceState({}, '', url.toString());
+};
+
 function App() {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [performance, setPerformance] = useState<
@@ -93,6 +121,7 @@ function App() {
     const [currentQuestions, setCurrentQuestions] = useState<Question[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
+    const [hasInitializedMode, setHasInitializedMode] = useState(false);
 
     // Load questions and performance on app start
     useEffect(() => {
@@ -127,6 +156,68 @@ function App() {
         loadData();
     }, []);
 
+    const startMode = useCallback(
+        (mode: StudyMode) => {
+            let questionsToUse: Question[] = [];
+
+            switch (mode) {
+                case 'review':
+                    questionsToUse = getQuestionsForReview(
+                        questions,
+                        performance
+                    );
+                    if (questionsToUse.length === 0) {
+                        alert(
+                            'No questions need review! All questions have been answered correctly.'
+                        );
+                        return;
+                    }
+                    break;
+                case 'memorise':
+                    questionsToUse = questions;
+                    break;
+                default:
+                    questionsToUse = weightedShuffle(questions, performance);
+            }
+
+            setCurrentMode(mode);
+            setCurrentQuestions(questionsToUse);
+            setCurrentIndex(0);
+        },
+        [questions, performance]
+    );
+
+    // On initial load, set mode from URL if present (after questions are loaded)
+    useEffect(() => {
+        if (!isLoading && questions.length > 0 && !hasInitializedMode) {
+            const modeFromURL = getModeFromURL();
+            if (modeFromURL) {
+                startMode(modeFromURL);
+            }
+            setHasInitializedMode(true);
+        }
+    }, [isLoading, questions.length, hasInitializedMode, startMode]);
+
+    // Handle URL parameter changes (popstate) after questions are loaded
+    useEffect(() => {
+        if (isLoading || questions.length === 0) return;
+        const handleURLChange = () => {
+            const modeFromURL = getModeFromURL();
+            if (modeFromURL && modeFromURL !== currentMode) {
+                startMode(modeFromURL);
+            } else if (!modeFromURL && currentMode) {
+                setCurrentMode(null);
+                setCurrentQuestions([]);
+                setCurrentIndex(0);
+            }
+        };
+
+        window.addEventListener('popstate', handleURLChange);
+        return () => {
+            window.removeEventListener('popstate', handleURLChange);
+        };
+    }, [isLoading, questions.length, currentMode, startMode]);
+
     // Save performance to localStorage whenever it changes
     useEffect(() => {
         if (performance.size > 0) {
@@ -134,30 +225,12 @@ function App() {
         }
     }, [performance]);
 
-    const startMode = (mode: StudyMode) => {
-        let questionsToUse: Question[] = [];
-
-        switch (mode) {
-            case 'review':
-                questionsToUse = getQuestionsForReview(questions, performance);
-                if (questionsToUse.length === 0) {
-                    alert(
-                        'No questions need review! All questions have been answered correctly.'
-                    );
-                    return;
-                }
-                break;
-            case 'memorise':
-                questionsToUse = questions;
-                break;
-            default:
-                questionsToUse = weightedShuffle(questions, performance);
+    // Sync URL when currentMode changes (but not during initial load)
+    useEffect(() => {
+        if (hasInitializedMode) {
+            setModeInURL(currentMode);
         }
-
-        setCurrentMode(mode);
-        setCurrentQuestions(questionsToUse);
-        setCurrentIndex(0);
-    };
+    }, [currentMode, hasInitializedMode]);
 
     const handleAnswer = (isCorrect: boolean) => {
         const currentQuestion = currentQuestions[currentIndex];
@@ -280,6 +353,12 @@ function App() {
                                     Review Mode
                                 </>
                             )}
+                            {currentMode === 'fill-in-blank' && (
+                                <>
+                                    <Edit3 size={16} />
+                                    Fill-in-the-Blank Mode
+                                </>
+                            )}
                         </div>
                     </div>
                     <div className="header-right">
@@ -303,6 +382,15 @@ function App() {
                         />
                     ) : currentMode === 'review' ? (
                         <ReviewMode
+                            questions={currentQuestions}
+                            currentIndex={currentIndex}
+                            onAnswer={handleAnswer}
+                            onNext={handleNext}
+                            onPrevious={handlePrevious}
+                            performance={performance}
+                        />
+                    ) : currentMode === 'fill-in-blank' ? (
+                        <FillInTheBlankMode
                             questions={currentQuestions}
                             currentIndex={currentIndex}
                             onAnswer={handleAnswer}
@@ -430,6 +518,18 @@ function App() {
                             <p>
                                 Browse all questions and answers with
                                 performance tracking.
+                            </p>
+                        </button>
+
+                        <button
+                            onClick={() => startMode('fill-in-blank')}
+                            className="mode-button fill-in-blank-mode"
+                        >
+                            <Edit3 size={32} />
+                            <h3>Fill-in-the-Blank Mode</h3>
+                            <p>
+                                Complete answers by filling in missing technical
+                                keywords.
                             </p>
                         </button>
                     </div>

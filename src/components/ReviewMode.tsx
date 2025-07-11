@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Question, QuestionPerformance } from '../types';
 import {
     CheckCircle,
@@ -11,8 +11,14 @@ import {
     HelpCircle,
     AlertTriangle,
     Trophy,
+    Keyboard,
 } from 'lucide-react';
 import { formatText } from '../utils/textFormatting';
+
+// Helper function to check if explanation has meaningful content
+const hasExplanation = (explanation: string): boolean => {
+    return explanation.trim().replace(/\n/g, '').length > 0;
+};
 
 interface ReviewModeProps {
     questions: Question[];
@@ -33,42 +39,12 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
 }) => {
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
     const [showAnswer, setShowAnswer] = useState(false);
+    const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 
     const currentQuestion = questions[currentIndex];
     const currentPerformance = performance.get(currentQuestion?.id);
 
-    const handleOptionSelect = (optionIndex: number) => {
-        if (!showAnswer) {
-            setSelectedOption(optionIndex);
-        }
-    };
-
-    const handleRevealAnswer = () => {
-        setShowAnswer(true);
-
-        // Automatically determine if the answer is correct
-        const correctOptionIndex = getCorrectOptionIndex();
-        const isCorrect = selectedOption === correctOptionIndex;
-
-        // Automatically call onAnswer with the result
-        onAnswer(isCorrect);
-    };
-
-    const handleNext = () => {
-        setShowAnswer(false);
-        setSelectedOption(null);
-        onNext();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    const handlePrevious = () => {
-        setShowAnswer(false);
-        setSelectedOption(null);
-        onPrevious();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    const getCorrectOptionIndex = () => {
+    const getCorrectOptionIndex = useCallback(() => {
         // Convert answer letter (A, B, C, D) to index (0, 1, 2, 3)
         const answerLetter = currentQuestion.answer.trim().toUpperCase();
         const letterToIndex: { [key: string]: number } = {
@@ -81,7 +57,127 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
         return letterToIndex[answerLetter] !== undefined
             ? letterToIndex[answerLetter]
             : -1;
-    };
+    }, [currentQuestion]);
+
+    const handleOptionSelect = useCallback(
+        (optionIndex: number) => {
+            if (!showAnswer) {
+                setSelectedOption(optionIndex);
+            }
+        },
+        [showAnswer]
+    );
+
+    const handleRevealAnswer = useCallback(() => {
+        setShowAnswer(true);
+
+        // Automatically determine if the answer is correct
+        const correctOptionIndex = getCorrectOptionIndex();
+        const isCorrect = selectedOption === correctOptionIndex;
+
+        // Automatically call onAnswer with the result
+        onAnswer(isCorrect);
+    }, [getCorrectOptionIndex, selectedOption, onAnswer]);
+
+    const handleNext = useCallback(() => {
+        setShowAnswer(false);
+        setSelectedOption(null);
+        onNext();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [onNext]);
+
+    const handlePrevious = useCallback(() => {
+        setShowAnswer(false);
+        setSelectedOption(null);
+        onPrevious();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [onPrevious]);
+
+    // Add keyboard event listeners
+    useEffect(() => {
+        const handleKeyPress = (event: KeyboardEvent) => {
+            // Prevent keyboard shortcuts when user is typing in an input
+            if (
+                event.target instanceof HTMLInputElement ||
+                event.target instanceof HTMLTextAreaElement
+            ) {
+                return;
+            }
+
+            switch (event.key) {
+                case 'ArrowLeft':
+                    event.preventDefault();
+                    if (currentIndex > 0) {
+                        handlePrevious();
+                    }
+                    break;
+                case 'ArrowRight':
+                    event.preventDefault();
+                    if (currentIndex < questions.length - 1) {
+                        handleNext();
+                    }
+                    break;
+                case '1':
+                case 'a':
+                case 'A':
+                    event.preventDefault();
+                    if (!showAnswer) {
+                        handleOptionSelect(0);
+                    }
+                    break;
+                case '2':
+                case 'b':
+                case 'B':
+                    event.preventDefault();
+                    if (!showAnswer) {
+                        handleOptionSelect(1);
+                    }
+                    break;
+                case '3':
+                case 'c':
+                case 'C':
+                    event.preventDefault();
+                    if (!showAnswer) {
+                        handleOptionSelect(2);
+                    }
+                    break;
+                case '4':
+                case 'd':
+                case 'D':
+                    event.preventDefault();
+                    if (!showAnswer) {
+                        handleOptionSelect(3);
+                    }
+                    break;
+                case 'Enter':
+                case ' ':
+                    event.preventDefault();
+                    if (!showAnswer && selectedOption !== null) {
+                        handleRevealAnswer();
+                    } else if (showAnswer) {
+                        handleNext();
+                    }
+                    break;
+                case '?':
+                    event.preventDefault();
+                    setShowKeyboardHelp(!showKeyboardHelp);
+                    break;
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyPress);
+        return () => window.removeEventListener('keydown', handleKeyPress);
+    }, [
+        currentIndex,
+        questions.length,
+        showAnswer,
+        selectedOption,
+        showKeyboardHelp,
+        handleNext,
+        handlePrevious,
+        handleOptionSelect,
+        handleRevealAnswer,
+    ]);
 
     if (!currentQuestion) {
         return (
@@ -118,12 +214,43 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
                 />
             </div>
 
+            {/* Keyboard shortcuts display */}
+            <div className="keyboard-shortcuts">
+                <button
+                    onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
+                    className="keyboard-help-toggle"
+                    title="Toggle keyboard shortcuts"
+                >
+                    <Keyboard size={16} />
+                </button>
+                {showKeyboardHelp && (
+                    <div className="keyboard-help">
+                        <div className="shortcut-item">
+                            <span className="key">←→</span>
+                            <span>Navigate questions</span>
+                        </div>
+                        <div className="shortcut-item">
+                            <span className="key">1234 / ABCD</span>
+                            <span>Select answer</span>
+                        </div>
+                        <div className="shortcut-item">
+                            <span className="key">Space/Enter</span>
+                            <span>Reveal answer</span>
+                        </div>
+                        <div className="shortcut-item">
+                            <span className="key">?</span>
+                            <span>Toggle help</span>
+                        </div>
+                    </div>
+                )}
+            </div>
+
             <div className="question-header">
                 <button
                     onClick={handlePrevious}
                     disabled={currentIndex === 0}
                     className="nav-arrow"
-                    title="Previous question"
+                    title="Previous question (←)"
                 >
                     <ChevronLeft size={20} />
                 </button>
@@ -139,7 +266,7 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
                     onClick={handleNext}
                     disabled={currentIndex === questions.length - 1}
                     className="nav-arrow"
-                    title="Next question"
+                    title="Next question (→)"
                 >
                     <ChevronRight size={20} />
                 </button>
@@ -191,6 +318,7 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
                                         : ''
                                 }`}
                                 disabled={showAnswer}
+                                title={`Select option ${String.fromCharCode(65 + index)} (${index + 1})`}
                             >
                                 <span className="option-letter">
                                     {String.fromCharCode(65 + index)}
@@ -215,9 +343,11 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
                                 {formatText(currentQuestion.answer)}
                             </strong>
                         </p>
-                        <div className="explanation">
-                            <p>{formatText(currentQuestion.explanation)}</p>
-                        </div>
+                        {hasExplanation(currentQuestion.explanation) && (
+                            <div className="explanation">
+                                <p>{formatText(currentQuestion.explanation)}</p>
+                            </div>
+                        )}
                         {selectedOption !== null && (
                             <div className="result-indicator">
                                 {isCorrect ? (
@@ -253,6 +383,7 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
                             onClick={handleRevealAnswer}
                             className="btn btn-primary"
                             disabled={selectedOption === null}
+                            title="Reveal answer (Space/Enter)"
                         >
                             <Eye size={16} />
                             Reveal Answer
@@ -261,6 +392,7 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
                         <button
                             onClick={handleNext}
                             className="btn btn-primary"
+                            title="Next question (→)"
                         >
                             <ArrowRight size={20} />
                             Next Question
