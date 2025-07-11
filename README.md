@@ -9,6 +9,7 @@ A React-based flashcard application for studying Professional Machine Learning E
 - **Quiz Mode**: Multiple choice questions with immediate feedback
 - **Review Mode**: Focus on questions you got wrong or haven't answered yet
 - **Memorise Mode**: Browse all questions and answers with performance statistics
+- **Fill in the Blank Mode**: Fill in the blanks in the answer
 
 ### 📊 Smart Learning
 - **Performance Tracking**: Tracks correct/incorrect answers for each question
