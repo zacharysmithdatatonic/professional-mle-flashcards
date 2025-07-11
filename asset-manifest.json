@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/static/css/main.6ccbb5b4.css",
-    "main.js": "/static/js/main.8455717e.js",
-    "index.html": "/index.html",
-    "main.6ccbb5b4.css.map": "/static/css/main.6ccbb5b4.css.map",
-    "main.8455717e.js.map": "/static/js/main.8455717e.js.map"
+    "main.css": "/professional-mle-flashcards/static/css/main.6ccbb5b4.css",
+    "main.js": "/professional-mle-flashcards/static/js/main.8455717e.js",
+    "index.html": "/professional-mle-flashcards/index.html",
+    "main.6ccbb5b4.css.map": "/professional-mle-flashcards/static/css/main.6ccbb5b4.css.map",
+    "main.8455717e.js.map": "/professional-mle-flashcards/static/js/main.8455717e.js.map"
   },
   "entrypoints": [
     "static/css/main.6ccbb5b4.css",
