@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
     Timer,
     Settings,
@@ -45,6 +45,18 @@ export const PomodoroTimer: React.FC = () => {
 
     const timerRef = useRef<NodeJS.Timeout>();
 
+    const handleTimerComplete = useCallback(() => {
+        if (isWorkMode) {
+            setStats(prev => ({
+                completedPomodoros: prev.completedPomodoros + 1,
+                totalStudyTime:
+                    prev.totalStudyTime + Math.floor(settings.workTime / 60),
+                currentStreak: prev.currentStreak + 1,
+            }));
+        }
+        setIsWorkMode(!isWorkMode);
+    }, [isWorkMode, settings.workTime]);
+
     useEffect(() => {
         if (isRunning) {
             timerRef.current = setInterval(() => {
@@ -65,19 +77,7 @@ export const PomodoroTimer: React.FC = () => {
                 clearInterval(timerRef.current);
             }
         };
-    }, [isRunning, isWorkMode, settings]);
-
-    const handleTimerComplete = () => {
-        if (isWorkMode) {
-            setStats(prev => ({
-                completedPomodoros: prev.completedPomodoros + 1,
-                totalStudyTime:
-                    prev.totalStudyTime + Math.floor(settings.workTime / 60),
-                currentStreak: prev.currentStreak + 1,
-            }));
-        }
-        setIsWorkMode(!isWorkMode);
-    };
+    }, [isRunning, isWorkMode, settings, handleTimerComplete]);
 
     const toggleTimer = () => {
         setIsRunning(!isRunning);
