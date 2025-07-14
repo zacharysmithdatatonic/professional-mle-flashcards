@@ -15,6 +15,7 @@ import { QuizMode } from './components/QuizMode';
 import { ReviewMode } from './components/ReviewMode';
 import { MemoriseMode } from './components/MemoriseMode';
 import { FillInTheBlankMode } from './components/FillInTheBlankMode';
+import { PomodoroTimer } from './components/PomodoroTimer';
 import {
     BookOpen,
     Brain,
@@ -58,7 +59,7 @@ const AccuracyDisplay: React.FC<{
             <span className="accuracy-percentage">{accuracy}%</span>
             <span className="accuracy-details">
                 ({totalCorrect}{' '}
-                <CheckCircle className="correct-icon" size={16} /> /{' '}
+                <CheckCircle className="correct-icon" size={16} /> |{' '}
                 {totalAttempts} <XCircle className="incorrect-icon" size={16} />
                 )
             </span>
@@ -315,6 +316,7 @@ function App() {
                             current={stats.totalAnswered}
                             total={questions.length}
                         />
+                        <PomodoroTimer />
                     </div>
                 </header>
                 <MemoriseMode questions={questions} performance={performance} />
@@ -367,6 +369,7 @@ function App() {
                             current={stats.totalAnswered}
                             total={questions.length}
                         />
+                        <PomodoroTimer />
                     </div>
                 </header>
 
@@ -428,6 +431,7 @@ function App() {
                         current={stats.totalAnswered}
                         total={questions.length}
                     />
+                    <PomodoroTimer />
                 </div>
             </header>
 
