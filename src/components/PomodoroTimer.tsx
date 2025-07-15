@@ -8,7 +8,30 @@ import {
     ChevronDown,
     ChevronUp,
     X,
+    SkipForward,
+    Coffee,
+    Brain,
+    Rocket,
+    Zap,
+    Target,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
+
+// Audio URLs
+const NOTIFICATION_SOUND = `${process.env.PUBLIC_URL}/sounds/notification.mp3`;
+
+// Motivational messages for different states
+const BREAK_START_MESSAGES = [
+    { message: 'Time for a well-deserved break!', icon: Coffee },
+    { message: 'Rest and recharge!', icon: Zap },
+    { message: 'Take a moment to relax.', icon: Brain },
+];
+
+const BREAK_END_MESSAGES = [
+    { message: "Break's over - let's get back to it!", icon: Rocket },
+    { message: 'Ready to continue learning!', icon: Target },
+    { message: 'Time to focus again!', icon: Brain },
+];
 
 interface PomodoroStats {
     completedPomodoros: number;
@@ -30,7 +53,13 @@ const DEFAULT_SETTINGS: TimerSettings = {
     sessionsUntilLongBreak: 4,
 };
 
-export const PomodoroTimer: React.FC = () => {
+interface PomodoroTimerProps {
+    onStudyTimeUpdate: (totalMinutes: number) => void;
+}
+
+export const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
+    onStudyTimeUpdate,
+}) => {
     const [timeLeft, setTimeLeft] = useState(DEFAULT_SETTINGS.workTime);
     const [isRunning, setIsRunning] = useState(false);
     const [isWorkMode, setIsWorkMode] = useState(true);
@@ -42,26 +71,212 @@ export const PomodoroTimer: React.FC = () => {
         totalStudyTime: 0,
         currentStreak: 0,
     });
+    const [audioEnabled, setAudioEnabled] = useState(true);
+    const [pendingStudyTime, setPendingStudyTime] = useState<number | null>(
+        null
+    );
+    const [waitingToContinue, setWaitingToContinue] = useState(false);
+
+    // Track actual elapsed time in work mode
+    const startTimeRef = useRef<number | null>(null);
+    const elapsedTimeRef = useRef<number>(0);
 
     const timerRef = useRef<NodeJS.Timeout>();
+    const containerRef = useRef<HTMLDivElement>(null);
+    const notificationAudioRef = useRef<HTMLAudioElement | null>(null);
+
+    // Initialize audio elements
+    useEffect(() => {
+        const audio = new Audio();
+
+        const loadAudio = async () => {
+            try {
+                // First check if the file exists
+                const response = await fetch(NOTIFICATION_SOUND);
+                if (!response.ok) {
+                    throw new Error(
+                        `Failed to load audio file: ${response.statusText}`
+                    );
+                }
+
+                // Set up event listeners before setting source
+                audio.addEventListener(
+                    'canplaythrough',
+                    () => {
+                        console.log('Audio loaded successfully');
+                        notificationAudioRef.current = audio;
+                    },
+                    { once: true }
+                ); // Only trigger once
+
+                audio.addEventListener(
+                    'error',
+                    e => {
+                        console.error('Audio loading failed:', e);
+                        setAudioEnabled(false);
+                    },
+                    { once: true }
+                ); // Only trigger once
+
+                // Set audio properties and load
+                audio.volume = 0.5;
+                audio.preload = 'auto';
+                audio.src = NOTIFICATION_SOUND;
+
+                await audio.load(); // Explicitly load the audio
+            } catch (error) {
+                console.error('Audio initialization failed:', error);
+                setAudioEnabled(false);
+            }
+        };
+
+        loadAudio();
+
+        return () => {
+            if (audio) {
+                audio.removeEventListener('canplaythrough', () => {});
+                audio.removeEventListener('error', () => {});
+                audio.src = '';
+                notificationAudioRef.current = null;
+            }
+        };
+    }, []);
+
+    // Handle study time updates in an effect to avoid setState during render
+    useEffect(() => {
+        if (pendingStudyTime !== null) {
+            onStudyTimeUpdate(pendingStudyTime);
+            setPendingStudyTime(null);
+        }
+    }, [pendingStudyTime, onStudyTimeUpdate]);
+
+    // Reset elapsed time when starting a new work session
+    useEffect(() => {
+        if (isWorkMode && timeLeft === settings.workTime) {
+            elapsedTimeRef.current = 0;
+        }
+    }, [isWorkMode, timeLeft, settings.workTime]);
+
+    // Track elapsed time when timer is running in work mode
+    useEffect(() => {
+        if (isRunning && isWorkMode) {
+            startTimeRef.current = Date.now();
+
+            return () => {
+                if (startTimeRef.current) {
+                    // Add the elapsed time since last start to total elapsed time
+                    elapsedTimeRef.current += Math.floor(
+                        (Date.now() - startTimeRef.current) / 1000
+                    );
+                    startTimeRef.current = null;
+                }
+            };
+        }
+    }, [isRunning, isWorkMode]);
+
+    // Handle click outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                containerRef.current &&
+                !containerRef.current.contains(event.target as Node) &&
+                isMenuOpen
+            ) {
+                setIsMenuOpen(false);
+                setIsSettingsOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isMenuOpen]);
+
+    const playSound = useCallback(() => {
+        if (!audioEnabled) return;
+
+        const audio = notificationAudioRef.current;
+        if (audio) {
+            audio.currentTime = 0; // Reset to start
+            audio.play().catch(err => {
+                console.error('Audio playback failed:', err);
+                setAudioEnabled(false);
+            });
+        }
+    }, [audioEnabled]);
+
+    const showNotification = useCallback(
+        (messages: typeof BREAK_START_MESSAGES) => {
+            const randomMessage =
+                messages[Math.floor(Math.random() * messages.length)];
+            const Icon = randomMessage.icon;
+
+            playSound();
+
+            toast.custom(
+                t => (
+                    <div className={`custom-toast ${t.visible ? 'show' : ''}`}>
+                        <Icon size={24} />
+                        <span>{randomMessage.message}</span>
+                    </div>
+                ),
+                {
+                    duration: 4000,
+                    position: 'top-center',
+                }
+            );
+        },
+        [playSound]
+    );
 
     const handleTimerComplete = useCallback(() => {
         if (isWorkMode) {
+            // Work session ending, break starting
+            // Calculate final elapsed time including the current interval
+            if (startTimeRef.current) {
+                elapsedTimeRef.current += Math.floor(
+                    (Date.now() - startTimeRef.current) / 1000
+                );
+                startTimeRef.current = null;
+            }
+
+            // Only update stats with actual elapsed time
+            const actualMinutesStudied = Math.floor(
+                elapsedTimeRef.current / 60
+            );
             setStats(prev => ({
                 completedPomodoros: prev.completedPomodoros + 1,
-                totalStudyTime:
-                    prev.totalStudyTime + Math.floor(settings.workTime / 60),
+                totalStudyTime: prev.totalStudyTime + actualMinutesStudied,
                 currentStreak: prev.currentStreak + 1,
             }));
+
+            // Queue the study time update instead of calling it directly
+            setPendingStudyTime(actualMinutesStudied);
+            showNotification(BREAK_START_MESSAGES);
+            setIsWorkMode(false);
+            setTimeLeft(settings.breakTime);
+        } else {
+            // Break ending, work starting - wait for manual continuation
+            showNotification(BREAK_END_MESSAGES);
+            setWaitingToContinue(true);
+            setIsRunning(false);
         }
-        setIsWorkMode(!isWorkMode);
-    }, [isWorkMode, settings.workTime]);
+    }, [isWorkMode, showNotification, settings.breakTime]);
+
+    const startNextWorkSession = useCallback(() => {
+        setWaitingToContinue(false);
+        setIsWorkMode(true);
+        setTimeLeft(settings.workTime);
+        setIsRunning(true);
+    }, [settings.workTime]);
 
     useEffect(() => {
         if (isRunning) {
             timerRef.current = setInterval(() => {
                 setTimeLeft(prevTime => {
                     if (prevTime <= 1) {
+                        clearInterval(timerRef.current);
                         handleTimerComplete();
                         return isWorkMode
                             ? settings.breakTime
@@ -78,6 +293,19 @@ export const PomodoroTimer: React.FC = () => {
             }
         };
     }, [isRunning, isWorkMode, settings, handleTimerComplete]);
+
+    const skipSession = useCallback(() => {
+        if (isWorkMode && startTimeRef.current) {
+            // Add elapsed time before skipping
+            elapsedTimeRef.current += Math.floor(
+                (Date.now() - startTimeRef.current) / 1000
+            );
+            startTimeRef.current = null;
+        }
+        // Just switch modes without showing notifications
+        setIsWorkMode(prev => !prev);
+        setTimeLeft(isWorkMode ? settings.breakTime : settings.workTime);
+    }, [isWorkMode, settings.breakTime, settings.workTime]);
 
     const toggleTimer = () => {
         setIsRunning(!isRunning);
@@ -111,7 +339,7 @@ export const PomodoroTimer: React.FC = () => {
     };
 
     return (
-        <div className="pomodoro-container">
+        <div className="pomodoro-container" ref={containerRef}>
             <div
                 className={`pomodoro-timer ${isMenuOpen ? 'expanded' : ''}`}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -119,15 +347,31 @@ export const PomodoroTimer: React.FC = () => {
                 <div className="timer-display">
                     <Timer size={16} />
                     <span className="time">{formatTime(timeLeft)}</span>
-                    <button
-                        className="play-pause-btn"
-                        onClick={e => {
-                            e.stopPropagation();
-                            toggleTimer();
-                        }}
-                    >
-                        {isRunning ? <Pause size={16} /> : <Play size={16} />}
-                    </button>
+                    {waitingToContinue ? (
+                        <button
+                            className="start-work-btn"
+                            onClick={e => {
+                                e.stopPropagation();
+                                startNextWorkSession();
+                            }}
+                        >
+                            Start Work Session
+                        </button>
+                    ) : (
+                        <button
+                            className="play-pause-btn"
+                            onClick={e => {
+                                e.stopPropagation();
+                                toggleTimer();
+                            }}
+                        >
+                            {isRunning ? (
+                                <Pause size={16} />
+                            ) : (
+                                <Play size={16} />
+                            )}
+                        </button>
+                    )}
                     {isMenuOpen ? (
                         <ChevronUp size={16} />
                     ) : (
@@ -142,19 +386,26 @@ export const PomodoroTimer: React.FC = () => {
                         <>
                             <div className="menu-header">
                                 <h3>
-                                    {isWorkMode ? 'Work Session' : 'Break Time'}
+                                    {waitingToContinue
+                                        ? 'Break Complete!'
+                                        : isWorkMode
+                                          ? 'Work Session'
+                                          : 'Break Time'}
                                 </h3>
                                 <div className="timer-controls">
-                                    <button onClick={toggleTimer}>
-                                        {isRunning ? (
-                                            <Pause size={16} />
-                                        ) : (
-                                            <Play size={16} />
-                                        )}
-                                    </button>
-                                    <button onClick={resetTimer}>
-                                        <RotateCcw size={16} />
-                                    </button>
+                                    {!waitingToContinue && (
+                                        <>
+                                            <button
+                                                onClick={skipSession}
+                                                title={`Skip to end of ${isWorkMode ? 'work' : 'break'} session`}
+                                            >
+                                                <SkipForward size={16} />
+                                            </button>
+                                            <button onClick={resetTimer}>
+                                                <RotateCcw size={16} />
+                                            </button>
+                                        </>
+                                    )}
                                     <button
                                         onClick={() => setIsSettingsOpen(true)}
                                     >

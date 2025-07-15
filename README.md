@@ -1,4 +1,4 @@
-# PMLE Flashcards
+# Professional MLE Flashcards
 
 A React-based flashcard application for studying Professional Machine Learning Engineer (PMLE) exam questions. This app provides multiple study modes with intelligent performance tracking and spaced repetition.
 

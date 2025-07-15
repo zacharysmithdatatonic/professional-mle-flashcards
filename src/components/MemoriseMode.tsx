@@ -37,7 +37,6 @@ export const MemoriseMode: React.FC<MemoriseModeProps> = ({
     const [sortBy, setSortBy] = useState<'index' | 'performance' | 'accuracy'>(
         'index'
     );
-    const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 
     // Add keyboard event listeners
     useEffect(() => {
@@ -73,16 +72,12 @@ export const MemoriseMode: React.FC<MemoriseModeProps> = ({
                         ) as HTMLInputElement
                     )?.blur();
                     break;
-                case '?':
-                    event.preventDefault();
-                    setShowKeyboardHelp(!showKeyboardHelp);
-                    break;
             }
         };
 
         window.addEventListener('keydown', handleKeyPress);
         return () => window.removeEventListener('keydown', handleKeyPress);
-    }, [showAnswers, showKeyboardHelp]);
+    }, [showAnswers]);
 
     const filteredQuestions = questions.filter(
         q =>
@@ -147,37 +142,6 @@ export const MemoriseMode: React.FC<MemoriseModeProps> = ({
                     Memorise Mode
                 </h2>
                 <p>Review all questions and answers to reinforce learning</p>
-            </div>
-
-            {/* Keyboard shortcuts display */}
-            <div className="keyboard-shortcuts">
-                <button
-                    onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
-                    className="keyboard-help-toggle"
-                    title="Toggle keyboard shortcuts"
-                >
-                    <Keyboard size={16} />
-                </button>
-                {showKeyboardHelp && (
-                    <div className="keyboard-help">
-                        <div className="shortcut-item">
-                            <span className="key">H</span>
-                            <span>Toggle answers</span>
-                        </div>
-                        <div className="shortcut-item">
-                            <span className="key">/</span>
-                            <span>Focus search</span>
-                        </div>
-                        <div className="shortcut-item">
-                            <span className="key">Esc</span>
-                            <span>Clear search</span>
-                        </div>
-                        <div className="shortcut-item">
-                            <span className="key">?</span>
-                            <span>Toggle help</span>
-                        </div>
-                    </div>
-                )}
             </div>
 
             <div className="memorise-controls">

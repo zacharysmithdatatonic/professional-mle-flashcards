@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Question, QuestionPerformance, StudyMode } from './types';
 import { loadQuestionsFromJSON } from './utils/questionParser';
 import {
@@ -17,6 +17,11 @@ import { MemoriseMode } from './components/MemoriseMode';
 import { FillInTheBlankMode } from './components/FillInTheBlankMode';
 import { PomodoroTimer } from './components/PomodoroTimer';
 import {
+    KeyboardShortcuts,
+    ShortcutItem,
+} from './components/KeyboardShortcuts';
+import { Toaster } from 'react-hot-toast';
+import {
     BookOpen,
     Brain,
     XCircle,
@@ -31,8 +36,15 @@ import {
     TrendingUp,
     Heart,
     Edit3,
+    Clock,
+    Menu,
+    X,
 } from 'lucide-react';
 import './App.css';
+
+interface StudyTimeStats {
+    totalStudyTime: number; // in minutes
+}
 
 // Accuracy Display Component
 const AccuracyDisplay: React.FC<{
@@ -48,9 +60,9 @@ const AccuracyDisplay: React.FC<{
 
     const totalAttempts = totalCorrect + totalIncorrect;
     const accuracy =
-        totalAttempts > 0
-            ? Math.round((totalCorrect / totalAttempts) * 100)
-            : 0;
+        totalAttempts === 0
+            ? 0
+            : Math.round((totalCorrect / totalAttempts) * 100);
 
     return (
         <div className="header-accuracy">
@@ -59,9 +71,9 @@ const AccuracyDisplay: React.FC<{
             <span className="accuracy-percentage">{accuracy}%</span>
             <span className="accuracy-details">
                 ({totalCorrect}{' '}
-                <CheckCircle className="correct-icon" size={16} /> |{' '}
-                {totalAttempts} <XCircle className="incorrect-icon" size={16} />
-                )
+                <CheckCircle className="correct-icon" size={16} /> /{' '}
+                {totalAttempts} total
+                <XCircle className="incorrect-icon" size={16} />)
             </span>
         </div>
     );
@@ -123,6 +135,79 @@ function App() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [hasInitializedMode, setHasInitializedMode] = useState(false);
+    const [studyTimeStats, setStudyTimeStats] = useState<StudyTimeStats>(() => {
+        const saved = localStorage.getItem('flashcard-study-time');
+        return saved ? JSON.parse(saved) : { totalStudyTime: 0 };
+    });
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const sidebarRef = useRef<HTMLDivElement | null>(null);
+
+    // Accessibility: Focus trap and ESC key for sidebar
+    useEffect(() => {
+        if (!isSidebarOpen) return;
+        const focusableSelectors = [
+            'button',
+            'a',
+            'input',
+            'select',
+            'textarea',
+            '[tabindex]:not([tabindex="-1"])',
+        ];
+        const sidebar = sidebarRef.current;
+        if (!sidebar) return;
+        const focusableEls = sidebar.querySelectorAll<HTMLElement>(
+            focusableSelectors.join(',')
+        );
+        const firstEl = focusableEls[0];
+        const lastEl = focusableEls[focusableEls.length - 1];
+        if (firstEl) firstEl.focus();
+
+        function handleKeyDown(e: KeyboardEvent) {
+            if (e.key === 'Escape') {
+                setIsSidebarOpen(false);
+            } else if (e.key === 'Tab') {
+                if (focusableEls.length === 0) return;
+                if (e.shiftKey) {
+                    if (document.activeElement === firstEl) {
+                        e.preventDefault();
+                        lastEl.focus();
+                    }
+                } else {
+                    if (document.activeElement === lastEl) {
+                        e.preventDefault();
+                        firstEl.focus();
+                    }
+                }
+            }
+        }
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [isSidebarOpen]);
+
+    // Prevent background scroll when sidebar is open
+    useEffect(() => {
+        if (isSidebarOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isSidebarOpen]);
+
+    const handleStudyTimeUpdate = useCallback((totalMinutes: number) => {
+        setStudyTimeStats(prev => {
+            const updated = {
+                totalStudyTime: prev.totalStudyTime + totalMinutes,
+            };
+            localStorage.setItem(
+                'flashcard-study-time',
+                JSON.stringify(updated)
+            );
+            return updated;
+        });
+    }, []);
 
     // Load questions and performance on app start
     useEffect(() => {
@@ -286,6 +371,173 @@ function App() {
     const stats = getPerformanceStats(performance);
     const reviewQuestions = getQuestionsForReview(questions, performance);
 
+    // Define mode-specific keyboard shortcuts
+    const getShortcuts = useCallback((): ShortcutItem[] => {
+        if (!currentMode) {
+            return [
+                { key: '/', description: 'Focus search (in Memorise mode)' },
+                { key: 'H', description: 'Toggle answers (in Memorise mode)' },
+                { key: '?', description: 'Toggle keyboard help' },
+            ];
+        }
+
+        switch (currentMode) {
+            case 'flashcard':
+                return [
+                    { key: '←→', description: 'Navigate questions' },
+                    { key: 'Space/Enter', description: 'Reveal answer' },
+                    { key: '1', description: 'Mark incorrect' },
+                    { key: '2', description: 'Mark correct' },
+                    { key: '?', description: 'Toggle help' },
+                ];
+            case 'quiz':
+            case 'review':
+                return [
+                    { key: '←→', description: 'Navigate questions' },
+                    { key: '1234 / ABCD', description: 'Select answer' },
+                    { key: 'Space/Enter', description: 'Reveal answer' },
+                    { key: '?', description: 'Toggle help' },
+                ];
+            case 'fill-in-blank':
+                return [
+                    { key: '←→', description: 'Navigate questions' },
+                    { key: 'Space/Enter', description: 'Check answers' },
+                    { key: '?', description: 'Toggle help' },
+                ];
+            case 'memorise':
+                return [
+                    { key: 'H', description: 'Toggle answers' },
+                    { key: '/', description: 'Focus search' },
+                    { key: 'Esc', description: 'Clear search' },
+                    { key: '?', description: 'Toggle help' },
+                ];
+            default:
+                return [];
+        }
+    }, [currentMode]);
+
+    // Sidebar content as a separate component
+    const HeaderSidebar = () => (
+        <aside
+            className="header-sidebar"
+            ref={sidebarRef}
+            aria-modal="true"
+            role="dialog"
+            tabIndex={-1}
+            aria-labelledby="sidebar-heading"
+        >
+            <button
+                className="sidebar-close-btn"
+                aria-label="Close sidebar"
+                onClick={() => setIsSidebarOpen(false)}
+                autoFocus
+            >
+                <X size={24} />
+            </button>
+            <div className="sidebar-content">
+                <section className="sidebar-section">
+                    <h3 className="sidebar-section-label">Accuracy</h3>
+                    <AccuracyDisplay performance={performance} />
+                </section>
+                <section className="sidebar-section">
+                    <h3 className="sidebar-section-label">Progress</h3>
+                    <ProgressBar
+                        current={stats.totalAnswered}
+                        total={questions.length}
+                    />
+                </section>
+                <section className="sidebar-section">
+                    <h3 className="sidebar-section-label">Pomodoro Timer</h3>
+                    <PomodoroTimer onStudyTimeUpdate={handleStudyTimeUpdate} />
+                </section>
+                <section>
+                    <div className="keyboard-help">
+                        <h3 className="sidebar-section-label">
+                            Keyboard Shortcuts
+                        </h3>
+                        {getShortcuts().map((shortcut, index) => (
+                            <div key={index} className="shortcut-item">
+                                <span className="key">{shortcut.key}</span>
+                                <span>{shortcut.description}</span>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            </div>
+        </aside>
+    );
+
+    const renderHeader = () => {
+        return (
+            <header className="app-header">
+                <div className="header-left">
+                    {currentMode ? (
+                        <>
+                            <button
+                                onClick={handleBackToMenu}
+                                className="back-button"
+                            >
+                                <ArrowLeft size={16} />
+                                <span className="back-text">Menu</span>
+                            </button>
+                            <div className="mode-indicator">
+                                {currentMode === 'flashcard' && (
+                                    <>
+                                        <BookOpen size={16} />
+                                        <span>Flashcard</span>
+                                    </>
+                                )}
+                                {currentMode === 'quiz' && (
+                                    <>
+                                        <Brain size={16} />
+                                        <span>Quiz</span>
+                                    </>
+                                )}
+                                {currentMode === 'review' && (
+                                    <>
+                                        <RotateCcw size={16} />
+                                        <span>Review</span>
+                                    </>
+                                )}
+                                {currentMode === 'fill-in-blank' && (
+                                    <>
+                                        <Edit3 size={16} />
+                                        <span>Fill-in-Blank</span>
+                                    </>
+                                )}
+                            </div>
+                        </>
+                    ) : (
+                        <h1>
+                            <Brain size={24} />
+                            <span>Professional MLE Flashcards</span>
+                        </h1>
+                    )}
+                </div>
+                {/* Hamburger menu only on small screens */}
+                <button
+                    className="header-toggle"
+                    aria-label={isSidebarOpen ? 'Close menu' : 'Open menu'}
+                    aria-controls="header-sidebar"
+                    aria-expanded={isSidebarOpen}
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                >
+                    {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+                {/* Inline header content for large screens only */}
+                <div className="header-right">
+                    <AccuracyDisplay performance={performance} />
+                    <ProgressBar
+                        current={stats.totalAnswered}
+                        total={questions.length}
+                    />
+                    <PomodoroTimer onStudyTimeUpdate={handleStudyTimeUpdate} />
+                    <KeyboardShortcuts shortcuts={getShortcuts()} />
+                </div>
+            </header>
+        );
+    };
+
     if (isLoading) {
         return (
             <div className="app">
@@ -300,25 +552,7 @@ function App() {
     if (currentMode === 'memorise') {
         return (
             <div className="app">
-                <header className="app-header">
-                    <div className="header-left">
-                        <button
-                            onClick={handleBackToMenu}
-                            className="back-button"
-                        >
-                            <ArrowLeft size={16} />
-                            Back to Menu
-                        </button>
-                    </div>
-                    <div className="header-right">
-                        <AccuracyDisplay performance={performance} />
-                        <ProgressBar
-                            current={stats.totalAnswered}
-                            total={questions.length}
-                        />
-                        <PomodoroTimer />
-                    </div>
-                </header>
+                {renderHeader()}
                 <MemoriseMode questions={questions} performance={performance} />
             </div>
         );
@@ -327,52 +561,7 @@ function App() {
     if (currentMode && currentQuestions.length > 0) {
         return (
             <div className="app">
-                <header className="app-header">
-                    <div className="header-left">
-                        <button
-                            onClick={handleBackToMenu}
-                            className="back-button"
-                        >
-                            <ArrowLeft size={16} />
-                            Back to Menu
-                        </button>
-                        <div className="mode-indicator">
-                            {currentMode === 'flashcard' && (
-                                <>
-                                    <BookOpen size={16} />
-                                    Flashcard Mode
-                                </>
-                            )}
-                            {currentMode === 'quiz' && (
-                                <>
-                                    <Brain size={16} />
-                                    Quiz Mode
-                                </>
-                            )}
-                            {currentMode === 'review' && (
-                                <>
-                                    <RotateCcw size={16} />
-                                    Review Mode
-                                </>
-                            )}
-                            {currentMode === 'fill-in-blank' && (
-                                <>
-                                    <Edit3 size={16} />
-                                    Fill-in-the-Blank Mode
-                                </>
-                            )}
-                        </div>
-                    </div>
-                    <div className="header-right">
-                        <AccuracyDisplay performance={performance} />
-                        <ProgressBar
-                            current={stats.totalAnswered}
-                            total={questions.length}
-                        />
-                        <PomodoroTimer />
-                    </div>
-                </header>
-
+                {renderHeader()}
                 <main className="app-main">
                     {currentMode === 'flashcard' ? (
                         <FlashcardMode
@@ -418,23 +607,18 @@ function App() {
 
     return (
         <div className="app">
-            <header className="app-header">
-                <div className="header-left">
-                    <h1>
-                        <Brain size={24} />
-                        PMLE Flashcards
-                    </h1>
-                </div>
-                <div className="header-right">
-                    <AccuracyDisplay performance={performance} />
-                    <ProgressBar
-                        current={stats.totalAnswered}
-                        total={questions.length}
-                    />
-                    <PomodoroTimer />
-                </div>
-            </header>
-
+            <Toaster />
+            {renderHeader()}
+            {/* Sidebar and overlay for small screens */}
+            {isSidebarOpen && (
+                <div
+                    className="header-overlay"
+                    aria-label="Sidebar overlay"
+                    onClick={() => setIsSidebarOpen(false)}
+                    tabIndex={-1}
+                />
+            )}
+            {isSidebarOpen && <HeaderSidebar />}
             <main className="app-main">
                 <div className="stats-overview">
                     <h2>Progress Overview</h2>
@@ -462,6 +646,14 @@ function App() {
                             <h3>Need Review</h3>
                             <p className="stat-number">
                                 {reviewQuestions.length}
+                            </p>
+                        </div>
+                        <div className="stat-card">
+                            <Clock size={20} />
+                            <h3>Study Time</h3>
+                            <p className="stat-number">
+                                {Math.floor(studyTimeStats.totalStudyTime / 60)}
+                                h {studyTimeStats.totalStudyTime % 60}m
                             </p>
                         </div>
                     </div>

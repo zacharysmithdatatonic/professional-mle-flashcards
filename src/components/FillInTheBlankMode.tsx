@@ -6,10 +6,10 @@ import {
     ArrowRight,
     ChevronLeft,
     ChevronRight,
+    Eye,
     RotateCcw,
     HelpCircle,
     Edit3,
-    Keyboard,
 } from 'lucide-react';
 import { formatText } from '../utils/textFormatting';
 
@@ -178,7 +178,6 @@ export const FillInTheBlankMode: React.FC<FillInTheBlankModeProps> = ({
     const [blanks, setBlanks] = useState<Blank[]>([]);
     const [showAnswer, setShowAnswer] = useState(false);
     const [hasAnswered, setHasAnswered] = useState(false);
-    const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 
     const currentQuestion = questions[currentIndex];
     const currentPerformance = performance.get(currentQuestion?.id);
@@ -254,10 +253,6 @@ export const FillInTheBlankMode: React.FC<FillInTheBlankModeProps> = ({
                         handleNext();
                     }
                     break;
-                case '?':
-                    event.preventDefault();
-                    setShowKeyboardHelp(!showKeyboardHelp);
-                    break;
             }
         };
 
@@ -268,7 +263,6 @@ export const FillInTheBlankMode: React.FC<FillInTheBlankModeProps> = ({
         questions.length,
         showAnswer,
         hasAnswered,
-        showKeyboardHelp,
         handleNext,
         handlePrevious,
         handleRevealAnswer,
@@ -591,61 +585,6 @@ export const FillInTheBlankMode: React.FC<FillInTheBlankModeProps> = ({
                 />
             </div>
 
-            {/* Keyboard shortcuts display */}
-            <div className="keyboard-shortcuts">
-                <button
-                    onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
-                    className="keyboard-help-toggle"
-                    title="Toggle keyboard shortcuts"
-                >
-                    <Keyboard size={16} />
-                </button>
-                {showKeyboardHelp && (
-                    <div className="keyboard-help">
-                        <div className="shortcut-item">
-                            <span className="key">←→</span>
-                            <span>Navigate questions</span>
-                        </div>
-                        <div className="shortcut-item">
-                            <span className="key">Space/Enter</span>
-                            <span>Check answers</span>
-                        </div>
-                        <div className="shortcut-item">
-                            <span className="key">?</span>
-                            <span>Toggle help</span>
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            <div className="question-header">
-                <button
-                    onClick={handlePrevious}
-                    disabled={currentIndex === 0}
-                    className="nav-arrow"
-                    title="Previous question (←)"
-                >
-                    <ChevronLeft size={20} />
-                </button>
-
-                <div className="question-info">
-                    <Edit3 size={16} />
-                    <span className="question-counter">
-                        Fill-in-the-Blank {currentIndex + 1} of{' '}
-                        {questions.length}
-                    </span>
-                </div>
-
-                <button
-                    onClick={handleNext}
-                    disabled={currentIndex === questions.length - 1}
-                    className="nav-arrow"
-                    title="Next question (→)"
-                >
-                    <ChevronRight size={20} />
-                </button>
-            </div>
-
             <div className="fill-in-blank-card">
                 <div className="question-section">
                     <div className="question-header-card">
@@ -683,63 +622,47 @@ export const FillInTheBlankMode: React.FC<FillInTheBlankModeProps> = ({
                     {renderAnswerWithBlanks()}
                 </div>
 
-                {showAnswer && (
-                    <div className="result-section">
-                        <h4>
-                            <CheckCircle size={18} />
-                            Result
-                        </h4>
-                        <div className="result-indicator">
-                            {allCorrect ? (
-                                <p className="correct-result">
-                                    <CheckCircle
-                                        size={20}
-                                        style={{
-                                            color: 'var(--success-color)',
-                                        }}
-                                    />
-                                    Perfect! All blanks filled correctly.
-                                </p>
-                            ) : (
-                                <p className="incorrect-result">
-                                    <XCircle
-                                        size={20}
-                                        style={{ color: 'var(--error-color)' }}
-                                    />
-                                    Some answers are incorrect. Check the
-                                    correct answers below.
-                                </p>
-                            )}
-                        </div>
-                        {hasExplanation(currentQuestion.explanation) && (
-                            <div className="explanation">
-                                <p>{formatText(currentQuestion.explanation)}</p>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                <div className="fill-in-blank-actions">
-                    {!showAnswer ? (
+                <div className="fill-in-blank-controls">
+                    {!showAnswer && (
                         <button
                             onClick={handleRevealAnswer}
                             className="btn btn-primary"
-                            disabled={!allBlanksFilled}
-                            title="Check answers (Space/Enter)"
                         >
-                            <CheckCircle size={16} />
+                            <Eye size={16} />
                             Check Answers
                         </button>
-                    ) : (
+                    )}
+                    {showAnswer && (
                         <button
                             onClick={handleNext}
                             className="btn btn-primary"
-                            title="Next question (→)"
                         >
-                            <ArrowRight size={20} />
+                            <ArrowRight size={16} />
                             Next Question
                         </button>
                     )}
+                </div>
+
+                <div className="navigation-controls">
+                    <button
+                        onClick={handlePrevious}
+                        disabled={currentIndex === 0}
+                        className="btn btn-secondary"
+                    >
+                        <ChevronLeft size={16} />
+                        Previous
+                    </button>
+                    <span className="question-counter">
+                        {currentIndex + 1} / {questions.length}
+                    </span>
+                    <button
+                        onClick={handleNext}
+                        disabled={currentIndex === questions.length - 1}
+                        className="btn btn-secondary"
+                    >
+                        Next
+                        <ChevronRight size={16} />
+                    </button>
                 </div>
             </div>
         </div>

@@ -4,25 +4,26 @@
   "private": true,
   "homepage": "https://zacharysmithdatatonic.github.io/professional-mle-flashcards/",
   "dependencies": {
+    "lucide-react": "^0.294.0",
+    "papaparse": "^5.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.5.2",
     "react-scripts": "5.0.1",
-    "papaparse": "^5.4.1",
-    "lucide-react": "^0.294.0",
-    "web-vitals": "^2.1.4",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "web-vitals": "^2.1.4"
   },
   "devDependencies": {
+    "@types/node": "^18.16.3",
+    "@types/papaparse": "^5.3.7",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "@types/papaparse": "^5.3.7",
-    "@types/node": "^18.16.3",
-    "husky": "^8.0.3",
-    "lint-staged": "^15.2.0",
-    "prettier": "^3.1.1",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.1.2"
+    "eslint-plugin-prettier": "^5.1.2",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.1.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -70,4 +71,4 @@
       "last 1 safari version"
     ]
   }
-} 
+}

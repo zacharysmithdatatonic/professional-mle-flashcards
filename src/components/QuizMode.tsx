@@ -7,11 +7,9 @@ import {
     ChevronLeft,
     ChevronRight,
     Eye,
+    Trophy,
     RotateCcw,
     HelpCircle,
-    Brain,
-    Trophy,
-    Keyboard,
 } from 'lucide-react';
 import { formatText } from '../utils/textFormatting';
 
@@ -39,7 +37,6 @@ export const QuizMode: React.FC<QuizModeProps> = ({
 }) => {
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
     const [showAnswer, setShowAnswer] = useState(false);
-    const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 
     const currentQuestion = questions[currentIndex];
     const currentPerformance = performance.get(currentQuestion?.id);
@@ -158,10 +155,6 @@ export const QuizMode: React.FC<QuizModeProps> = ({
                         handleNext();
                     }
                     break;
-                case '?':
-                    event.preventDefault();
-                    setShowKeyboardHelp(!showKeyboardHelp);
-                    break;
             }
         };
 
@@ -172,7 +165,6 @@ export const QuizMode: React.FC<QuizModeProps> = ({
         questions.length,
         showAnswer,
         selectedOption,
-        showKeyboardHelp,
         handleNext,
         handlePrevious,
         handleOptionSelect,
@@ -212,64 +204,6 @@ export const QuizMode: React.FC<QuizModeProps> = ({
                         width: `${((currentIndex + 1) / questions.length) * 100}%`,
                     }}
                 />
-            </div>
-
-            {/* Keyboard shortcuts display */}
-            <div className="keyboard-shortcuts">
-                <button
-                    onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
-                    className="keyboard-help-toggle"
-                    title="Toggle keyboard shortcuts"
-                >
-                    <Keyboard size={16} />
-                </button>
-                {showKeyboardHelp && (
-                    <div className="keyboard-help">
-                        <div className="shortcut-item">
-                            <span className="key">←→</span>
-                            <span>Navigate questions</span>
-                        </div>
-                        <div className="shortcut-item">
-                            <span className="key">1234 / ABCD</span>
-                            <span>Select answer</span>
-                        </div>
-                        <div className="shortcut-item">
-                            <span className="key">Space/Enter</span>
-                            <span>Reveal answer</span>
-                        </div>
-                        <div className="shortcut-item">
-                            <span className="key">?</span>
-                            <span>Toggle help</span>
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            <div className="question-header">
-                <button
-                    onClick={handlePrevious}
-                    disabled={currentIndex === 0}
-                    className="nav-arrow"
-                    title="Previous question (←)"
-                >
-                    <ChevronLeft size={20} />
-                </button>
-
-                <div className="question-info">
-                    <Brain size={16} />
-                    <span className="question-counter">
-                        Question {currentIndex + 1} of {questions.length}
-                    </span>
-                </div>
-
-                <button
-                    onClick={handleNext}
-                    disabled={currentIndex === questions.length - 1}
-                    className="nav-arrow"
-                    title="Next question (→)"
-                >
-                    <ChevronRight size={20} />
-                </button>
             </div>
 
             <div className="quiz-card">

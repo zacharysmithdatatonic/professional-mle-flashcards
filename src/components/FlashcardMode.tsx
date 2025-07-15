@@ -10,7 +10,6 @@ import {
     RotateCcw,
     HelpCircle,
     BookOpen,
-    Keyboard,
 } from 'lucide-react';
 import { formatText } from '../utils/textFormatting';
 
@@ -38,7 +37,6 @@ export const FlashcardMode: React.FC<FlashcardModeProps> = ({
 }) => {
     const [showAnswer, setShowAnswer] = useState(false);
     const [hasAnswered, setHasAnswered] = useState(false);
-    const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 
     const currentQuestion = questions[currentIndex];
     const currentPerformance = performance.get(currentQuestion?.id);
@@ -114,10 +112,6 @@ export const FlashcardMode: React.FC<FlashcardModeProps> = ({
                         handleAnswerResponse(true);
                     }
                     break;
-                case '?':
-                    event.preventDefault();
-                    setShowKeyboardHelp(!showKeyboardHelp);
-                    break;
             }
         };
 
@@ -128,7 +122,6 @@ export const FlashcardMode: React.FC<FlashcardModeProps> = ({
         questions.length,
         showAnswer,
         hasAnswered,
-        showKeyboardHelp,
         handleNext,
         handlePrevious,
         handleRevealAnswer,
@@ -165,68 +158,6 @@ export const FlashcardMode: React.FC<FlashcardModeProps> = ({
                         width: `${((currentIndex + 1) / questions.length) * 100}%`,
                     }}
                 />
-            </div>
-
-            {/* Keyboard shortcuts display */}
-            <div className="keyboard-shortcuts">
-                <button
-                    onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
-                    className="keyboard-help-toggle"
-                    title="Toggle keyboard shortcuts"
-                >
-                    <Keyboard size={16} />
-                </button>
-                {showKeyboardHelp && (
-                    <div className="keyboard-help">
-                        <div className="shortcut-item">
-                            <span className="key">←→</span>
-                            <span>Navigate questions</span>
-                        </div>
-                        <div className="shortcut-item">
-                            <span className="key">Space/Enter</span>
-                            <span>Reveal answer</span>
-                        </div>
-                        <div className="shortcut-item">
-                            <span className="key">1</span>
-                            <span>Mark incorrect</span>
-                        </div>
-                        <div className="shortcut-item">
-                            <span className="key">2</span>
-                            <span>Mark correct</span>
-                        </div>
-                        <div className="shortcut-item">
-                            <span className="key">?</span>
-                            <span>Toggle help</span>
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            <div className="question-header">
-                <button
-                    onClick={handlePrevious}
-                    disabled={currentIndex === 0}
-                    className="nav-arrow"
-                    title="Previous question (←)"
-                >
-                    <ChevronLeft size={20} />
-                </button>
-
-                <div className="question-info">
-                    <BookOpen size={16} />
-                    <span className="question-counter">
-                        Question {currentIndex + 1} of {questions.length}
-                    </span>
-                </div>
-
-                <button
-                    onClick={handleNext}
-                    disabled={currentIndex === questions.length - 1}
-                    className="nav-arrow"
-                    title="Next question (→)"
-                >
-                    <ChevronRight size={20} />
-                </button>
             </div>
 
             <div className="flashcard">
@@ -274,48 +205,63 @@ export const FlashcardMode: React.FC<FlashcardModeProps> = ({
                     </div>
                 )}
 
-                <div className="flashcard-actions">
+                <div className="flashcard-controls">
                     {!showAnswer ? (
                         <button
                             onClick={handleRevealAnswer}
                             className="btn btn-primary"
-                            title="Reveal answer (Space/Enter)"
                         >
                             <Eye size={16} />
-                            Reveal Answer
+                            Show Answer
                         </button>
                     ) : !hasAnswered ? (
-                        <div className="answer-feedback">
-                            <p>Did you get this question right?</p>
-                            <div className="feedback-buttons">
-                                <button
-                                    onClick={() => handleAnswerResponse(false)}
-                                    className="btn btn-incorrect"
-                                    title="Mark as incorrect (1)"
-                                >
-                                    <XCircle size={20} />
-                                    Incorrect
-                                </button>
-                                <button
-                                    onClick={() => handleAnswerResponse(true)}
-                                    className="btn btn-correct"
-                                    title="Mark as correct (2)"
-                                >
-                                    <CheckCircle size={20} />
-                                    Correct
-                                </button>
-                            </div>
+                        <div className="answer-buttons">
+                            <button
+                                onClick={() => handleAnswerResponse(false)}
+                                className="btn btn-danger"
+                            >
+                                <XCircle size={16} />
+                                Incorrect
+                            </button>
+                            <button
+                                onClick={() => handleAnswerResponse(true)}
+                                className="btn btn-success"
+                            >
+                                <CheckCircle size={16} />
+                                Correct
+                            </button>
                         </div>
                     ) : (
                         <button
                             onClick={handleNext}
                             className="btn btn-primary"
-                            title="Next question (→)"
                         >
-                            <ArrowRight size={20} />
+                            <ArrowRight size={16} />
                             Next Question
                         </button>
                     )}
+                </div>
+
+                <div className="navigation-controls">
+                    <button
+                        onClick={handlePrevious}
+                        disabled={currentIndex === 0}
+                        className="btn btn-secondary"
+                    >
+                        <ChevronLeft size={16} />
+                        Previous
+                    </button>
+                    <span className="question-counter">
+                        {currentIndex + 1} / {questions.length}
+                    </span>
+                    <button
+                        onClick={handleNext}
+                        disabled={currentIndex === questions.length - 1}
+                        className="btn btn-secondary"
+                    >
+                        Next
+                        <ChevronRight size={16} />
+                    </button>
                 </div>
             </div>
         </div>
