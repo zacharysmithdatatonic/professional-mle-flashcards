@@ -54,7 +54,10 @@ body {
 /* Header */
 .app-header {
     background-color: var(--surface-color);
-    padding: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
     border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
@@ -237,9 +240,7 @@ body {
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background-color: var(--surface-color);
     border-radius: 4px;
-    border: 1px solid var(--border-color);
 }
 
 /* Main Content */
@@ -1473,13 +1474,11 @@ select:focus {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: var(--background-color);
-    color: var(--text-secondary);
+    color: var(--text-primary);
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     font-weight: 500;
     font-size: 0.75rem;
-    border: 1px solid var(--border-color);
 }
 
 /* Accuracy Display Icons */
@@ -1843,12 +1842,38 @@ select:focus {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 2rem;
     background: var(--surface-color);
     border-top: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
     color: var(--text-secondary);
-    font-size: 0.9rem;
-    margin-top: auto;
+    position: relative;
+}
+
+.app-footer .reset-stats-btn {
+    margin-left: auto;
+    font-size: 0.85rem;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    opacity: 0.5;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    transition:
+        opacity 0.2s,
+        background 0.2s,
+        color 0.2s;
+    position: absolute;
+    right: 1rem;
+}
+
+.app-footer .reset-stats-btn:hover,
+.app-footer .reset-stats-btn:focus {
+    opacity: 1;
+    background: var(--border-color);
+    color: var(--primary-color);
+    outline: none;
 }
 
 .app-footer svg {
@@ -2686,4 +2711,142 @@ select:focus {
 
 .header-toggle:focus {
     outline: 2px solid var(--primary-color);
+}
+
+@media (max-width: 600px) {
+    .app-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 0.25rem;
+        padding: 1rem 0.75rem;
+    }
+    .app-footer .reset-stats-btn {
+        position: static;
+        width: 100%;
+        margin-left: 0;
+        margin-top: 0.5rem;
+        align-self: stretch;
+        text-align: right;
+    }
+}
+
+/* --- Pomodoro Sidebar Mode Overrides --- */
+.pomodoro-container.sidebar {
+    position: static;
+    width: 100%;
+}
+.pomodoro-timer.sidebar {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0;
+    border-radius: 0;
+    cursor: default;
+    background: none;
+    box-shadow: none;
+    margin-bottom: 0.5rem;
+}
+.pomodoro-timer.sidebar:hover {
+    background: none;
+}
+.pomodoro-timer.sidebar .timer-display {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+    gap: 0.5rem;
+}
+.pomodoro-menu.sidebar {
+    position: static;
+    top: unset;
+    right: unset;
+    left: unset;
+    background: none;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    z-index: auto;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    margin-top: 0.5rem;
+}
+.menu-header {
+    padding: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    gap: 0.5rem;
+}
+.stats-container {
+    margin-bottom: 0;
+    width: 100%;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+}
+@media (max-width: 400px) {
+    .stats-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.settings-menu.sidebar {
+    min-width: 0;
+    width: 100%;
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+.settings-header.sidebar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: flex-start;
+    margin-bottom: 1rem;
+}
+.settings-header.sidebar h3 {
+    margin-left: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+.settings-content.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    padding: 0;
+}
+.setting-item {
+    margin-bottom: 0.5rem;
+}
+.setting-item label {
+    width: 100%;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+}
+.setting-item input {
+    width: 100%;
+    box-sizing: border-box;
+}
+.back-settings-btn {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 1rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+.back-settings-btn:hover {
+    background: var(--background-color);
 }

@@ -14,6 +14,7 @@ import {
     Rocket,
     Zap,
     Target,
+    ArrowLeft,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -55,10 +56,12 @@ const DEFAULT_SETTINGS: TimerSettings = {
 
 interface PomodoroTimerProps {
     onStudyTimeUpdate: (totalMinutes: number) => void;
+    sidebarMode?: boolean;
 }
 
 export const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
     onStudyTimeUpdate,
+    sidebarMode = false,
 }) => {
     const [timeLeft, setTimeLeft] = useState(DEFAULT_SETTINGS.workTime);
     const [isRunning, setIsRunning] = useState(false);
@@ -174,8 +177,9 @@ export const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
         }
     }, [isRunning, isWorkMode]);
 
-    // Handle click outside
+    // Only run click-outside logic if not in sidebarMode
     useEffect(() => {
+        if (sidebarMode) return;
         const handleClickOutside = (event: MouseEvent) => {
             if (
                 containerRef.current &&
@@ -186,12 +190,11 @@ export const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
                 setIsSettingsOpen(false);
             }
         };
-
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isMenuOpen]);
+    }, [isMenuOpen, sidebarMode]);
 
     const playSound = useCallback(() => {
         if (!audioEnabled) return;
@@ -339,196 +342,399 @@ export const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
     };
 
     return (
-        <div className="pomodoro-container" ref={containerRef}>
-            <div
-                className={`pomodoro-timer ${isMenuOpen ? 'expanded' : ''}`}
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-                <div className="timer-display">
-                    <Timer size={16} />
-                    <span className="time">{formatTime(timeLeft)}</span>
-                    {waitingToContinue ? (
-                        <button
-                            className="start-work-btn"
-                            onClick={e => {
-                                e.stopPropagation();
-                                startNextWorkSession();
-                            }}
-                        >
-                            Start Work Session
-                        </button>
-                    ) : (
-                        <button
-                            className="play-pause-btn"
-                            onClick={e => {
-                                e.stopPropagation();
-                                toggleTimer();
-                            }}
-                        >
-                            {isRunning ? (
-                                <Pause size={16} />
-                            ) : (
-                                <Play size={16} />
-                            )}
-                        </button>
-                    )}
-                    {isMenuOpen ? (
-                        <ChevronUp size={16} />
-                    ) : (
-                        <ChevronDown size={16} />
-                    )}
-                </div>
-            </div>
-
-            {isMenuOpen && (
-                <div className="pomodoro-menu">
-                    {!isSettingsOpen ? (
-                        <>
-                            <div className="menu-header">
-                                <h3>
-                                    {waitingToContinue
-                                        ? 'Break Complete!'
-                                        : isWorkMode
-                                          ? 'Work Session'
-                                          : 'Break Time'}
-                                </h3>
-                                <div className="timer-controls">
-                                    {!waitingToContinue && (
-                                        <>
-                                            <button
-                                                onClick={skipSession}
-                                                title={`Skip to end of ${isWorkMode ? 'work' : 'break'} session`}
-                                            >
-                                                <SkipForward size={16} />
-                                            </button>
-                                            <button onClick={resetTimer}>
-                                                <RotateCcw size={16} />
-                                            </button>
-                                        </>
-                                    )}
+        <div
+            className={`pomodoro-container${sidebarMode ? ' sidebar' : ''}`}
+            ref={containerRef}
+        >
+            {sidebarMode ? (
+                <div className="pomodoro-timer sidebar">
+                    <div className="timer-display">
+                        <Timer size={16} />
+                        <span className="time">{formatTime(timeLeft)}</span>
+                        {waitingToContinue ? (
+                            <button
+                                className="start-work-btn"
+                                onClick={startNextWorkSession}
+                            >
+                                Start Work Session
+                            </button>
+                        ) : (
+                            <button
+                                className="play-pause-btn"
+                                onClick={toggleTimer}
+                            >
+                                {isRunning ? (
+                                    <Pause size={16} />
+                                ) : (
+                                    <Play size={16} />
+                                )}
+                            </button>
+                        )}
+                        {/* No chevron/expand in sidebar mode */}
+                    </div>
+                    <div className="pomodoro-menu sidebar">
+                        {!isSettingsOpen ? (
+                            <>
+                                <div className="menu-header">
+                                    <h3 style={{ fontSize: '1rem', margin: 0 }}>
+                                        {waitingToContinue
+                                            ? 'Break Complete!'
+                                            : isWorkMode
+                                              ? 'Work Session'
+                                              : 'Break Time'}
+                                    </h3>
+                                    <div className="timer-controls">
+                                        {!waitingToContinue && (
+                                            <>
+                                                <button
+                                                    onClick={skipSession}
+                                                    title={`Skip to end of ${isWorkMode ? 'work' : 'break'} session`}
+                                                >
+                                                    <SkipForward size={16} />
+                                                </button>
+                                                <button onClick={resetTimer}>
+                                                    <RotateCcw size={16} />
+                                                </button>
+                                            </>
+                                        )}
+                                        <button
+                                            onClick={() =>
+                                                setIsSettingsOpen(true)
+                                            }
+                                        >
+                                            <Settings size={16} />
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="stats-container">
+                                    <div className="stat-item">
+                                        <span className="stat-label">
+                                            Completed
+                                        </span>
+                                        <span className="stat-value">
+                                            {stats.completedPomodoros}
+                                        </span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">
+                                            Study Time
+                                        </span>
+                                        <span className="stat-value">
+                                            {stats.totalStudyTime} min
+                                        </span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">
+                                            Streak
+                                        </span>
+                                        <span className="stat-value">
+                                            {stats.currentStreak}
+                                        </span>
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="settings-menu sidebar">
+                                <div className="settings-header sidebar">
                                     <button
-                                        onClick={() => setIsSettingsOpen(true)}
+                                        className="back-settings-btn"
+                                        onClick={closeSettings}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 4,
+                                        }}
                                     >
-                                        <Settings size={16} />
+                                        <ArrowLeft size={16} />
+                                        <span>Back</span>
                                     </button>
+                                    <h3 style={{ margin: 0, fontSize: '1rem' }}>
+                                        Timer Settings
+                                    </h3>
+                                </div>
+                                <div className="settings-content sidebar">
+                                    <div className="setting-item">
+                                        <label htmlFor="workTime">
+                                            Work Time (minutes)
+                                        </label>
+                                        <input
+                                            id="workTime"
+                                            type="number"
+                                            min="1"
+                                            value={Math.floor(
+                                                settings.workTime / 60
+                                            )}
+                                            onChange={e =>
+                                                handleSettingChange(
+                                                    'workTime',
+                                                    e.target.value
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                    <div className="setting-item">
+                                        <label htmlFor="breakTime">
+                                            Break Time (minutes)
+                                        </label>
+                                        <input
+                                            id="breakTime"
+                                            type="number"
+                                            min="1"
+                                            value={Math.floor(
+                                                settings.breakTime / 60
+                                            )}
+                                            onChange={e =>
+                                                handleSettingChange(
+                                                    'breakTime',
+                                                    e.target.value
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                    <div className="setting-item">
+                                        <label htmlFor="longBreakTime">
+                                            Long Break Time (minutes)
+                                        </label>
+                                        <input
+                                            id="longBreakTime"
+                                            type="number"
+                                            min="1"
+                                            value={Math.floor(
+                                                settings.longBreakTime / 60
+                                            )}
+                                            onChange={e =>
+                                                handleSettingChange(
+                                                    'longBreakTime',
+                                                    e.target.value
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                    <div className="setting-item">
+                                        <label htmlFor="sessionsUntilLongBreak">
+                                            Sessions Until Long Break
+                                        </label>
+                                        <input
+                                            id="sessionsUntilLongBreak"
+                                            type="number"
+                                            min="1"
+                                            value={
+                                                settings.sessionsUntilLongBreak
+                                            }
+                                            onChange={e =>
+                                                handleSettingChange(
+                                                    'sessionsUntilLongBreak',
+                                                    e.target.value
+                                                )
+                                            }
+                                        />
+                                    </div>
                                 </div>
                             </div>
-
-                            <div className="stats-container">
-                                <div className="stat-item">
-                                    <span className="stat-label">
-                                        Completed
-                                    </span>
-                                    <span className="stat-value">
-                                        {stats.completedPomodoros}
-                                    </span>
-                                </div>
-                                <div className="stat-item">
-                                    <span className="stat-label">
-                                        Study Time
-                                    </span>
-                                    <span className="stat-value">
-                                        {stats.totalStudyTime} min
-                                    </span>
-                                </div>
-                                <div className="stat-item">
-                                    <span className="stat-label">Streak</span>
-                                    <span className="stat-value">
-                                        {stats.currentStreak}
-                                    </span>
-                                </div>
-                            </div>
-                        </>
-                    ) : (
-                        <div className="settings-menu">
-                            <div className="settings-header">
-                                <h3>Timer Settings</h3>
+                        )}
+                    </div>
+                </div>
+            ) : (
+                <>
+                    <div
+                        className={`pomodoro-timer ${isMenuOpen ? 'expanded' : ''}`}
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    >
+                        <div className="timer-display">
+                            <Timer size={16} />
+                            <span className="time">{formatTime(timeLeft)}</span>
+                            {waitingToContinue ? (
                                 <button
-                                    className="close-settings"
-                                    onClick={closeSettings}
+                                    className="start-work-btn"
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        startNextWorkSession();
+                                    }}
                                 >
-                                    <X size={16} />
+                                    Start Work Session
                                 </button>
-                            </div>
-                            <div className="settings-content">
-                                <div className="setting-item">
-                                    <label htmlFor="workTime">
-                                        Work Time (minutes)
-                                    </label>
-                                    <input
-                                        id="workTime"
-                                        type="number"
-                                        min="1"
-                                        value={Math.floor(
-                                            settings.workTime / 60
-                                        )}
-                                        onChange={e =>
-                                            handleSettingChange(
-                                                'workTime',
-                                                e.target.value
-                                            )
-                                        }
-                                    />
+                            ) : (
+                                <button
+                                    className="play-pause-btn"
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        toggleTimer();
+                                    }}
+                                >
+                                    {isRunning ? (
+                                        <Pause size={16} />
+                                    ) : (
+                                        <Play size={16} />
+                                    )}
+                                </button>
+                            )}
+                            {isMenuOpen ? (
+                                <ChevronUp size={16} />
+                            ) : (
+                                <ChevronDown size={16} />
+                            )}
+                        </div>
+                    </div>
+                    {isMenuOpen && (
+                        <div className="pomodoro-menu">
+                            {!isSettingsOpen ? (
+                                <>
+                                    <div className="menu-header">
+                                        <h3>
+                                            {waitingToContinue
+                                                ? 'Break Complete!'
+                                                : isWorkMode
+                                                  ? 'Work Session'
+                                                  : 'Break Time'}
+                                        </h3>
+                                        <div className="timer-controls">
+                                            {!waitingToContinue && (
+                                                <>
+                                                    <button
+                                                        onClick={skipSession}
+                                                        title={`Skip to end of ${isWorkMode ? 'work' : 'break'} session`}
+                                                    >
+                                                        <SkipForward
+                                                            size={16}
+                                                        />
+                                                    </button>
+                                                    <button
+                                                        onClick={resetTimer}
+                                                    >
+                                                        <RotateCcw size={16} />
+                                                    </button>
+                                                </>
+                                            )}
+                                            <button
+                                                onClick={() =>
+                                                    setIsSettingsOpen(true)
+                                                }
+                                            >
+                                                <Settings size={16} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="stats-container">
+                                        <div className="stat-item">
+                                            <span className="stat-label">
+                                                Completed
+                                            </span>
+                                            <span className="stat-value">
+                                                {stats.completedPomodoros}
+                                            </span>
+                                        </div>
+                                        <div className="stat-item">
+                                            <span className="stat-label">
+                                                Study Time
+                                            </span>
+                                            <span className="stat-value">
+                                                {stats.totalStudyTime} min
+                                            </span>
+                                        </div>
+                                        <div className="stat-item">
+                                            <span className="stat-label">
+                                                Streak
+                                            </span>
+                                            <span className="stat-value">
+                                                {stats.currentStreak}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="settings-menu">
+                                    <div className="settings-header">
+                                        <h3>Timer Settings</h3>
+                                        <button
+                                            className="close-settings"
+                                            onClick={closeSettings}
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+                                    <div className="settings-content">
+                                        <div className="setting-item">
+                                            <label htmlFor="workTime">
+                                                Work Time (minutes)
+                                            </label>
+                                            <input
+                                                id="workTime"
+                                                type="number"
+                                                min="1"
+                                                value={Math.floor(
+                                                    settings.workTime / 60
+                                                )}
+                                                onChange={e =>
+                                                    handleSettingChange(
+                                                        'workTime',
+                                                        e.target.value
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        <div className="setting-item">
+                                            <label htmlFor="breakTime">
+                                                Break Time (minutes)
+                                            </label>
+                                            <input
+                                                id="breakTime"
+                                                type="number"
+                                                min="1"
+                                                value={Math.floor(
+                                                    settings.breakTime / 60
+                                                )}
+                                                onChange={e =>
+                                                    handleSettingChange(
+                                                        'breakTime',
+                                                        e.target.value
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        <div className="setting-item">
+                                            <label htmlFor="longBreakTime">
+                                                Long Break Time (minutes)
+                                            </label>
+                                            <input
+                                                id="longBreakTime"
+                                                type="number"
+                                                min="1"
+                                                value={Math.floor(
+                                                    settings.longBreakTime / 60
+                                                )}
+                                                onChange={e =>
+                                                    handleSettingChange(
+                                                        'longBreakTime',
+                                                        e.target.value
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        <div className="setting-item">
+                                            <label htmlFor="sessionsUntilLongBreak">
+                                                Sessions Until Long Break
+                                            </label>
+                                            <input
+                                                id="sessionsUntilLongBreak"
+                                                type="number"
+                                                min="1"
+                                                value={
+                                                    settings.sessionsUntilLongBreak
+                                                }
+                                                onChange={e =>
+                                                    handleSettingChange(
+                                                        'sessionsUntilLongBreak',
+                                                        e.target.value
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="setting-item">
-                                    <label htmlFor="breakTime">
-                                        Break Time (minutes)
-                                    </label>
-                                    <input
-                                        id="breakTime"
-                                        type="number"
-                                        min="1"
-                                        value={Math.floor(
-                                            settings.breakTime / 60
-                                        )}
-                                        onChange={e =>
-                                            handleSettingChange(
-                                                'breakTime',
-                                                e.target.value
-                                            )
-                                        }
-                                    />
-                                </div>
-                                <div className="setting-item">
-                                    <label htmlFor="longBreakTime">
-                                        Long Break Time (minutes)
-                                    </label>
-                                    <input
-                                        id="longBreakTime"
-                                        type="number"
-                                        min="1"
-                                        value={Math.floor(
-                                            settings.longBreakTime / 60
-                                        )}
-                                        onChange={e =>
-                                            handleSettingChange(
-                                                'longBreakTime',
-                                                e.target.value
-                                            )
-                                        }
-                                    />
-                                </div>
-                                <div className="setting-item">
-                                    <label htmlFor="sessionsUntilLongBreak">
-                                        Sessions Until Long Break
-                                    </label>
-                                    <input
-                                        id="sessionsUntilLongBreak"
-                                        type="number"
-                                        min="1"
-                                        value={settings.sessionsUntilLongBreak}
-                                        onChange={e =>
-                                            handleSettingChange(
-                                                'sessionsUntilLongBreak',
-                                                e.target.value
-                                            )
-                                        }
-                                    />
-                                </div>
-                            </div>
+                            )}
                         </div>
                     )}
-                </div>
+                </>
             )}
         </div>
     );

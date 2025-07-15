@@ -448,7 +448,10 @@ function App() {
                 </section>
                 <section className="sidebar-section">
                     <h3 className="sidebar-section-label">Pomodoro Timer</h3>
-                    <PomodoroTimer onStudyTimeUpdate={handleStudyTimeUpdate} />
+                    <PomodoroTimer
+                        onStudyTimeUpdate={handleStudyTimeUpdate}
+                        sidebarMode={true}
+                    />
                 </section>
                 <section>
                     <div className="keyboard-help">
@@ -484,25 +487,25 @@ function App() {
                                 {currentMode === 'flashcard' && (
                                     <>
                                         <BookOpen size={16} />
-                                        <span>Flashcard</span>
+                                        <span>Flashcard Mode</span>
                                     </>
                                 )}
                                 {currentMode === 'quiz' && (
                                     <>
                                         <Brain size={16} />
-                                        <span>Quiz</span>
+                                        <span>Quiz Mode</span>
                                     </>
                                 )}
                                 {currentMode === 'review' && (
                                     <>
                                         <RotateCcw size={16} />
-                                        <span>Review</span>
+                                        <span>Review Mode</span>
                                     </>
                                 )}
                                 {currentMode === 'fill-in-blank' && (
                                     <>
                                         <Edit3 size={16} />
-                                        <span>Fill-in-Blank</span>
+                                        <span>Fill-in-Blank Mode</span>
                                     </>
                                 )}
                             </div>
@@ -737,6 +740,24 @@ function App() {
                 <p>
                     Keep practicing to improve your machine learning knowledge!
                 </p>
+                <button
+                    className="reset-stats-btn"
+                    title="Reset all statistics"
+                    onClick={() => {
+                        if (
+                            window.confirm(
+                                'Are you sure you want to reset all statistics? This cannot be undone.'
+                            )
+                        ) {
+                            setPerformance(new Map());
+                            setStudyTimeStats({ totalStudyTime: 0 });
+                            localStorage.removeItem('flashcard-performance');
+                            localStorage.removeItem('flashcard-study-time');
+                        }
+                    }}
+                >
+                    Reset Statistics
+                </button>
             </footer>
         </div>
     );
