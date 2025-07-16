@@ -9,8 +9,6 @@ import {
     Eye,
     RotateCcw,
     HelpCircle,
-    AlertTriangle,
-    Trophy,
 } from 'lucide-react';
 import { formatText } from '../utils/textFormatting';
 
@@ -176,10 +174,7 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
         return (
             <div className="review-container">
                 <div className="completion-message">
-                    <Trophy
-                        size={48}
-                        style={{ color: 'var(--success-color)' }}
-                    />
+                    <RotateCcw size={48} />
                     <h2>Review Complete! Great job!</h2>
                     <button
                         onClick={() => window.location.reload()}

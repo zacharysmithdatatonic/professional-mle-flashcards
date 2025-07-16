@@ -14,7 +14,6 @@ import {
     Calendar,
     BarChart3,
     ListChecks,
-    Keyboard,
 } from 'lucide-react';
 import { formatText } from '../utils/textFormatting';
 

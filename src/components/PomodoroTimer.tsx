@@ -6,7 +6,6 @@ import {
     Play,
     RotateCcw,
     ChevronDown,
-    ChevronUp,
     X,
     SkipForward,
     Coffee,

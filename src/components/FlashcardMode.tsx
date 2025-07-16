@@ -9,7 +9,6 @@ import {
     Eye,
     RotateCcw,
     HelpCircle,
-    BookOpen,
 } from 'lucide-react';
 import { formatText } from '../utils/textFormatting';
 

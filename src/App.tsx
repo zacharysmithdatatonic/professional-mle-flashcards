@@ -318,30 +318,36 @@ function App() {
         loadData();
     }, [selectedBank]);
 
-    function startMode(mode: StudyMode) {
-        let questionsToUse: Question[] = [];
+    const startMode = useCallback(
+        (mode: StudyMode) => {
+            let questionsToUse: Question[] = [];
 
-        switch (mode) {
-            case 'review':
-                questionsToUse = getQuestionsForReview(questions, performance);
-                if (questionsToUse.length === 0) {
-                    alert(
-                        'No questions need review! All questions have been answered correctly.'
+            switch (mode) {
+                case 'review':
+                    questionsToUse = getQuestionsForReview(
+                        questions,
+                        performance
                     );
-                    return;
-                }
-                break;
-            case 'memorise':
-                questionsToUse = questions;
-                break;
-            default:
-                questionsToUse = weightedShuffle(questions, performance);
-        }
+                    if (questionsToUse.length === 0) {
+                        alert(
+                            'No questions need review! All questions have been answered correctly.'
+                        );
+                        return;
+                    }
+                    break;
+                case 'memorise':
+                    questionsToUse = questions;
+                    break;
+                default:
+                    questionsToUse = weightedShuffle(questions, performance);
+            }
 
-        setCurrentMode(mode);
-        setCurrentQuestions(questionsToUse);
-        setCurrentIndex(0);
-    }
+            setCurrentMode(mode);
+            setCurrentQuestions(questionsToUse);
+            setCurrentIndex(0);
+        },
+        [questions, performance]
+    );
 
     // On initial load, set mode from URL if present (after questions are loaded)
     useEffect(() => {

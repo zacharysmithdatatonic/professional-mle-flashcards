@@ -13,11 +13,6 @@ import {
 } from 'lucide-react';
 import { formatText } from '../utils/textFormatting';
 
-// Helper function to check if explanation has meaningful content
-const hasExplanation = (explanation: string): boolean => {
-    return explanation.trim().replace(/\n/g, '').length > 0;
-};
-
 // Technical keywords to target for blanks
 const TECHNICAL_KEYWORDS = [
     // ML/AI terms
@@ -544,11 +539,6 @@ export const FillInTheBlankMode: React.FC<FillInTheBlankModeProps> = ({
 
         return <p className="answer-text">{segments}</p>;
     };
-
-    const allBlanksFilled = blanks.every(blank => blank.userAnswer !== null);
-    const allCorrect = blanks.every(
-        blank => blank.userAnswer === blank.correctAnswer
-    );
 
     if (!currentQuestion) {
         return (
