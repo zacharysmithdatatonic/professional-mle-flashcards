@@ -87,6 +87,8 @@ export const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
     const timerRef = useRef<NodeJS.Timeout>();
     const containerRef = useRef<HTMLDivElement>(null);
     const notificationAudioRef = useRef<HTMLAudioElement | null>(null);
+    const dropdownBtnRef = useRef<HTMLButtonElement | null>(null);
+    const dropdownRef = useRef<HTMLDivElement | null>(null);
 
     // Initialize audio elements
     useEffect(() => {
@@ -182,8 +184,10 @@ export const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
         if (sidebarMode) return;
         const handleClickOutside = (event: MouseEvent) => {
             if (
-                containerRef.current &&
-                !containerRef.current.contains(event.target as Node) &&
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node) &&
+                dropdownBtnRef.current &&
+                !dropdownBtnRef.current.contains(event.target as Node) &&
                 isMenuOpen
             ) {
                 setIsMenuOpen(false);
@@ -536,51 +540,64 @@ export const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
                 </div>
             ) : (
                 <>
-                    <div
-                        className={`pomodoro-timer ${isMenuOpen ? 'expanded' : ''}`}
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    >
-                        <div className="timer-display">
-                            <Timer size={16} />
-                            <span className="time">{formatTime(timeLeft)}</span>
-                            {waitingToContinue ? (
-                                <button
-                                    className="start-work-btn"
-                                    onClick={e => {
-                                        e.stopPropagation();
-                                        startNextWorkSession();
-                                    }}
-                                >
-                                    Start Work Session
-                                </button>
-                            ) : (
-                                <button
-                                    className="play-pause-btn"
-                                    onClick={e => {
-                                        e.stopPropagation();
-                                        toggleTimer();
-                                    }}
-                                >
-                                    {isRunning ? (
-                                        <Pause size={16} />
-                                    ) : (
-                                        <Play size={16} />
-                                    )}
-                                </button>
-                            )}
-                            {isMenuOpen ? (
-                                <ChevronUp size={16} />
-                            ) : (
-                                <ChevronDown size={16} />
-                            )}
-                        </div>
+                    <div className="pomodoro-timer">
+                        <Timer size={16} />
+                        <span className="time">{formatTime(timeLeft)}</span>
+                        {waitingToContinue ? (
+                            <button
+                                className="start-work-btn"
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    startNextWorkSession();
+                                }}
+                            >
+                                Start Work Session
+                            </button>
+                        ) : (
+                            <button
+                                className="play-pause-btn"
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    toggleTimer();
+                                }}
+                            >
+                                {isRunning ? (
+                                    <Pause size={16} />
+                                ) : (
+                                    <Play size={16} />
+                                )}
+                            </button>
+                        )}
+                        <button
+                            className="header-metrics-btn"
+                            ref={dropdownBtnRef}
+                            aria-label="Show Pomodoro details"
+                            aria-haspopup="true"
+                            aria-expanded={isMenuOpen}
+                            onClick={e => {
+                                e.stopPropagation();
+                                setIsMenuOpen(v => !v);
+                            }}
+                        >
+                            <ChevronDown size={16} />
+                        </button>
                     </div>
                     {isMenuOpen && (
-                        <div className="pomodoro-menu">
+                        <div
+                            className="header-metrics-dropdown"
+                            ref={dropdownRef}
+                            tabIndex={-1}
+                            role="menu"
+                        >
                             {!isSettingsOpen ? (
                                 <>
                                     <div className="menu-header">
-                                        <h3>
+                                        <h3
+                                            style={{
+                                                fontSize: '1rem',
+                                                margin: 0,
+                                            }}
+                                        >
                                             {waitingToContinue
                                                 ? 'Break Complete!'
                                                 : isWorkMode

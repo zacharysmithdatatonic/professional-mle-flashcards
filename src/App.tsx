@@ -39,6 +39,7 @@ import {
     Clock,
     Menu,
     X,
+    Sparkles,
 } from 'lucide-react';
 import './App.css';
 
@@ -125,6 +126,21 @@ const setModeInURL = (mode: StudyMode | null) => {
     window.history.replaceState({}, '', url.toString());
 };
 
+const QUESTION_BANKS = [
+    {
+        key: 'mle',
+        label: 'Professional MLE',
+        icon: <Brain size={18} />,
+        dataset: '/pmle.json',
+    },
+    {
+        key: 'genai',
+        label: 'GenAI Leader',
+        icon: <Sparkles size={18} />,
+        dataset: '/genai.json',
+    },
+];
+
 function App() {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [performance, setPerformance] = useState<
@@ -141,6 +157,43 @@ function App() {
     });
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const sidebarRef = useRef<HTMLDivElement | null>(null);
+    const [metricsDropdownOpen, setMetricsDropdownOpen] = useState(false);
+    const metricsBtnRef = useRef<HTMLButtonElement | null>(null);
+    const metricsDropdownRef = useRef<HTMLDivElement | null>(null);
+    const [selectedBank, setSelectedBank] = useState('mle');
+    const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+    // Detect small screen
+    useEffect(() => {
+        function handleResize() {
+            setIsSmallScreen(window.innerWidth <= 900);
+        }
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Replace BankSelector with a custom dropdown
+    const [bankDropdownOpen, setBankDropdownOpen] = useState(false);
+    const bankDropdownRef = useRef<HTMLDivElement | null>(null);
+    const bankDropdownBtnRef = useRef<HTMLButtonElement | null>(null);
+
+    // Close dropdown on outside click
+    useEffect(() => {
+        if (!bankDropdownOpen) return;
+        function handleClick(e: MouseEvent) {
+            if (
+                bankDropdownRef.current &&
+                !bankDropdownRef.current.contains(e.target as Node) &&
+                bankDropdownBtnRef.current &&
+                !bankDropdownBtnRef.current.contains(e.target as Node)
+            ) {
+                setBankDropdownOpen(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClick);
+        return () => document.removeEventListener('mousedown', handleClick);
+    }, [bankDropdownOpen]);
 
     // Accessibility: Focus trap and ESC key for sidebar
     useEffect(() => {
@@ -196,6 +249,23 @@ function App() {
         };
     }, [isSidebarOpen]);
 
+    // Close dropdown on outside click
+    useEffect(() => {
+        if (!metricsDropdownOpen) return;
+        function handleClick(e: MouseEvent) {
+            if (
+                metricsDropdownRef.current &&
+                !metricsDropdownRef.current.contains(e.target as Node) &&
+                metricsBtnRef.current &&
+                !metricsBtnRef.current.contains(e.target as Node)
+            ) {
+                setMetricsDropdownOpen(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClick);
+        return () => document.removeEventListener('mousedown', handleClick);
+    }, [metricsDropdownOpen]);
+
     const handleStudyTimeUpdate = useCallback((totalMinutes: number) => {
         setStudyTimeStats(prev => {
             const updated = {
@@ -209,16 +279,22 @@ function App() {
         });
     }, []);
 
-    // Load questions and performance on app start
+    // Load questions and performance on app start or when selectedBank changes
     useEffect(() => {
         const loadData = async () => {
             try {
-                // Load JSON data from public folder
-                const parsedQuestions = await loadQuestionsFromJSON();
+                // Load JSON data from public folder based on selectedBank
+                const bank =
+                    QUESTION_BANKS.find(b => b.key === selectedBank) ||
+                    QUESTION_BANKS[0];
+                const parsedQuestions = await loadQuestionsFromJSON(
+                    bank.dataset
+                );
                 setQuestions(parsedQuestions);
 
-                // Load performance from localStorage
-                const savedPerformance = loadPerformanceFromStorage();
+                // Load performance from localStorage (per bank)
+                const savedPerformance =
+                    loadPerformanceFromStorage(selectedBank);
 
                 // Initialize performance for new questions
                 const updatedPerformance = new Map(savedPerformance);
@@ -240,38 +316,32 @@ function App() {
         };
 
         loadData();
-    }, []);
+    }, [selectedBank]);
 
-    const startMode = useCallback(
-        (mode: StudyMode) => {
-            let questionsToUse: Question[] = [];
+    function startMode(mode: StudyMode) {
+        let questionsToUse: Question[] = [];
 
-            switch (mode) {
-                case 'review':
-                    questionsToUse = getQuestionsForReview(
-                        questions,
-                        performance
+        switch (mode) {
+            case 'review':
+                questionsToUse = getQuestionsForReview(questions, performance);
+                if (questionsToUse.length === 0) {
+                    alert(
+                        'No questions need review! All questions have been answered correctly.'
                     );
-                    if (questionsToUse.length === 0) {
-                        alert(
-                            'No questions need review! All questions have been answered correctly.'
-                        );
-                        return;
-                    }
-                    break;
-                case 'memorise':
-                    questionsToUse = questions;
-                    break;
-                default:
-                    questionsToUse = weightedShuffle(questions, performance);
-            }
+                    return;
+                }
+                break;
+            case 'memorise':
+                questionsToUse = questions;
+                break;
+            default:
+                questionsToUse = weightedShuffle(questions, performance);
+        }
 
-            setCurrentMode(mode);
-            setCurrentQuestions(questionsToUse);
-            setCurrentIndex(0);
-        },
-        [questions, performance]
-    );
+        setCurrentMode(mode);
+        setCurrentQuestions(questionsToUse);
+        setCurrentIndex(0);
+    }
 
     // On initial load, set mode from URL if present (after questions are loaded)
     useEffect(() => {
@@ -304,12 +374,12 @@ function App() {
         };
     }, [isLoading, questions.length, currentMode, startMode]);
 
-    // Save performance to localStorage whenever it changes
+    // Save performance to localStorage whenever it changes (per bank)
     useEffect(() => {
         if (performance.size > 0) {
-            savePerformanceToStorage(performance);
+            savePerformanceToStorage(performance, selectedBank);
         }
-    }, [performance]);
+    }, [performance, selectedBank]);
 
     // Sync URL when currentMode changes (but not during initial load)
     useEffect(() => {
@@ -434,7 +504,22 @@ function App() {
             >
                 <X size={24} />
             </button>
+            {/* App logo and title at the top of the sidebar */}
+            <div className="sidebar-app-title">
+                {selectedBank === 'genai' ? (
+                    <Sparkles size={24} />
+                ) : (
+                    <Brain size={24} />
+                )}
+                <span>
+                    {selectedBank === 'genai'
+                        ? 'GenAI Leader Flashcards'
+                        : 'Professional MLE Flashcards'}
+                </span>
+            </div>
             <div className="sidebar-content">
+                {/* Bank dropdown at top if on home and small screen */}
+                {!currentMode && isSmallScreen && <BankSelector sidebarMode />}
                 <section className="sidebar-section">
                     <h3 className="sidebar-section-label">Accuracy</h3>
                     <AccuracyDisplay performance={performance} />
@@ -470,7 +555,102 @@ function App() {
         </aside>
     );
 
+    // Replace BankSelector with a custom dropdown
+    const BankSelector: React.FC<{ sidebarMode?: boolean }> = ({
+        sidebarMode,
+    }) => {
+        if (sidebarMode) {
+            return (
+                <section className="sidebar-section bank-sidebar-section">
+                    <h3 className="sidebar-section-label">Question Bank</h3>
+                    <div className="bank-sidebar-list">
+                        {QUESTION_BANKS.map(bank => (
+                            <button
+                                key={bank.key}
+                                className={`bank-sidebar-option${selectedBank === bank.key ? ' selected' : ''}`}
+                                onClick={() => setSelectedBank(bank.key)}
+                                aria-pressed={selectedBank === bank.key}
+                            >
+                                <span className="bank-dropdown-icon">
+                                    {bank.icon}
+                                </span>
+                                <span className="bank-dropdown-label">
+                                    {bank.label}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+                </section>
+            );
+        }
+        // Default: header dropdown
+        return (
+            <div className="bank-dropdown-wrapper">
+                <button
+                    className="bank-dropdown-btn"
+                    ref={bankDropdownBtnRef}
+                    aria-haspopup="true"
+                    aria-expanded={bankDropdownOpen}
+                    onClick={() => setBankDropdownOpen(v => !v)}
+                >
+                    {QUESTION_BANKS.find(b => b.key === selectedBank)?.icon}
+                    <span className="bank-dropdown-label">
+                        {
+                            QUESTION_BANKS.find(b => b.key === selectedBank)
+                                ?.label
+                        }
+                    </span>
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                        <path
+                            d="M6 8l4 4 4-4"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
+                </button>
+                {bankDropdownOpen && (
+                    <div
+                        className="bank-dropdown-list"
+                        ref={bankDropdownRef}
+                        tabIndex={-1}
+                        role="menu"
+                    >
+                        {QUESTION_BANKS.map(bank => (
+                            <button
+                                key={bank.key}
+                                className={`bank-dropdown-option${selectedBank === bank.key ? ' selected' : ''}`}
+                                onClick={() => {
+                                    setSelectedBank(bank.key);
+                                    setBankDropdownOpen(false);
+                                }}
+                                aria-pressed={selectedBank === bank.key}
+                            >
+                                <span className="bank-dropdown-icon">
+                                    {bank.icon}
+                                </span>
+                                <span className="bank-dropdown-info">
+                                    <span className="bank-dropdown-label">
+                                        {bank.label}
+                                    </span>
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
+    };
+
     const renderHeader = () => {
+        // Determine app name and logo based on selected bank
+        let appLogo = <Brain size={24} />;
+        let appName = 'Professional MLE Flashcards';
+        if (selectedBank === 'genai') {
+            appLogo = <Sparkles size={24} />;
+            appName = 'GenAI Leader Flashcards';
+        }
         return (
             <header className="app-header">
                 <div className="header-left">
@@ -512,8 +692,8 @@ function App() {
                         </>
                     ) : (
                         <h1>
-                            <Brain size={24} />
-                            <span>Professional MLE Flashcards</span>
+                            {appLogo}
+                            <span>{appName}</span>
                         </h1>
                     )}
                 </div>
@@ -529,14 +709,37 @@ function App() {
                 </button>
                 {/* Inline header content for large screens only */}
                 <div className="header-right">
-                    <AccuracyDisplay performance={performance} />
-                    <ProgressBar
-                        current={stats.totalAnswered}
-                        total={questions.length}
-                    />
                     <PomodoroTimer onStudyTimeUpdate={handleStudyTimeUpdate} />
+                    <div className="header-metrics-wrapper">
+                        <button
+                            className="header-metrics-btn"
+                            ref={metricsBtnRef}
+                            aria-label="Show metrics"
+                            aria-haspopup="true"
+                            aria-expanded={metricsDropdownOpen}
+                            onClick={() => setMetricsDropdownOpen(v => !v)}
+                        >
+                            <BarChart3 size={22} />
+                        </button>
+                        {metricsDropdownOpen && (
+                            <div
+                                className="header-metrics-dropdown"
+                                ref={metricsDropdownRef}
+                                tabIndex={-1}
+                                role="menu"
+                            >
+                                <AccuracyDisplay performance={performance} />
+                                <ProgressBar
+                                    current={stats.totalAnswered}
+                                    total={questions.length}
+                                />
+                            </div>
+                        )}
+                    </div>
                     <KeyboardShortcuts shortcuts={getShortcuts()} />
                 </div>
+                {/* Show bank dropdown in header only if not small screen */}
+                {!currentMode && !isSmallScreen && <BankSelector />}
             </header>
         );
     };

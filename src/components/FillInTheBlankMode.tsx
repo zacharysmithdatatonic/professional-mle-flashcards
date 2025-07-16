@@ -576,6 +576,27 @@ export const FillInTheBlankMode: React.FC<FillInTheBlankModeProps> = ({
 
     return (
         <div className="fill-in-blank-container">
+            <div className="mode-nav-bar navigation-controls">
+                <button
+                    onClick={handlePrevious}
+                    disabled={currentIndex === 0}
+                    className="nav-arrow"
+                    aria-label="Previous question"
+                >
+                    <ChevronLeft size={24} />
+                </button>
+                <span className="question-counter">
+                    Question {currentIndex + 1} of {questions.length}
+                </span>
+                <button
+                    onClick={handleNext}
+                    disabled={currentIndex === questions.length - 1}
+                    className="nav-arrow"
+                    aria-label="Next question"
+                >
+                    <ChevronRight size={24} />
+                </button>
+            </div>
             <div className="progress-bar">
                 <div
                     className="progress-fill"
@@ -622,7 +643,7 @@ export const FillInTheBlankMode: React.FC<FillInTheBlankModeProps> = ({
                     {renderAnswerWithBlanks()}
                 </div>
 
-                <div className="fill-in-blank-controls">
+                <div className="mode-action-bar fill-in-blank-controls">
                     {!showAnswer && (
                         <button
                             onClick={handleRevealAnswer}
@@ -641,28 +662,6 @@ export const FillInTheBlankMode: React.FC<FillInTheBlankModeProps> = ({
                             Next Question
                         </button>
                     )}
-                </div>
-
-                <div className="navigation-controls">
-                    <button
-                        onClick={handlePrevious}
-                        disabled={currentIndex === 0}
-                        className="btn btn-secondary"
-                    >
-                        <ChevronLeft size={16} />
-                        Previous
-                    </button>
-                    <span className="question-counter">
-                        {currentIndex + 1} / {questions.length}
-                    </span>
-                    <button
-                        onClick={handleNext}
-                        disabled={currentIndex === questions.length - 1}
-                        className="btn btn-secondary"
-                    >
-                        Next
-                        <ChevronRight size={16} />
-                    </button>
                 </div>
             </div>
         </div>

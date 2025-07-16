@@ -17,6 +17,7 @@ export const KeyboardShortcuts: React.FC<KeyboardShortcutsProps> = ({
 }) => {
     const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
     const keyboardHelpRef = useRef<HTMLDivElement>(null);
+    const btnRef = useRef<HTMLButtonElement>(null);
 
     // Handle click outside
     useEffect(() => {
@@ -24,6 +25,8 @@ export const KeyboardShortcuts: React.FC<KeyboardShortcutsProps> = ({
             if (
                 keyboardHelpRef.current &&
                 !keyboardHelpRef.current.contains(event.target as Node) &&
+                btnRef.current &&
+                !btnRef.current.contains(event.target as Node) &&
                 showKeyboardHelp
             ) {
                 setShowKeyboardHelp(false);
@@ -56,19 +59,24 @@ export const KeyboardShortcuts: React.FC<KeyboardShortcutsProps> = ({
     }, [showKeyboardHelp]);
 
     return (
-        <div
-            className={`keyboard-shortcuts ${className}`}
-            ref={keyboardHelpRef}
-        >
+        <div className={`keyboard-shortcuts ${className}`}>
             <button
                 onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
-                className="keyboard-help-toggle"
+                className="header-metrics-btn"
+                ref={btnRef}
                 title="Toggle keyboard shortcuts"
+                aria-haspopup="true"
+                aria-expanded={showKeyboardHelp}
             >
-                <Keyboard size={16} />
+                <Keyboard size={20} />
             </button>
             {showKeyboardHelp && (
-                <div className="keyboard-help keyboard-help-fixed">
+                <div
+                    className="header-metrics-dropdown"
+                    ref={keyboardHelpRef}
+                    tabIndex={-1}
+                    role="menu"
+                >
                     {shortcuts.map((shortcut, index) => (
                         <div key={index} className="shortcut-item">
                             <span className="key">{shortcut.key}</span>

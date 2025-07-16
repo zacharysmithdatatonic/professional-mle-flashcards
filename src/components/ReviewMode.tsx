@@ -198,6 +198,27 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
 
     return (
         <div className="review-container">
+            <div className="mode-nav-bar navigation-controls">
+                <button
+                    onClick={handlePrevious}
+                    disabled={currentIndex === 0}
+                    className="nav-arrow"
+                    aria-label="Previous question"
+                >
+                    <ChevronLeft size={24} />
+                </button>
+                <span className="question-counter">
+                    Question {currentIndex + 1} of {questions.length}
+                </span>
+                <button
+                    onClick={handleNext}
+                    disabled={currentIndex === questions.length - 1}
+                    className="nav-arrow"
+                    aria-label="Next question"
+                >
+                    <ChevronRight size={24} />
+                </button>
+            </div>
             <div className="progress-bar">
                 <div
                     className="progress-fill"
@@ -312,7 +333,7 @@ export const ReviewMode: React.FC<ReviewModeProps> = ({
                     </div>
                 )}
 
-                <div className="review-actions">
+                <div className="mode-action-bar review-actions">
                     {!showAnswer ? (
                         <button
                             onClick={handleRevealAnswer}

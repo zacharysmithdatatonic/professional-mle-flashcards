@@ -141,7 +141,8 @@ export const weightedShuffle = (
 };
 
 export const savePerformanceToStorage = (
-    performance: Map<string, QuestionPerformance>
+    performance: Map<string, QuestionPerformance>,
+    bankKey?: string
 ) => {
     const serialized = Array.from(performance.entries()).map(([id, perf]) => [
         id,
@@ -150,15 +151,24 @@ export const savePerformanceToStorage = (
             lastAnswered: perf.lastAnswered?.toISOString() || null,
         },
     ]);
-    localStorage.setItem('flashcard-performance', JSON.stringify(serialized));
+    const key = bankKey
+        ? `flashcard-performance-${bankKey}`
+        : 'flashcard-performance';
+    localStorage.setItem(key, JSON.stringify(serialized));
 };
 
-export const loadPerformanceFromStorage = (): Map<
-    string,
-    QuestionPerformance
-> => {
+export const loadPerformanceFromStorage = (
+    bankKey?: string
+): Map<string, QuestionPerformance> => {
     try {
-        const stored = localStorage.getItem('flashcard-performance');
+        const key = bankKey
+            ? `flashcard-performance-${bankKey}`
+            : 'flashcard-performance';
+        let stored = localStorage.getItem(key);
+        // Backwards compatibility: if per-bank key not found, fall back to global key
+        if (!stored && bankKey) {
+            stored = localStorage.getItem('flashcard-performance');
+        }
         if (!stored) return new Map();
 
         const parsed = JSON.parse(stored);

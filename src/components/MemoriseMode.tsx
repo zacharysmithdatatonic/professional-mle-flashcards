@@ -189,6 +189,15 @@ export const MemoriseMode: React.FC<MemoriseModeProps> = ({
             </div>
 
             <div className="questions-list">
+                <div
+                    className="navigation-controls"
+                    style={{ marginBottom: '1rem' }}
+                >
+                    <span className="question-counter">
+                        Showing {sortedQuestions.length} of {questions.length}{' '}
+                        questions
+                    </span>
+                </div>
                 {sortedQuestions.map((question, index) => {
                     const perf = performance.get(question.id);
                     const accuracy = getAccuracy(perf);

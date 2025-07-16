@@ -139,11 +139,14 @@ export const parseJSON = (jsonContent: string): Question[] => {
     return questions;
 };
 
-export const loadQuestionsFromJSON = async (): Promise<Question[]> => {
+export const loadQuestionsFromJSON = async (
+    datasetPath?: string
+): Promise<Question[]> => {
     try {
         // Use PUBLIC_URL environment variable to get the correct base path
         const baseUrl = process.env.PUBLIC_URL || '';
-        const response = await fetch(`${baseUrl}/dataset.json`);
+        const path = datasetPath || '/pmle.json';
+        const response = await fetch(`${baseUrl}${path}`);
         if (!response.ok) {
             throw new Error(
                 `Failed to load dataset: ${response.status} ${response.statusText}`
@@ -153,7 +156,7 @@ export const loadQuestionsFromJSON = async (): Promise<Question[]> => {
         const jsonContent = await response.text();
         const questions = parseJSON(jsonContent);
 
-        console.log(`Loaded ${questions.length} questions from dataset.json`);
+        console.log(`Loaded ${questions.length} questions from ${path}`);
         return questions;
     } catch (error) {
         console.error('Error loading questions from JSON:', error);
