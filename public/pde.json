@@ -520,5 +520,1005 @@
             null,
             null
         ]
+    },
+    {
+        "question": "Business analysts in your team need to run analysis on data that was loaded into BigQuery. You need to follow recommended practices and grant permissions. What role should you grant the business analysts?",
+        "options": [
+            "bigquery.resourceViewer and bigquery.dataViewer",
+            "bigquery.user and bigquery.dataViewer",
+            "bigquery.dataOwner",
+            "storage.objectViewer and bigquery.user"
+        ],
+        "answer": [
+            "B"
+        ],
+        "explanation": "A is not correct because The resourceViewer role grants permissions to view capacity and reservations, which are not sufficient to conduct analysis.\n\nB is correct because The analysts need to view the data and run queries on it, which are granted by these predefined roles.\n\nC is not correct because The dataOwner role has more permissions that the business analysts need.\n\nD is not correct because The storage.objectViewer role is useful when running federated queries with Cloud Storage, but not for this use case. The business analysts will also require permissions in the bigquery.dataViewer role.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "Your company has acquired another company in Europe. Data access permissions and policies in this new region differ from those in your company’s headquarters, which is in North America. You need to define a consistent set of policies for projects in each region that follow recommended practices. What should you do?",
+        "options": [
+            "Create a new organization for all projects in Europe and assign policies in each organization that comply with regional laws.",
+            "Implement a flat hierarchy, and assign policies to each project according to its region.",
+            "Create top level folders for each region, and assign policies at the folder level.",
+            "Implement policies at the resource level that comply with regional laws."
+        ],
+        "answer": [
+            "C"
+        ],
+        "explanation": "A is not correct because Creating a new organization to apply separate policies or to work with a different region is not a recommended practice. This requirement can be managed within the same organization by using folders.\n\nB is not correct because A flat hierarchy is not recommended, because policy settings need to be individually applied for each project.\n\nC is correct because Folders are used to group related projects within an organization. They can also be used to apply consistent policies for projects within the folder.\n\nD is not correct because Applying policies at the resource level is time-consuming and might be inconsistent.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You are migrating on-premises data to a data warehouse on Google Cloud. This data will be made available to business analysts. Local regulations require that customer information including credit card numbers, phone numbers, and email IDs be captured, but not used in analysis. You need to use a reliable, recommended solution to redact the sensitive data. What should you do?",
+        "options": [
+            "Use the Cloud Data Loss Prevention API (DLP API) to identify and redact data that matches infoTypes like credit card numbers, phone numbers, and email IDs.",
+            "Delete all columns with a title similar to \"credit card,\" \"phone,\" and \"email.\"",
+            "Create a regular expression to identify and delete patterns that resemble credit card numbers, phone numbers, and email IDs.",
+            "Use the Cloud Data Loss Prevention API (DLP API) to perform date shifting of any entries with credit card numbers, phone numbers, and email IDs."
+        ],
+        "answer": [
+            "A"
+        ],
+        "explanation": "A is correct because The Cloud Data Loss Prevention API, part of Sensitive Data Protection, helps you discover, classify, and protect your most sensitive data. There are predefined infoTypes that you can employ to identify and redact specific data types.\n\nB is not correct because Deleting columns based on title is not a reliable way to protect sensitive data, because columns might contain sensitive data, even if it is not indicated by the title. For example, there could be a comments column with sensitive private information.\n\nC is not correct because Determining the regular expressions that match different data types can be more tedious and less accurate than using Sensitive Data Protection.\n\nD is not correct because Date shifting the entries does not redact the personal identifiable information (PII) like credit card numbers, phone numbers, and email IDs.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "Your data and applications reside in multiple geographies on Google Cloud. Some regional laws require you to hold your own keys outside of the cloud provider environment, whereas other laws are less restrictive and allow storing keys with the same provider who stores the data. The management of these keys has increased in complexity, and you need a solution that can centrally manage all your keys. What should you do?",
+        "options": [
+            "Enable confidential computing for all your virtual machines.",
+            "Store keys in Cloud Key Management Service (Cloud KMS), and reduce the number of days for automatic key rotation.",
+            "Store your keys in Cloud Hardware Security Module (Cloud HSM), and retrieve keys from it when required.",
+            "Store your keys on a supported external key management partner, and use Cloud External Key Manager (Cloud EKM) to get keys when required."
+        ],
+        "answer": [
+            "D"
+        ],
+        "explanation": "A is not correct because Confidential computing does not affect the storage of data.\n\nB is not correct because Cloud KMS stores keys on Google Cloud; therefore, this won't meet the requirement for the data and the keys that will be stored in different provider environments.\n\nC is not correct because Cloud HSM is a Google Cloud service that stores keys on hardware security modules on Google Cloud. Hence, this won't meet the requirement for the data and the keys that will be stored in different provider environments.\n\nD is correct because With Cloud EKM, you manage access to your externally managed keys that reside outside of Google Cloud. Because you need a single solution that also has to store keys externally, this would be the appropriate option.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "Your company has a team of business analysts who need to fix and enhance a set of large input data files. For example, duplicates need to be removed, erroneous rows should be deleted, and missing data should be added. These steps need to be performed on all the present set of files and any files received in the future in a repeatable, automated process. The business analysts are not adept at programming. What should they do?",
+        "options": [
+            "Load the data into Dataprep, explore the data, and edit the transformations as needed.",
+            "Create a Dataproc job to perform the data fixes you need.",
+            "Create a Dataflow pipeline with the data fixes you need.",
+            "Load the data into Google Sheets, explore the data, and fix the data as needed."
+        ],
+        "answer": [
+            "A"
+        ],
+        "explanation": "A is correct because Dataprep lets you load large amounts of data and visually fix it, which would be very convenient for those who are unfamiliar with programming. The data wrangling steps can be captured as a series of transformations that can be reapplied later to future data.\n\nB is not correct because Dataproc requires programming knowledge and does not provide a visual data wrangling interface, which is required for this team.\n\nC is not correct because Dataflow requires you to write new code, which is not possible for the data analysts.\n\nD is not correct because Performing data wrangling in Google Sheets is not an automatable process in the data pipeline; therefore, it’s ineffective for this requirement.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You are running a user-supplied DoFn method signature pipeline in Dataflow. The function has been defined by you. The code is running slow and you want to further examine the pipeline code to get better visibility of why. What should you do?",
+        "options": [
+            "Use Cloud Monitoring",
+            "Use Cloud Logging",
+            "Use Cloud Profiler",
+            "Use Cloud Audit Logs"
+        ],
+        "answer": [
+            "C"
+        ],
+        "explanation": "A is not correct because Cloud Monitoring provides useful diagnostics about Dataflow jobs, but for this requirement, you need the features in Cloud Profiler.\n\nB is not correct because Results captured by Cloud Logging are not inherently enough to identify resource usage.\n\nC is correct because Cloud Profiler shows you a flame graph of statistics of the running jobs, which can be used to evaluate resource usage.\n\nD is not correct because Cloud Audit Logs capture administrative events. They do not provide sufficient data to identify Dataflow resource usage.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You are using Dataproc to process a large number of CSV files. The storage option you choose needs to be flexible to serve many worker nodes in multiple clusters. These worker nodes will read the data and also write to it for intermediate storage between processing jobs. What is the recommended storage option on Google Cloud?",
+        "options": [
+            "Cloud SQL",
+            "Zonal persistent disks",
+            "Local SSD",
+            "Cloud Storage"
+        ],
+        "answer": [
+            "D"
+        ],
+        "explanation": "A is not correct because Cloud SQL is appropriate for transactional data, but it is not the recommended option for Dataproc data processing.\n\nB is not correct because Zonal Persistent Disks are not the recommended option for Dataproc storage.\n\nC is not correct because Local SSDs are not persistent, so they are not a good storage option when you need to retain intermediate data for longer than the life of the worker node.\n\nD is correct because Cloud Storage is the recommended, centralized storage option for Dataproc. It offers many benefits such as high data availability, no storage management, quick startup, and consistent Identity and Access Management (IAM).",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You are managing the data for your company, which consists of multiple teams including retail, sales, marketing, and legal. These teams are consuming data from multiple producers including point of sales systems, industry data, orders, and more. Currently, teams that consume data have to repeatedly ask the teams that produce it to verify the most up-to-date data and to clarify other questions about the data, such as source and ownership. This process is unreliable and time-consuming and often leads to repeated escalations. You need to implement a centralized solution that gains a unified view of the organization's data and improves searchability. What should you do?",
+        "options": [
+            "Implement a data mesh with Dataplex and have producers tag data when created.",
+            "Implement a data lake with Cloud Storage, and create buckets for each team such as retail, sales, marketing.",
+            "Implement a data warehouse by using BigQuery, and create datasets for each team such as retail, sales, marketing.",
+            "Implement Looker dashboards that provide views of the data that meet each teams’ requirements."
+        ],
+        "answer": [
+            "A"
+        ],
+        "explanation": "A is correct because Dataplex is a data mesh that also includes data cataloging capability with Data Catalog. Consumers of data can search and discover information readily without having to wait for data producers to respond, which reduces the bottlenecks on data analysis.\n\nB is not correct because Cloud Storage is an object store solution. Though we can separate the data in buckets, it does not have rich tagging capabilities.\n\nC is not correct because BigQuery can separate the data in datasets, but it is not a centralized data discovery solution that can hold different types of data.\n\nD is not correct because Looker provides visualizations of the data based on the data itself. It does not have inherent data tagging facilities.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "Laws in the region where you operate require that files related to all orders made each day are stored immutably for 365 days. The solution that you recommend has to be cost-effective. What should you do?",
+        "options": [
+            "Store the data in a Cloud Storage bucket, and enable object versioning and delete any version older than 365 days.",
+            "Store the data in a Cloud Storage bucket, and specify a retention period.",
+            "Store the data in a Cloud Storage bucket, and set a lifecycle policy to delete the file after 365 days.",
+            "Store the data in a Cloud Storage bucket, enable object versioning, and delete any version greater than 365."
+        ],
+        "answer": [
+            "B"
+        ],
+        "explanation": "A is not correct because Object versioning does not restrict the files from being modified or deleted.\n\nB is correct because Object retention is a built-in option that lets you configure how long the files should remain without allowing any changes.\n\nC is not correct because This option automates the deletion of the file after 365 days, but it does not restrict the deletion of the file before that.\n\nD is not correct because Object versioning does not restrict the files from being modified or deleted. Having multiple versions of the objects is also not cost-effective.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "Your company is migrating its private data centers to Google Cloud. Over many years, hundreds of terabytes of data were accumulated. You currently have a 100 Mbps line and you need to transfer this data reliably before commencing operations on Google Cloud in 45 days. What should you do?",
+        "options": [
+            "Store the data in an HTTPS endpoint, and configure Storage Transfer Service to copy the data to Cloud Storage.",
+            "Upload the data to Cloud Storage by using gcloud storage.",
+            "Zip and upload the data to Cloud Storage buckets by using the Google Cloud console.",
+            "Order a transfer appliance, export the data to it, and ship it to Google."
+        ],
+        "answer": [
+            "D"
+        ],
+        "explanation": "A is not correct because The bandwidth available is not sufficient to finish the data transfer in the required time.\n\nB is not correct because gcloud storage is useful for a few files of small to medium sizes. For larger data, other data transfer options should be considered.\n\nC is not correct because Uploading large amounts of data through the Google Cloud console is not convenient or performant.\n\nD is correct because For large amounts of data that need to be transferred within a month, a transfer appliance is the right choice.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "Your data engineering team receives data in JSON format from external sources at the end of each day. You need to design the data pipeline. What should you do?",
+        "options": [
+            "Store the data in Cloud Storage and create an extract, transform, and load (ETL) pipeline.",
+            "Make your BigQuery data warehouse public and ask the external sources to insert the data.",
+            "Create a public API to allow external applications to add the data to your warehouse.",
+            "Store the data in persistent disks and create an ETL pipeline."
+        ],
+        "answer": [
+            "A"
+        ],
+        "explanation": "A is correct because The recommended approach for batch data pipelines is to store data in Cloud Storage. Then, create an ETL (or ELT, depending on the use case) pipeline to move the data into a data warehouse.\n\nB is not correct because Making your data warehouse public is not recommended. The data also might not have the transformations you require.\n\nC is not correct because Data added by external sources might not have the transformations you require.\n\nD is not correct because Storing the data in persistent disks is not recommended for data analytics pipelines. A centralized, serverless storage, such as Cloud Storage, is preferable.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "The first stage of your data pipeline processes tens of terabytes of financial data and creates a sparse, time-series dataset as a key-value pair. Which of these is a suitable sink for the pipeline's first stage?",
+        "options": [
+            "Cloud Storage",
+            "Cloud SQL",
+            "AlloyDB",
+            "Bigtable"
+        ],
+        "answer": [
+            "D"
+        ],
+        "explanation": "A is not correct because Cloud Storage is used for object storage and is not suitable as a database.\n\nB is not correct because Cloud SQL supports relational databases, which are not as suitable as Bigtable for sparse, time-series data.\n\nC is not correct because AlloyDB is a relational database, which is not as suitable as Bigtable for sparse, time-series data.\n\nD is correct because Bigtable is ideal for applications that need high throughput and scalability for key/value data, where each value is typically no larger than 10 MB. Bigtable is suitable for applications that work on time-series data, such as financial applications.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You are processing large amounts of input data in BigQuery. You need to combine this data with a small amount of frequently changing data that is available in Cloud SQL. What should you do?",
+        "options": [
+            "Copy the data from Cloud SQL to a new BigQuery table hourly.",
+            "Copy the data from Cloud SQL and create a combined, normalized table hourly.",
+            "Use a federated query to get data from Cloud SQL.",
+            "Create a Dataflow pipeline to combine the BigQuery and Cloud SQL data when the Cloud SQL data changes."
+        ],
+        "answer": [
+            "C"
+        ],
+        "explanation": "A is not correct because Because the data is frequently changing, importing the table hourly could result in inaccurate results.\n\nB is not correct because Because the data is frequently changing, importing the table hourly could result in inaccurate results.\n\nC is correct because Because the data is frequently changing, you can query the data in-place by using federated queries from BigQuery.\n\nD is not correct because Because the data is frequently changing, computation and costs might be excessive.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "Your company has multiple data analysts but a limited data engineering team. You need to choose a tool where the analysts can build data pipelines themselves with a graphical user interface. Which of these products is the most appropriate?",
+        "options": [
+            "Dataflow",
+            "Cloud Data Fusion",
+            "Dataproc",
+            "Cloud Composer"
+        ],
+        "answer": [
+            "B"
+        ],
+        "explanation": "A is not correct because Dataflow requires programming knowledge.\n\nB is correct because The Cloud Data Fusion web UI lets you build scalable data integration solutions to clean, prepare, blend, transfer, and transform data, without having to manage the infrastructure.\n\nC is not correct because Dataproc requires considerable technical knowledge.\n\nD is not correct because With Cloud Composer, you need to create a pipeline with code.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You manage a PySpark batch data pipeline by using Dataproc. You want to take a hands-off approach to running the workload, and you do not want to provision and manage your own cluster. What should you do?",
+        "options": [
+            "Configure the job to run on Dataproc Serverless.",
+            "Configure the job to run with Spot VMs.",
+            "Rewrite the job in Spark SQL.",
+            "Rewrite the job in Dataflow with SQL."
+        ],
+        "answer": [
+            "A"
+        ],
+        "explanation": "A is correct because Dataproc Serverless will automatically provision the resources to run your Dataproc jobs.\n\nB is not correct because Configuring Spot VMs is a cost reduction strategy, and not an effort reduction.\n\nC is not correct because Running a Spark SQL job does not automatically take care of cluster management.\n\nD is not correct because Rewriting the jobs in Dataflow requires more effort.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You need to run batch jobs, which could take many days to complete. You do not want to manage the infrastructure provisioning. What should you do?",
+        "options": [
+            "Use Cloud Scheduler to run the jobs.",
+            "Use Workflows to run the jobs.",
+            "Run the jobs on Batch.",
+            "Use Cloud Run to run the jobs."
+        ],
+        "answer": [
+            "C"
+        ],
+        "explanation": "A is not correct because Cloud Scheduler lets you schedule an event in the future, but it does not automatically allocate any resources.\n\nB is not correct because Workflows is recommended when you want to connect a series of shorter tasks.\n\nC is correct because Batch is a fully managed service that schedules, queues, and executes batch processing workloads on Google Cloud. Resources and capacity are provisioned and managed for you based on your requirements.\n\nD is not correct because Cloud Run has limits on the maximum time of a running process and is not a viable option for long running data processing jobs.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You are creating a data pipeline for streaming data on Dataflow for your company's point of sales data. You want to calculate the total sales per hour on a continuous basis. Which of these windowing options should you use?",
+        "options": [
+            "Hopping windows (sliding windows in Apache Beam)",
+            "Session windows",
+            "Global window",
+            "Tumbling windows (fixed windows in Apache Beam)"
+        ],
+        "answer": [
+            "D"
+        ],
+        "explanation": "A is not correct because Hopping windows (or sliding windows in Apache Beam) can overlap and are not the right option for this requirement.\n\nB is not correct because Session windows are appropriate for use cases with gaps in the activity, which is not the case here.\n\nC is not correct because A global window applies to the whole dataset and is not the appropriate choice for intermediate results.\n\nD is correct because A tumbling window (or fixed window in Apache Beam) is fixed duration and non-overlapping, which is the right option for this requirement.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You want to build a streaming data analytics pipeline in Google Cloud. You need to choose the right products that support streaming data. Which of these would you choose?",
+        "options": [
+            "Pub/Sub, Dataflow, BigQuery",
+            "Pub/Sub, Dataprep, BigQuery",
+            "Cloud Storage, Dataflow, Cloud SQL",
+            "Cloud Storage, Dataprep, AlloyDB"
+        ],
+        "answer": [
+            "A"
+        ],
+        "explanation": "A is correct because Pub/Sub, Dataflow, and BigQuery support streaming data and form the recommended pipeline for continuous data processing.\n\nB is not correct because Dataprep does not support streaming data processing.\n\nC is not correct because Cloud Storage is appropriate for a data lake but not for streaming data. Cloud SQL is a transactional storage solution and does not have streaming capabilities.\n\nD is not correct because Cloud Storage is appropriate for a data lake but not for streaming data. AlloyDB is a transactional database.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You have a data pipeline that requires you to monitor a Cloud Storage bucket for a file, start a Dataflow job to process data in the file, run a shell script to validate the processed data in BigQuery, and then delete the original file. You need to orchestrate this pipeline by using recommended tools. Which product should you choose?",
+        "options": [
+            "Cloud Tasks",
+            "Cloud Composer",
+            "Cloud Scheduler",
+            "Cloud Run"
+        ],
+        "answer": [
+            "B"
+        ],
+        "explanation": "A is not correct because Cloud Tasks is for asynchronous task execution and is not the preferred tool for data pipeline orchestration.\n\nB is correct because Cloud Composer, a managed version of Apache Airflow, can orchestrate a series of data pipeline tasks.\n\nC is not correct because Cloud Scheduler is a cron job service that can run applications at a scheduled time.\n\nD is not correct because Cloud Run runs container applications in a serverless approach. It is not the appropriate tool to perform data pipeline orchestration.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You are running Dataflow jobs for data processing. When developers update the code in Cloud Source Repositories, you need to test and deploy the updated code with minimal effort. Which of these would you use to build your continuous integration and delivery (CI/CD) pipeline for data processing?",
+        "options": [
+            "Terraform",
+            "Compute Engine",
+            "Cloud Code",
+            "Cloud Build"
+        ],
+        "answer": [
+            "D"
+        ],
+        "explanation": "A is not correct because Terraform is suitable for automated infrastructure management, but it is not a CI/CD solution.\n\nB is not correct because Using Compute Engine requires significantly more effort to install required software and provision build resources.\n\nC is not correct because Cloud Code integrates with popular integrated development environments (IDEs) to make it easier to work with Google Cloud. It is not a CI/CD or build system by itself.\n\nD is correct because Cloud Build can be configured to watch for updates in the source repository and trigger a series of steps, as required, to implement a CI/CD pipeline.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You need to choose a data storage solution to support a transactional system. Your customers are primarily based in one region. You want to reduce your administration tasks and focus engineering effort on building your business application. What should you do?",
+        "options": [
+            "Use Spanner.",
+            "Use Cloud SQL.",
+            "Install a database of your choice on a Compute Engine VM.",
+            "Create a Cloud Storage bucket with a regional bucket."
+        ],
+        "answer": [
+            "B"
+        ],
+        "explanation": "A is not correct because Spanner is more suitable for a global, transactional database requirement.\n\nB is correct because Cloud SQL is a managed service that supports the popular transactional databases MySQL, PostgreSQL, and SQL Server.\n\nC is not correct because Installing and maintaining your own database instance is more effort on the engineering team.\n\nD is not correct because A Cloud Storage bucket is not a transactional database.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You need to store data long term and use it to create quarterly reports. What storage class should you choose?",
+        "options": [
+            "Standard",
+            "Nearline",
+            "Coldline",
+            "Archive"
+        ],
+        "answer": [
+            "C"
+        ],
+        "explanation": "A is not correct because Standard storage class is the recommended option when the data is accessed frequently, such as daily or weekly.\n\nB is not correct because Nearline storage class is the recommended option when the data is accessed less frequently, such as once a month.\n\nC is correct because Coldline storage class is the recommended option when the data is accessed infrequently, such as once a quarter.\n\nD is not correct because Archive storage class is the recommended option when the data is accessed rarely, like once a year or less.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You have several large tables in your transaction databases. You need to move all the data to BigQuery for the business analysts to explore and analyze the data.How should you design the schema in BigQuery?",
+        "options": [
+            "Retain the data on BigQuery with the same schema as the source.",
+            "Combine all the transactional database tables into a single table using outer joins.",
+            "Redesign the schema to normalize the data by removing all redundancies.",
+            "Redesign the schema to denormalize the data with nested and repeated data."
+        ],
+        "answer": [
+            "D"
+        ],
+        "explanation": "A is not correct because The normalized form in transactional databases are efficient for writes, but not efficient for running queries against.\n\nB is not correct because Combining multiple tables into a single table using only outer joins could include significantly more redundancy than is required. Fewer tables are better on BigQuery, but the schema needs to be thought through.\n\nC is not correct because Normalizing the data is not the recommended approach for BigQuery.\n\nD is correct because Denormalizing the data is the recommended approach. Joining large amounts of data repeatedly during data analysis increases costs.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You are ingesting data that is spread out over a wide range of dates into BigQuery at a fast rate. You need to partition the table to make queries performant.What should you do?",
+        "options": [
+            "Create an ingestion-time partitioned table with daily partitioning type.",
+            "Create an ingestion-time partitioned table with yearly partitioning type.",
+            "Create an integer-range partitioned table.",
+            "Create a time-unit column-partitioned table with yearly partitioning type."
+        ],
+        "answer": [
+            "A"
+        ],
+        "explanation": "A is correct because A daily partition type is the most suitable given the volume of the data and the range of dates.\n\nB is not correct because A yearly partition type has too much data per partition, which makes queries inefficient.\n\nC is not correct because An integer-range partition type is not appropriate given that the data is defined by dates.\n\nD is not correct because A yearly partition type has too much data per partition, which makes queries inefficient.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "Your analysts repeatedly run the same complex queries that combine and filter through a lot of data on BigQuery. The data changes frequently. You need to reduce the effort for the analysts.What should you do?",
+        "options": [
+            "Create a dataset with the data that is frequently queried.",
+            "Create a view of the frequently queried data.",
+            "Export the frequently queried data into a new table.",
+            "Export the frequently queried data into Cloud SQL."
+        ],
+        "answer": [
+            "B"
+        ],
+        "explanation": "A is not correct because This is not a recommended approach, because there will be redundant data.\n\nB is correct because Creating a view will rerun the complex query automatically. Meanwhile, the analysts need only reference the name of the view, which makes it easier for them.\n\nC is not correct because This is not a recommended approach, because there will be redundant data.\n\nD is not correct because It requires more effort and cost to duplicate the data in another database.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You have data that is ingested daily and frequently analyzed in the first month. Thereafter, the data is retained only for audits, which happen occasionally every few years. You need to configure cost-effective storage. What should you do?",
+        "options": [
+            "Create a bucket on Cloud Storage with object versioning configured.",
+            "Create a bucket on Cloud Storage with Autoclass configured.",
+            "Configure a data retention policy on Cloud Storage.",
+            "Configure a lifecycle policy on Cloud Storage."
+        ],
+        "answer": [
+            "D"
+        ],
+        "explanation": "A is not correct because Object versioning retains versions of the object, but it will add to costs.\n\nB is not correct because An Autoclass configuration will automatically move data to different classes, but you will not have granular control over when it happens and to which class.\n\nC is not correct because Retention policies restrict changing the object, but do not reduce cost.\n\nD is correct because A lifecycle policy can be configured to automatically move the objects between different storage classes on schedules that you determine.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You have data stored in a Cloud Storage bucket. You are using both Identity and Access Management (IAM) and Access Control Lists (ACLs) to configure access control. Which statement describes a user's access to objects in the bucket?",
+        "options": [
+            "The user has no access if IAM denies the permission.",
+            "The user only has access if both IAM and ACLs grant a permission.",
+            "The user has access if either IAM or ACLs grant a permission.",
+            "The user has no access if either IAM or ACLs deny a permission."
+        ],
+        "answer": [
+            "C"
+        ],
+        "explanation": "A is not correct because ACLs can override IAM permissions.\n\nB is not correct because Permissions need not be congruently set in both; either can give access.\n\nC is correct because IAM and ACLs work in parallel. If either of the systems grants the user access permission, the user will have access.\n\nD is not correct because Either system can override the permission set by the other.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You need to evaluate all access on all objects in the bucket. What should you do?",
+        "options": [
+            "Review the Admin Activity audit logs.",
+            "Enable and then review the Data Access audit logs.",
+            "Route the Admin Activity logs to a BigQuery sink and analyze the logs with SQL queries.",
+            "Change the permissions on the bucket to only trusted employees."
+        ],
+        "answer": [
+            "B"
+        ],
+        "explanation": "A is not correct because Admin Activity audit logs do not show who is reading and writing the objects.\n\nB is correct because Data Access audit logs have to be specifically enabled first, because they could generate a lot of logs for all reads and writes.\n\nC is not correct because Routing Admin Activity audit logs to BigQuery for analysis will not help because they will not show who is reading and writing the objects.\n\nD is not correct because Changing permissions will restrict usage; however, you won't be able to discover who is currently accessing the objects.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "Your company has accumulated a large amount of data. Analysts and leadership are finding it difficult to understand the meaning of the data, such as BigQuery columns. Users of the data don't know who owns what. You need to improve the searchability of the data.What should you do?",
+        "options": [
+            "Create tags for data entries in Cloud Catalog.",
+            "Rename BigQuery columns with more descriptive names.",
+            "Export the data to Cloud Storage with descriptive file names.",
+            "Add a description column corresponding to each data column."
+        ],
+        "answer": [
+            "A"
+        ],
+        "explanation": "A is correct because Tags enable attaching metadata to data assets and entities. This can improve searchability of the data.\n\nB is not correct because Renaming data columns is not a viable option, because it would affect programmes elsewhere. Data might also be ingested from external sources where you do not have the ability to change the column names.\n\nC is not correct because Analysts require the data in analytic engines for performance and convenience. Moving the data to files in Cloud Storage is not a good option.\n\nD is not correct because Adding description columns for each column is not a convenient approach. It increases data in the tables and also requires changes to existing schemas, whether they were internally or externally defined.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You have large amounts of data stored on Cloud Storage and BigQuery. Some of it is processed, but some is yet unprocessed. You have a data mesh created in Dataplex. You need to make it convenient for internal users of the data to discover and use the data.What should you do?",
+        "options": [
+            "Create a lake for Cloud Storage data and a zone for BigQuery data.",
+            "Create a lake for BigQuery data and a zone for Cloud Storage data.",
+            "Create a lake for unprocessed data and assets for processed data.",
+            "Create a raw zone for the unprocessed data and a curated zone for the processed data."
+        ],
+        "answer": [
+            "D"
+        ],
+        "explanation": "A is not correct because A lake represents a data domain or business unit. A lake could encompass both Cloud Storage and BigQuery data.\n\nB is not correct because A lake represents a data domain or business unit. A lake could encompass both Cloud Storage and BigQuery data.\n\nC is not correct because A zone is where we make a distinction between processed and unprocessed data.\n\nD is correct because The recommended architecture is to use raw zones for unprocessed data and curated zones for processed data.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "Your company uses Google Workspace and your leadership team is familiar with its business apps and collaboration tools. They want a cost-effective solution that uses their existing knowledge to evaluate, analyze, filter, and visualize data that is stored in BigQuery. What should you do to create a solution for the leadership team?",
+        "options": [
+            "Create models in Looker.",
+            "Configure Connected Sheets.",
+            "Configure Tableau.",
+            "Configure Looker Studio."
+        ],
+        "answer": [
+            "B"
+        ],
+        "explanation": "A is not correct because Using Looker requires additional training for the team and incurs additional cost.\n\nB is correct because Connected Sheets is an easy way to integrate BigQuery data with Google Sheets. Because the leadership team is familiar with Workspace and Sheets, this satisfies their requirement.\n\nC is not correct because Using Tableau requires additional training for the team and incurs additional cost.\n\nD is not correct because Using Looker Studio requires additional training for the team.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You have data in PostgreSQL that was designed to reduce redundancy. You are transferring this data to BigQuery for analytics. The source data is hierarchical and frequently queried together. You need to design a BigQuery schema that is performant. What should you do?",
+        "options": [
+            "Use nested and repeated fields.",
+            "Retain the data in normalized form always.",
+            "Copy the primary tables and use federated queries for secondary tables.",
+            "Copy the normalized data into partitions."
+        ],
+        "answer": [
+            "A"
+        ],
+        "explanation": "A is correct because Because the data is queried together, the schema design can group the data together with nested and repeated fields.\n\nB is not correct because Normalized data is suitable for transactional databases, but is not efficient for analytics, especially for the kind of data in this requirement.\n\nC is not correct because Federated queries are not efficient for analytics, because they have to join data across multiple data storage systems.\n\nD is not correct because The inefficiency of multiple, separate, normalized tables still exists even if you partition the table.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You repeatedly run the same queries by joining multiple tables. The original tables change about ten times per day. You want an optimized querying approach. Which feature should you use?",
+        "options": [
+            "Views",
+            "Materialized views",
+            "Federated queries",
+            "Partitions"
+        ],
+        "answer": [
+            "B"
+        ],
+        "explanation": "A is not correct because Views rerun the query each time on the source data; therefore, is not optimal.\n\nB is correct because Materialized views will improve query performance by precomputing and periodically caching query results.\n\nC is not correct because Federated queries are not optimal, because they are used to query data that is stored outside BigQuery.\n\nD is not correct because Partitions can improve the query performance by only scanning a portion of a table. However, scanning a portion of the table might not suit the business need in this scenario.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You have analytics data stored in BigQuery. You need an efficient way to compute values across a group of rows and return a single result for each row. What should you do?",
+        "options": [
+            "Use an aggregate function.",
+            "Use a UDF (user-defined function).",
+            "Use BigQuery ML.",
+            "Use a window function with an OVER clause."
+        ],
+        "answer": [
+            "D"
+        ],
+        "explanation": "A is not correct because An aggregate function gives you one result for all the rows.\n\nB is not correct because Using a UDF function entails extra work; therefore, it is not the most efficient solution.\n\nC is not correct because BigQuery ML does not have any inbuilt features that provide this functionality.\n\nD is correct because A window function defines rows around each row. As a result, this approach can produce a separate output for each row.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You need to optimize the performance of queries in BigQuery. Your tables are not partitioned or clustered. What optimization technique can you use?",
+        "options": [
+            "Batch your updates and inserts.",
+            "Use the LIMIT clause to reduce the data read.",
+            "Filter data as late as possible.",
+            "Perform self-joins on data."
+        ],
+        "answer": [
+            "A"
+        ],
+        "explanation": "A is correct because Updating and inserting rows one at a time is not performant. Batch them instead.\n\nB is not correct because A limit clause is applied at the end of the query, which does not make it performant.\n\nC is not correct because Filtering data as early as possible reduces the amount of data processed across stages.\n\nD is not correct because Self-joins are not performant. Use window analytical functions instead.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "Your data in BigQuery has some columns that are extremely sensitive. You need to enable only some users to see certain columns. What should you do?",
+        "options": [
+            "Create a new dataset with the column's data.",
+            "Create a new table with the column's data.",
+            "Use policy tags.",
+            "Use Identity and Access Management (IAM) permissions."
+        ],
+        "answer": [
+            "C"
+        ],
+        "explanation": "A is not correct because Creating a separate dataset with the required column is not a viable approach, because the original data might change.\n\nB is not correct because Creating a separate table with the required column is not a reasonable approach, because the original data might change.\n\nC is correct because In BigQuery, policy tags give you fine-grained column level access control.\n\nD is not correct because IAM permissions do not provide the column-level access control granularity that this scenario requires.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "Your business has collected industry-relevant data over many years. The processed data is useful for your partners and they are willing to pay for its usage. You need to ensure proper access control over the data. What should you do?",
+        "options": [
+            "Export the data to zip files and share it through Cloud Storage.",
+            "Host the data on Analytics Hub.",
+            "Export the data to persistent disks and share it through an FTP endpoint.",
+            "Host the data on Cloud SQL."
+        ],
+        "answer": [
+            "B"
+        ],
+        "explanation": "A is not correct because Cloud Storage does not provide the greatest control over external data access for data sharing, and monetization will have to be done separately.\n\nB is correct because Analytics Hub has the built-in options to connect publishers and subscribers with access control and to monetize data access.\n\nC is not correct because Sharing data through FTP endpoints has very limited access control and is not recommended.\n\nD is not correct because Cloud SQL does not provide convenient access control or built-in monetization options.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You have a complex set of data that comes from multiple sources. The analysts in your team need to analyze the data, visualize it, and publish reports to internal and external stakeholders. You need to make it easier for the analysts to work with the data by abstracting the multiple data sources.What tool do you recommend?",
+        "options": [
+            "Looker Studio",
+            "Connected Sheets",
+            "D3.js library",
+            "Looker"
+        ],
+        "answer": [
+            "D"
+        ],
+        "explanation": "A is not correct because Looker Studio (previously Data Studio) is a visualization tool that does not have the data abstraction capabilities of Looker modeling.\n\nB is not correct because Connected Sheets gives you access to data in BigQuery, but not other data sources.\n\nC is not correct because To use the D3.js library, the analysts need to be adept at Javascript and complex details of creating visualizations with the library. This is not usually feasible for analysts.\n\nD is correct because Looker lets you model the underlying data sources and create an abstraction that analysts can easily build on.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You built machine learning (ML) models based on your own data. In production, the ML models are not giving satisfactory results. When you examine the data, it appears that the existing data is not sufficiently representing the business goals. You need to create a more accurate machine learning model. What should you do?",
+        "options": [
+            "Train the model with more of similar data.",
+            "Perform L2 regularization.",
+            "Perform feature engineering, and use domain knowledge to enhance the column data.",
+            "Train the model with the same data, but use more epochs."
+        ],
+        "answer": [
+            "C"
+        ],
+        "explanation": "A is not correct because The type of data seems to be insufficient in representing the business requirement. Having more of the same data does not help.\n\nB is not correct because It seems that overfitting is not the issue. L2 regularization does not improve the model's predictions.\n\nC is correct because Feature engineering can pick and choose relevant data columns and also enhance a model by combining columns. For this requirement, feature engineering improves the ML model.\n\nD is not correct because Repeating training for longer with the same data might not improve the model.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You used Dataplex to create lakes and zones for your business data. However, some files are not being discovered. What could be the issue?",
+        "options": [
+            "You have an exclude pattern that matches the files.",
+            "You have scheduled discovery to run every hour.",
+            "The files are in ORC format.",
+            "The files are in Parquet format."
+        ],
+        "answer": [
+            "A"
+        ],
+        "explanation": "A is correct because An exclude pattern will skip the file and therefore, this could be the reason the data is not discovered.\n\nB is not correct because Even if the delivery runs only every hour, the files should be discovered then, which is not the case here. So, this cannot be the issue.\n\nC is not correct because ORC format is supported and the file should be discovered.\n\nD is not correct because Parquet format is supported and the file should be discovered.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You need to design a Dataproc cluster to run multiple small jobs. Many jobs (but not all) are of high priority. What should you do?",
+        "options": [
+            "Reuse the same cluster and run each job in sequence.",
+            "Reuse the same cluster to run all jobs in parallel.",
+            "Use ephemeral clusters.",
+            "Use cluster autoscaling."
+        ],
+        "answer": [
+            "C"
+        ],
+        "explanation": "A is not correct because Because many jobs are high priority, running them in sequence would not meet the business requirements.\n\nB is not correct because With Dataproc, this is not a recommended approach. Configurations and running jobs could interfere with each other.\n\nC is correct because Jobs can use ephemeral clusters to quickly run the job and then deallocate the resources after use. Multiple jobs can be run in parallel without interfering with each other.\n\nD is not correct because Cluster autoscaling is effective within a cluster running individual jobs, but it is not recommended when running multiple jobs because they can interfere with the resource scaling.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You need to create repeatable data processing tasks by using Cloud Composer. You need to follow best practices and recommended approaches.What should you do?",
+        "options": [
+            "Write each task to be responsible for one operation.",
+            "Use current time with the now() function for computation.",
+            "Update data with INSERT statements during the task run.",
+            "Combine multiple functionalities in a single task execution."
+        ],
+        "answer": [
+            "A"
+        ],
+        "explanation": "A is correct because To run repeatable tasks, it is recommended to use atomic tasks that have a single responsibility. Many of these tasks can be combined in sequence to achieve a desired end result.\n\nB is not correct because Using current time for data processing results in different and non-repeatable task runs.\n\nC is not correct because Insert statements in tasks creates new entries. Rerunning the same tasks will insert new entries again. Instead of INSERT, UPSERT should be used.\n\nD is not correct because It is recommended that a single task should take up a single functionality.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "Multiple analysts need to prepare reports on Monday mornings due to which there is heavy utilization of BigQuery. You want to take a cost-effective approach to managing this demand.What should you do?",
+        "options": [
+            "Use on-demand pricing.",
+            "Use Flex Slots.",
+            "Use BigQuery Enterprise edition with a one-year commitment.",
+            "Use BigQuery Enterprise Plus edition with a three-year commitment."
+        ],
+        "answer": [
+            "B"
+        ],
+        "explanation": "A is not correct because On-demand pricing is not cost-effective for this scenario.\n\nB is correct because Flex Slots let you reserve BigQuery slots for short durations.\n\nC is not correct because A year-long commitment is unnecessary given the duration of the demand.\n\nD is not correct because A multi year-long commitment is unnecessary given the duration of the demand.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You have a team of data analysts that run queries interactively on BigQuery during work hours. You also have thousands of report generation queries that run simultaneously. You often see an error: Exceeded rate limits: too many concurrent queries for this project_and_region. How would you resolve this issue?",
+        "options": [
+            "Run all queries in interactive mode.",
+            "Create a yearly reservation of BigQuery slots.",
+            "Run the report generation queries in batch mode.",
+            "Create a view to run the queries."
+        ],
+        "answer": [
+            "C"
+        ],
+        "explanation": "A is not correct because Running all queries in interactive mode will lead to the same error.\n\nB is not correct because Reserving BigQuery slots will not avoid the error because concurrent query limits still apply.\n\nC is correct because Offloading the report generation queries to batch mode reduces the number of concurrent queries.\n\nD is not correct because Queries run on views also count towards the concurrent queries limit, therefore, they do not solve this issue.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You have a Dataflow pipeline in production. For certain data, the system seems to be stuck longer than usual. This is causing delays in the pipeline execution. You want to reliably and proactively track and resolve such issues. What should you do?",
+        "options": [
+            "Review the Dataflow logs regularly.",
+            "Set up alerts with Cloud Run functions code that reviews the audit logs regularly.",
+            "Review the Cloud Monitoring dashboard regularly.",
+            "Set up alerts on Cloud Monitoring based on system lag."
+        ],
+        "answer": [
+            "D"
+        ],
+        "explanation": "A is not correct because Watching for delays in the Dataflow logs is not a viable or reliable solution.\n\nB is not correct because Audit logs do not show information such as Dataflow pipeline system lag. Writing code to review logs and send alerts is cumbersome and is not recommended.\n\nC is not correct because Watching for delays in the monitoring dashboard is not a viable or reliable solution.\n\nD is correct because Setting up alerts proactively notifies users about issues or metrics that need to be tracked.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "When running Dataflow jobs, you see this error in the logs: \"A hot key HOT_KEY_NAME was detected in…\". You need to resolve this issue and make the workload performant. What should you do?",
+        "options": [
+            "Disable Dataflow shuffle.",
+            "Increase the data with the hot key.",
+            "Ensure that your data is evenly distributed.",
+            "Add more compute instances for processing."
+        ],
+        "answer": [
+            "C"
+        ],
+        "explanation": "A is not correct because It is recommended to enable Dataflow Shuffle because it partitions and groups data by key in a scalable, efficient, fault-tolerant manner.\n\nB is not correct because Increasing the amount of data with the same hot key will increase hotspots, making the data processing less efficient.\n\nC is correct because The Dataflow transformations are more performant with an evenly distributed key.\n\nD is not correct because Adding more compute instances does not automatically resolve hot spots in the data.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "Your company asks you about the configuration of Dataproc autoscaling for a project. What would be the Google-recommended situation when you should enable autoscaling?",
+        "options": [
+            "When you want to scale on-cluster Hadoop Distributed File System (HDFS).",
+            "When you want to scale out single-job clusters.",
+            "When you want to down-scale idle clusters to minimum size.",
+            "When there are different size workloads on the cluster."
+        ],
+        "answer": [
+            "B"
+        ],
+        "explanation": "A is not correct because Since HDFS utilization is not a signal for autoscaling, this would not be a good use case.\n\nB is correct because Single job clusters are well suited for autoscaling because there won't be any overlap with scaling of other jobs.\n\nC is not correct because On Dataproc, it is recommended that you delete idle clusters instead of scaling down to minimum size because it is quick and cost-efficient.\n\nD is not correct because Running different size workloads on the same cluster can cause interference. Long-running jobs might interfere with and delay the downscaling of smaller jobs.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "Your company processes streaming data on Dataflow with Pub/Sub as a source. You need to plan for disaster recovery and protect against zonal failures. What should you do?",
+        "options": [
+            "Take Dataflow snapshots periodically.",
+            "Create Dataflow jobs from templates.",
+            "Enable vertical autoscaling.",
+            "Enable Dataflow shuffle."
+        ],
+        "answer": [
+            "A"
+        ],
+        "explanation": "A is correct because When running streaming pipelines, Dataflow snapshots can save the current state. You can then start a new job based on the saved state. This allows you to recover from failures and also migrate jobs.\n\nB is not correct because Creating jobs from templates makes it easy to start new jobs by changing parameter values. However, since templates do not retain any state, they are not useful for disaster recovery.\n\nC is not correct because Vertical autoscaling can dynamically allocate compute capacity based on worker utilization, but it is not relevant for disaster recovery.\n\nD is not correct because Horizontal autoscaling can automatically change the number of workers allocated to your job, but it is not relevant for disaster recovery.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You run a Cloud SQL instance for a business that requires that the database is accessible for transactions. You need to ensure minimal downtime for database transactions.What should you do?",
+        "options": [
+            "Configure replication.",
+            "Configure high availability.",
+            "Configure backups.",
+            "Configure backups and increase the number of backups."
+        ],
+        "answer": [
+            "B"
+        ],
+        "explanation": "A is not correct because Replication on Cloud SQL is effective to offload reads. However, it does not support a full read-write database.\n\nB is correct because Configuring high availability on Cloud SQL will automatically switch to the secondary instance when the primary instance goes down, thus reducing downtime for the database's users.\n\nC is not correct because Backups are useful to retrieve older data in case of catastrophic failures such as accidental data deletion. However, they don’t provide continuous availability of the database, because restoring the database takes time.\n\nD is not correct because Increasing the number of backups does not impact or improve availability. Although there are more backups, restoring the database in case of failure incurs downtime.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    {
+        "question": "You are running a Dataflow pipeline in production. The input data for this pipeline is occasionally inconsistent. Separately from processing the valid data, you want to efficiently capture the erroneous input data for analysis.What should you do?",
+        "options": [
+            "Re-read the input data and create separate outputs for valid and erroneous data.",
+            "Read the data once, and split it into two pipelines, one to output valid data and another to output erroneous data.",
+            "Check for the erroneous data in the logs.",
+            "Create a side output for the erroneous data."
+        ],
+        "answer": [
+            "D"
+        ],
+        "explanation": "A is not correct because Re-reading the input data for processing only erroneous data is not efficient.\n\nB is not correct because Using separate pipelines for the same data (one to compute good data and the other for erroneous data) is not efficient.\n\nC is not correct because Erroneous data is not automatically available in the logs.\n\nD is correct because Using side outputs can collect the erroneous data efficiently and is a recommended approach.",
+        "questionImages": [],
+        "optionImages": [
+            null,
+            null,
+            null,
+            null
+        ]
     }
 ]
