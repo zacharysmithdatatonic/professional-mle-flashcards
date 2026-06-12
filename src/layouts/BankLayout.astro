@@ -1,0 +1,48 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { StudyHeader } from '../components/react/StudyHeader';
+import type { QuestionBank, StudyMode } from '../lib/banks';
+import { MODE_LABELS } from '../lib/banks';
+
+interface Props {
+    bank: QuestionBank;
+    mode?: StudyMode | null;
+    title?: string;
+    wide?: boolean;
+}
+
+const { bank, mode = null, title, wide = false } = Astro.props;
+const pageTitle =
+    title ??
+    (mode ? `${MODE_LABELS[mode]} — ${bank.name}` : `${bank.name} Flashcards`);
+---
+
+<BaseLayout title={pageTitle}>
+    <div class="bank-layout">
+        <StudyHeader client:load bank={bank} mode={mode} />
+        <main class:list={['bank-main', { wide }]}>
+            <slot />
+        </main>
+    </div>
+</BaseLayout>
+
+<style>
+    .bank-layout {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .bank-main {
+        flex: 1;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    .bank-main.wide {
+        max-width: none;
+        padding: 0;
+    }
+</style>

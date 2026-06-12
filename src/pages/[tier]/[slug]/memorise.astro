@@ -1,0 +1,19 @@
+---
+import BankLayout from '../../../layouts/BankLayout.astro';
+import { MemoriseSession } from '../../../components/react/MemoriseSession';
+import { getStaticBankPaths, type QuestionBank } from '../../../lib/banks';
+
+export function getStaticPaths() {
+    return getStaticBankPaths();
+}
+
+interface Props {
+    bank: QuestionBank;
+}
+
+const { bank } = Astro.props;
+---
+
+<BankLayout bank={bank} mode="memorise" wide>
+    <MemoriseSession client:load bankKey={bank.key} dataset={bank.dataset!} />
+</BankLayout>

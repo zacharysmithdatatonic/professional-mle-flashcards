@@ -1,0 +1,55 @@
+---
+import BankLayout from '../../../layouts/BankLayout.astro';
+import { BankHome } from '../../../components/react/BankHome';
+import {
+    getStaticBankPaths,
+    toSlug,
+    type QuestionBank,
+} from '../../../lib/banks';
+
+export function getStaticPaths() {
+    return getStaticBankPaths();
+}
+
+interface Props {
+    bank: QuestionBank;
+}
+
+const { bank } = Astro.props;
+---
+
+<BankLayout bank={bank} wide>
+    <script
+        define:vars={{
+            baseUrl: import.meta.env.BASE_URL,
+            tier: bank.tier,
+            slug: toSlug(bank.name),
+        }}
+    >
+        (function () {
+            const params = new URLSearchParams(window.location.search);
+            const mode = params.get('mode');
+            if (
+                !mode ||
+                !['quiz', 'memorise', 'fill-in-blank'].includes(mode)
+            ) {
+                return;
+            }
+            const modePath = mode === 'fill-in-blank' ? 'fill-in-blank' : mode;
+            const search = new URLSearchParams(window.location.search);
+            search.delete('mode');
+            const query = search.toString();
+            const target =
+                baseUrl +
+                tier +
+                '/' +
+                slug +
+                '/' +
+                modePath +
+                (query ? '?' + query : '');
+            window.location.replace(target);
+        })();
+    </script>
+
+    <BankHome client:load bank={bank} />
+</BankLayout>

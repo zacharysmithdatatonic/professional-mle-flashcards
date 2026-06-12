@@ -1,0 +1,23 @@
+---
+import BankLayout from '../../../layouts/BankLayout.astro';
+import { FillInBlankSession } from '../../../components/react/FillInBlankSession';
+import { getStaticBankPaths, type QuestionBank } from '../../../lib/banks';
+
+export function getStaticPaths() {
+    return getStaticBankPaths();
+}
+
+interface Props {
+    bank: QuestionBank;
+}
+
+const { bank } = Astro.props;
+---
+
+<BankLayout bank={bank} mode="fill-in-blank" wide>
+    <FillInBlankSession
+        client:load
+        bankKey={bank.key}
+        dataset={bank.dataset!}
+    />
+</BankLayout>

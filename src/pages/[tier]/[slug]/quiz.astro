@@ -1,0 +1,19 @@
+---
+import BankLayout from '../../../layouts/BankLayout.astro';
+import { QuizSession } from '../../../components/react/QuizSession';
+import { getStaticBankPaths, type QuestionBank } from '../../../lib/banks';
+
+export function getStaticPaths() {
+    return getStaticBankPaths();
+}
+
+interface Props {
+    bank: QuestionBank;
+}
+
+const { bank } = Astro.props;
+---
+
+<BankLayout bank={bank} mode="quiz" wide>
+    <QuizSession client:load bankKey={bank.key} dataset={bank.dataset!} />
+</BankLayout>
