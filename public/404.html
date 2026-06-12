@@ -6,7 +6,10 @@
         <title>Redirecting...</title>
         <script>
             (function () {
-                var currentPath = window.location.pathname + window.location.search + window.location.hash;
+                var currentPath =
+                    window.location.pathname +
+                    window.location.search +
+                    window.location.hash;
                 var basePath = '/google-cloud-certification-flashcards';
                 var targetBase = currentPath.startsWith(basePath)
                     ? basePath
