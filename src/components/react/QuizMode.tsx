@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
     Box,
     Stack,
@@ -31,6 +31,24 @@ import { resolveAssetPath } from '../../lib/assets';
 // Helper function to check if explanation has meaningful content
 const hasExplanation = (explanation: string): boolean => {
     return explanation.trim().replace(/\n/g, '').length > 0;
+};
+
+const getOptionIndexFromKey = (
+    key: string,
+    optionCount: number
+): number | null => {
+    if (/^[1-9]$/.test(key)) {
+        const index = parseInt(key, 10) - 1;
+        return index < optionCount ? index : null;
+    }
+
+    const lower = key.toLowerCase();
+    if (/^[a-z]$/.test(lower)) {
+        const index = lower.charCodeAt(0) - 'a'.charCodeAt(0);
+        return index < optionCount ? index : null;
+    }
+
+    return null;
 };
 
 interface QuizModeProps {
@@ -114,6 +132,50 @@ export const QuizMode: React.FC<QuizModeProps> = ({
         // Automatically call onAnswer with the result
         onAnswer(isCorrect);
     }, [getCorrectOptionIndexes, selectedOptions, onAnswer]);
+
+    useEffect(() => {
+        if (!currentQuestion) {
+            return;
+        }
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.ctrlKey || event.metaKey) {
+                return;
+            }
+
+            if (event.key === 'Enter') {
+                if (!showAnswer && selectedOptions.length > 0) {
+                    event.preventDefault();
+                    handleRevealAnswer();
+                }
+                return;
+            }
+
+            if (showAnswer) {
+                return;
+            }
+
+            const optionIndex = getOptionIndexFromKey(
+                event.key,
+                currentQuestion.options.length
+            );
+            if (optionIndex === null) {
+                return;
+            }
+
+            event.preventDefault();
+            handleOptionSelect(optionIndex);
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [
+        currentQuestion,
+        showAnswer,
+        selectedOptions,
+        handleOptionSelect,
+        handleRevealAnswer,
+    ]);
 
     const handleNext = useCallback(() => {
         setShowAnswer(false);
