@@ -40,6 +40,7 @@ interface QuizModeProps {
     onNext: () => void;
     onPrevious: () => void;
     performance: Map<string, QuestionPerformance>;
+    variant?: 'quiz' | 'review';
 }
 
 export const QuizMode: React.FC<QuizModeProps> = ({
@@ -49,7 +50,9 @@ export const QuizMode: React.FC<QuizModeProps> = ({
     onNext,
     onPrevious,
     performance,
+    variant = 'quiz',
 }) => {
+    const isReview = variant === 'review';
     const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
     const [showAnswer, setShowAnswer] = useState(false);
 
@@ -132,12 +135,18 @@ export const QuizMode: React.FC<QuizModeProps> = ({
                 <Card>
                     <CardContent>
                         <Stack spacing={2} sx={{ alignItems: 'center' }}>
-                            <Trophy size={48} />
+                            {isReview ? (
+                                <RotateCcw size={48} />
+                            ) : (
+                                <Trophy size={48} />
+                            )}
                             <Typography
                                 variant="h5"
                                 sx={{ textAlign: 'center' }}
                             >
-                                Quiz Complete! Great job!
+                                {isReview
+                                    ? 'Review Complete! Great job!'
+                                    : 'Quiz Complete! Great job!'}
                             </Typography>
                             <Button
                                 variant="contained"
@@ -191,7 +200,17 @@ export const QuizMode: React.FC<QuizModeProps> = ({
                     value={((currentIndex + 1) / questions.length) * 100}
                     sx={{ height: 6, borderRadius: 999 }}
                 />
-                <Card sx={{ overflow: 'hidden' }}>
+                <Card
+                    sx={{
+                        overflow: 'hidden',
+                        ...(isReview
+                            ? {
+                                  borderLeft: '4px solid',
+                                  borderColor: 'warning.main',
+                              }
+                            : {}),
+                    }}
+                >
                     <CardContent sx={{ overflow: 'hidden' }}>
                         <Stack spacing={2}>
                             <Stack

@@ -31,7 +31,7 @@ const { bank } = Astro.props;
             const mode = params.get('mode');
             if (
                 !mode ||
-                !['quiz', 'memorise', 'fill-in-blank'].includes(mode)
+                !['quiz', 'review', 'memorise', 'fill-in-blank'].includes(mode)
             ) {
                 return;
             }

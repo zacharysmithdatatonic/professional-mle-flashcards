@@ -1,0 +1,28 @@
+---
+import BankLayout from '../../../layouts/BankLayout.astro';
+import { ReviewSession } from '../../../components/react/ReviewSession';
+import {
+    getBankBasePath,
+    getStaticBankPaths,
+    type QuestionBank,
+} from '../../../lib/banks';
+
+export function getStaticPaths() {
+    return getStaticBankPaths();
+}
+
+interface Props {
+    bank: QuestionBank;
+}
+
+const { bank } = Astro.props;
+---
+
+<BankLayout bank={bank} mode="review" wide>
+    <ReviewSession
+        client:load
+        bankKey={bank.key}
+        dataset={bank.dataset!}
+        bankBasePath={getBankBasePath(bank)}
+    />
+</BankLayout>

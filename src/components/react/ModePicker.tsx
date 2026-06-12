@@ -7,13 +7,14 @@ import {
     CardContent,
     CardActionArea,
 } from '@mui/material';
-import { Brain, Edit3, List } from 'lucide-react';
+import { Brain, Edit3, List, RotateCcw } from 'lucide-react';
 import type { QuestionBank, StudyMode } from '../../lib/banks';
 import { getBankModePath } from '../../lib/banks';
 import { ReactProviders } from './ReactProviders';
 
 interface ModePickerProps {
     bank: QuestionBank;
+    reviewQuestionCount?: number;
 }
 
 const MODES: Array<{
@@ -22,6 +23,8 @@ const MODES: Array<{
     description: string;
     icon: React.ReactNode;
     color: string;
+    disabled?: (reviewQuestionCount: number) => boolean;
+    badge?: (reviewQuestionCount: number) => string | undefined;
 }> = [
     {
         key: 'quiz',
@@ -29,6 +32,16 @@ const MODES: Array<{
         description: 'Test your knowledge with multiple choice questions.',
         icon: <Brain size={28} />,
         color: '#1e8e3e',
+    },
+    {
+        key: 'review',
+        label: 'Review Mode',
+        description:
+            "Focus on questions you got wrong or haven't answered yet.",
+        icon: <RotateCcw size={28} />,
+        color: '#f9ab00',
+        disabled: count => count === 0,
+        badge: count => (count === 0 ? 'No questions need review' : undefined),
     },
     {
         key: 'memorise',
@@ -48,7 +61,7 @@ const MODES: Array<{
     },
 ];
 
-function ModePickerCards({ bank }: ModePickerProps) {
+function ModePickerCards({ bank, reviewQuestionCount = 0 }: ModePickerProps) {
     return (
         <Box>
             <Typography variant="h5" sx={{ textAlign: 'center', mb: 2 }}>
@@ -64,42 +77,61 @@ function ModePickerCards({ bank }: ModePickerProps) {
                     },
                 }}
             >
-                {MODES.map(mode => (
-                    <Card
-                        key={mode.key}
-                        sx={{
-                            borderLeft: `4px solid ${mode.color}`,
-                            minHeight: 160,
-                        }}
-                    >
-                        <CardActionArea
-                            component="a"
-                            href={getBankModePath(bank, mode.key)}
-                            sx={{ height: '100%' }}
+                {MODES.map(mode => {
+                    const isDisabled = mode.disabled?.(reviewQuestionCount);
+                    const badge = mode.badge?.(reviewQuestionCount);
+
+                    return (
+                        <Card
+                            key={mode.key}
+                            sx={{
+                                borderLeft: `4px solid ${mode.color}`,
+                                opacity: isDisabled ? 0.6 : 1,
+                                minHeight: 160,
+                            }}
                         >
-                            <CardContent sx={{ height: '100%' }}>
-                                <Stack spacing={1} sx={{ height: '100%' }}>
-                                    <Stack
-                                        direction="row"
-                                        spacing={1}
-                                        sx={{ alignItems: 'center' }}
-                                    >
-                                        {mode.icon}
-                                        <Typography variant="h6">
-                                            {mode.label}
+                            <CardActionArea
+                                component={isDisabled ? 'div' : 'a'}
+                                href={
+                                    isDisabled
+                                        ? undefined
+                                        : getBankModePath(bank, mode.key)
+                                }
+                                disabled={isDisabled}
+                                sx={{ height: '100%' }}
+                            >
+                                <CardContent sx={{ height: '100%' }}>
+                                    <Stack spacing={1} sx={{ height: '100%' }}>
+                                        <Stack
+                                            direction="row"
+                                            spacing={1}
+                                            sx={{ alignItems: 'center' }}
+                                        >
+                                            {mode.icon}
+                                            <Typography variant="h6">
+                                                {mode.label}
+                                            </Typography>
+                                        </Stack>
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                        >
+                                            {mode.description}
                                         </Typography>
+                                        {badge ? (
+                                            <Typography
+                                                variant="caption"
+                                                color="error"
+                                            >
+                                                {badge}
+                                            </Typography>
+                                        ) : null}
                                     </Stack>
-                                    <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                    >
-                                        {mode.description}
-                                    </Typography>
-                                </Stack>
-                            </CardContent>
-                        </CardActionArea>
-                    </Card>
-                ))}
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    );
+                })}
             </Box>
         </Box>
     );

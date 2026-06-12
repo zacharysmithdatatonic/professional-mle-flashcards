@@ -17,7 +17,7 @@ export interface QuestionPerformance {
     scheduledNext: number | null;
 }
 
-export type StudyMode = 'quiz' | 'memorise' | 'fill-in-blank';
+export type StudyMode = 'quiz' | 'review' | 'memorise' | 'fill-in-blank';
 
 export type CertificationTier = 'foundational' | 'associate' | 'professional';
 
@@ -232,6 +232,7 @@ export const getBanksByTier = (tier: CertificationTier) =>
 
 export const MODE_LABELS: Record<StudyMode, string> = {
     quiz: 'Quiz Mode',
+    review: 'Review Mode',
     memorise: 'Memorise Mode',
     'fill-in-blank': 'Fill-in-Blank Mode',
 };

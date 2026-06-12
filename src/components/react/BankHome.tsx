@@ -9,6 +9,7 @@ import { loadQuestionsFromJSON } from '../../lib/questionParser';
 import {
     createInitialPerformance,
     getPerformanceStats,
+    getQuestionsForReview,
     loadPerformanceFromStorage,
 } from '../../lib/performance';
 import { ReactProviders } from './ReactProviders';
@@ -56,6 +57,10 @@ function BankHomeContent({ bank }: BankHomeProps) {
     }, [bank]);
 
     const stats = getPerformanceStats(performance, questions);
+    const reviewQuestionCount = getQuestionsForReview(
+        questions,
+        performance
+    ).length;
     const progressPercent =
         questions.length > 0
             ? (stats.totalAnswered / questions.length) * 100
@@ -105,7 +110,10 @@ function BankHomeContent({ bank }: BankHomeProps) {
                     </Stack>
                 )}
 
-                <ModePickerCards bank={bank} />
+                <ModePickerCards
+                    bank={bank}
+                    reviewQuestionCount={reviewQuestionCount}
+                />
             </Stack>
         </Container>
     );

@@ -7,7 +7,7 @@ import {
     Stack,
     Chip,
 } from '@mui/material';
-import { ArrowLeft, Brain, Edit3, List } from 'lucide-react';
+import { ArrowLeft, Brain, Edit3, List, RotateCcw } from 'lucide-react';
 import type { QuestionBank, StudyMode } from '../../lib/banks';
 import { getBankBasePath, MODE_LABELS } from '../../lib/banks';
 import { getCertificationIcon } from '../../lib/certificationIcons';
@@ -70,6 +70,8 @@ function StudyHeaderContent({ bank, mode = null }: StudyHeaderProps) {
                             icon={
                                 mode === 'quiz' ? (
                                     <Brain size={16} />
+                                ) : mode === 'review' ? (
+                                    <RotateCcw size={16} />
                                 ) : mode === 'fill-in-blank' ? (
                                     <Edit3 size={16} />
                                 ) : (
