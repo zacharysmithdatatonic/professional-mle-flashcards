@@ -19,5 +19,4 @@ yarn.lock
 .DS_Store
 Thumbs.db
 
-# Public folder (often contains static assets)
-public/ 
+.astro/
