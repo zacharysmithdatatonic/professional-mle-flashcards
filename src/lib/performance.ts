@@ -78,6 +78,17 @@ export const getQuestionsForReview = (
     });
 };
 
+/**
+ * Splits a session queue into the number of distinct questions and the number
+ * of repeats, since answering incorrectly re-inserts a question into the queue.
+ */
+export const getQuestionTotals = (
+    questions: Question[]
+): { unique: number; repeats: number } => {
+    const unique = new Set(questions.map(question => question.id)).size;
+    return { unique, repeats: questions.length - unique };
+};
+
 export const shuffleQuestions = (questions: Question[]): Question[] => {
     const shuffled = [...questions];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -85,6 +96,16 @@ export const shuffleQuestions = (questions: Question[]): Question[] => {
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     return shuffled;
+};
+
+/** Fisher–Yates permutation of 0..length-1 for reshuffling answer options. */
+export const createShuffledOrder = (length: number): number[] => {
+    const order = Array.from({ length }, (_, index) => index);
+    for (let i = order.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [order[i], order[j]] = [order[j], order[i]];
+    }
+    return order;
 };
 
 export const weightedShuffle = (

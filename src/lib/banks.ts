@@ -236,3 +236,10 @@ export const MODE_LABELS: Record<StudyMode, string> = {
     memorise: 'Memorise Mode',
     'fill-in-blank': 'Fill-in-Blank Mode',
 };
+
+export const MODE_SHORT_LABELS: Record<StudyMode, string> = {
+    quiz: 'Quiz',
+    review: 'Review',
+    memorise: 'Memorise',
+    'fill-in-blank': 'Fill-in-Blank',
+};

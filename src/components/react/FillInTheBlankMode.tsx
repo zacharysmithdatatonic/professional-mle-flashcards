@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
     Box,
     Stack,
@@ -22,9 +22,14 @@ import {
     ChevronRight,
     Eye,
     RotateCcw,
-    HelpCircle,
     Edit3,
 } from 'lucide-react';
+import { getQuestionTotals } from '../../lib/performance';
+import {
+    studyCardContentSx,
+    studyCardSx,
+    studyCardWrapperSx,
+} from '../../lib/studyCardStyles';
 import { formatText } from '../../lib/textFormatting';
 import { FormattedText, formattedTextSx } from './FormattedText';
 import { resolveAssetPath } from '../../lib/assets';
@@ -192,6 +197,10 @@ export const FillInTheBlankMode: React.FC<FillInTheBlankModeProps> = ({
 
     const currentQuestion = questions[currentIndex];
     const currentPerformance = performance.get(currentQuestion?.id);
+    const questionTotals = useMemo(
+        () => getQuestionTotals(questions),
+        [questions]
+    );
 
     const handleBlankChange = useCallback((blankId: string, value: string) => {
         setBlanks(prev =>
@@ -548,7 +557,7 @@ export const FillInTheBlankMode: React.FC<FillInTheBlankModeProps> = ({
     }
 
     return (
-        <Box sx={{ maxWidth: 720, mx: 'auto', px: 2 }}>
+        <Box sx={studyCardWrapperSx}>
             <Stack spacing={2}>
                 <Stack
                     direction="row"
@@ -565,7 +574,10 @@ export const FillInTheBlankMode: React.FC<FillInTheBlankModeProps> = ({
                         <ChevronLeft size={24} />
                     </IconButton>
                     <Typography variant="body2" color="text.secondary">
-                        Question {currentIndex + 1} of {questions.length}
+                        Question {currentIndex + 1} of {questionTotals.unique}
+                        {questionTotals.repeats > 0
+                            ? ` +${questionTotals.repeats}`
+                            : ''}
                     </Typography>
                     <IconButton
                         onClick={handleNext}
@@ -580,51 +592,36 @@ export const FillInTheBlankMode: React.FC<FillInTheBlankModeProps> = ({
                     value={((currentIndex + 1) / questions.length) * 100}
                     sx={{ height: 6, borderRadius: 999 }}
                 />
-                <Card
-                    sx={{
-                        borderLeft: '4px solid',
-                        borderColor: 'error.main',
-                        overflow: 'hidden',
-                    }}
-                >
-                    <CardContent sx={{ overflow: 'hidden' }}>
+                <Card sx={studyCardSx('error')}>
+                    <CardContent sx={studyCardContentSx}>
                         <Stack spacing={2}>
-                            <Stack
-                                direction="row"
-                                sx={{
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                }}
-                            >
-                                <Stack direction="row" spacing={1}>
-                                    <HelpCircle size={18} />
-                                    <Typography variant="subtitle1">
-                                        Question
-                                    </Typography>
+                            {currentPerformance && (
+                                <Stack
+                                    direction="row"
+                                    spacing={1}
+                                    sx={{
+                                        justifyContent: 'flex-end',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <Chip
+                                        size="small"
+                                        icon={<CheckCircle size={14} />}
+                                        label={currentPerformance.correctCount}
+                                        color="success"
+                                        variant="outlined"
+                                    />
+                                    <Chip
+                                        size="small"
+                                        icon={<XCircle size={14} />}
+                                        label={
+                                            currentPerformance.incorrectCount
+                                        }
+                                        color="error"
+                                        variant="outlined"
+                                    />
                                 </Stack>
-                                {currentPerformance && (
-                                    <Stack direction="row" spacing={1}>
-                                        <Chip
-                                            size="small"
-                                            icon={<CheckCircle size={14} />}
-                                            label={
-                                                currentPerformance.correctCount
-                                            }
-                                            color="success"
-                                            variant="outlined"
-                                        />
-                                        <Chip
-                                            size="small"
-                                            icon={<XCircle size={14} />}
-                                            label={
-                                                currentPerformance.incorrectCount
-                                            }
-                                            color="error"
-                                            variant="outlined"
-                                        />
-                                    </Stack>
-                                )}
-                            </Stack>
+                            )}
                             <FormattedText text={currentQuestion.question} />
                             {currentQuestion.questionImages?.length ? (
                                 <Stack

@@ -1,8 +1,12 @@
 ---
+import { ArrowLeft, Home } from 'lucide-react';
 import BaseLayout from './BaseLayout.astro';
-import { StudyHeader } from '../components/react/StudyHeader';
 import type { QuestionBank, StudyMode } from '../lib/banks';
-import { MODE_LABELS } from '../lib/banks';
+import { getBankBasePath, MODE_LABELS, MODE_SHORT_LABELS } from '../lib/banks';
+import {
+    getCertificationIconComponent,
+    getStudyModeIconComponent,
+} from '../lib/certificationIcons';
 
 interface Props {
     bank: QuestionBank;
@@ -15,11 +19,58 @@ const { bank, mode = null, title, wide = false } = Astro.props;
 const pageTitle =
     title ??
     (mode ? `${MODE_LABELS[mode]} — ${bank.name}` : `${bank.name} Flashcards`);
+const bankHref = getBankBasePath(bank);
+const CertificationIcon = getCertificationIconComponent(bank.key);
+const ModeIcon = mode ? getStudyModeIconComponent(mode) : null;
+const backHref = mode ? bankHref : import.meta.env.BASE_URL;
+const backLabel = mode ? 'Back to menu' : 'Back to certifications';
 ---
 
 <BaseLayout title={pageTitle}>
     <div class="bank-layout">
-        <StudyHeader client:load bank={bank} mode={mode} />
+        <header class="bank-header">
+            <a
+                class="bank-back"
+                href={backHref}
+                aria-label={backLabel}
+                title={backLabel}
+            >
+                <ArrowLeft size={18} strokeWidth={1.5} />
+            </a>
+            <nav class="bank-breadcrumbs" aria-label="Breadcrumb">
+                <a class="crumb" href={import.meta.env.BASE_URL}>
+                    <Home size={16} strokeWidth={1.5} />
+                    <span>Certifications</span>
+                </a>
+                <span class="crumb-separator" aria-hidden="true">/</span>
+                {
+                    mode ? (
+                        <a class="crumb" href={bankHref}>
+                            <CertificationIcon size={16} strokeWidth={1.5} />
+                            <span>{bank.name}</span>
+                        </a>
+                    ) : (
+                        <span class="crumb" aria-current="page">
+                            <CertificationIcon size={16} strokeWidth={1.5} />
+                            <span>{bank.name}</span>
+                        </span>
+                    )
+                }
+                {
+                    mode && ModeIcon ? (
+                        <>
+                            <span class="crumb-separator" aria-hidden="true">
+                                /
+                            </span>
+                            <span class="crumb" aria-current="page">
+                                <ModeIcon size={16} strokeWidth={1.5} />
+                                <span>{MODE_SHORT_LABELS[mode]}</span>
+                            </span>
+                        </>
+                    ) : null
+                }
+            </nav>
+        </header>
         <main class:list={['bank-main', { wide }]}>
             <slot />
         </main>
@@ -33,6 +84,65 @@ const pageTitle =
         flex-direction: column;
     }
 
+    .bank-header {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 1rem;
+        max-width: 1000px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 1.5rem 1.5rem 0;
+    }
+
+    .bank-breadcrumbs {
+        grid-column: 2;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1;
+        color: #5f6368;
+    }
+
+    .crumb {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+    }
+
+    .crumb svg {
+        display: block;
+        flex-shrink: 0;
+    }
+
+    .crumb-separator {
+        color: #dadce0;
+    }
+
+    .bank-back {
+        grid-column: 1;
+        justify-self: start;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.75rem;
+        height: 1.75rem;
+        border-radius: 999px;
+        color: #5f6368;
+    }
+
+    .bank-back svg {
+        display: block;
+    }
+
+    .bank-back:hover {
+        background: #f1f3f4;
+        text-decoration: none;
+    }
+
     .bank-main {
         flex: 1;
         width: 100%;
@@ -44,5 +154,19 @@ const pageTitle =
     .bank-main.wide {
         max-width: none;
         padding: 0;
+    }
+
+    @media (max-width: 600px) {
+        .bank-header {
+            grid-template-columns: auto 1fr;
+        }
+
+        .bank-breadcrumbs {
+            justify-content: flex-start;
+        }
+
+        .bank-breadcrumbs > :not([aria-current='page']) {
+            display: none;
+        }
     }
 </style>

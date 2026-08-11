@@ -29,6 +29,7 @@ import {
     BarChart3,
     ListChecks,
 } from 'lucide-react';
+import { memoriseCardContentSx } from '../../lib/studyCardStyles';
 import { formatText, getOptionDisplayText } from '../../lib/textFormatting';
 import { FormattedText } from './FormattedText';
 import { hasOptionImages, OptionImagesGrid } from './OptionImagesGrid';
@@ -122,7 +123,7 @@ export const MemoriseMode: React.FC<MemoriseModeProps> = ({
     };
 
     return (
-        <Box sx={{ maxWidth: 900, mx: 'auto', px: 2, py: 3 }}>
+        <Box sx={{ maxWidth: 900, mx: 'auto', px: { xs: 1, sm: 2 }, py: 3 }}>
             <Stack spacing={3}>
                 <Stack
                     direction={{ xs: 'column', md: 'row' }}
@@ -223,7 +224,7 @@ export const MemoriseMode: React.FC<MemoriseModeProps> = ({
 
                         return (
                             <Card key={question.id}>
-                                <CardContent>
+                                <CardContent sx={memoriseCardContentSx}>
                                     <Stack spacing={2}>
                                         <Stack
                                             direction="row"

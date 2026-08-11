@@ -5,45 +5,50 @@ import {
     Cloud,
     Code,
     Database,
+    Edit3,
+    List,
     Network,
+    RotateCcw,
     Settings,
     Shield,
     Sparkles,
     Users,
+    type LucideIcon,
 } from 'lucide-react';
+import type { StudyMode } from './banks';
+
+const CERTIFICATION_ICONS: Record<string, LucideIcon> = {
+    cdl: Cloud,
+    genai: Sparkles,
+    ace: Cloud,
+    adp: Database,
+    agwa: Users,
+    pca: Cloud,
+    pcde: Database,
+    pcd: Code,
+    pde: Database,
+    pcdo: Settings,
+    pcse: Shield,
+    pcne: Network,
+    pmle: Brain,
+    psoe: Shield,
+};
+
+const STUDY_MODE_ICONS: Record<StudyMode, LucideIcon> = {
+    quiz: Brain,
+    review: RotateCcw,
+    memorise: List,
+    'fill-in-blank': Edit3,
+};
+
+/** Icon component for a certification, for callers that need the type itself. */
+export const getCertificationIconComponent = (key: string): LucideIcon =>
+    CERTIFICATION_ICONS[key] ?? BookOpen;
+
+export const getStudyModeIconComponent = (mode: StudyMode): LucideIcon =>
+    STUDY_MODE_ICONS[mode];
 
 export const getCertificationIcon = (key: string, size: number = 24) => {
-    const iconProps = { size, strokeWidth: 1.5 };
-    switch (key) {
-        case 'cdl':
-            return <Cloud {...iconProps} />;
-        case 'genai':
-            return <Sparkles {...iconProps} />;
-        case 'ace':
-            return <Cloud {...iconProps} />;
-        case 'adp':
-            return <Database {...iconProps} />;
-        case 'agwa':
-            return <Users {...iconProps} />;
-        case 'pca':
-            return <Cloud {...iconProps} />;
-        case 'pcde':
-            return <Database {...iconProps} />;
-        case 'pcd':
-            return <Code {...iconProps} />;
-        case 'pde':
-            return <Database {...iconProps} />;
-        case 'pcdo':
-            return <Settings {...iconProps} />;
-        case 'pcse':
-            return <Shield {...iconProps} />;
-        case 'pcne':
-            return <Network {...iconProps} />;
-        case 'pmle':
-            return <Brain {...iconProps} />;
-        case 'psoe':
-            return <Shield {...iconProps} />;
-        default:
-            return <BookOpen {...iconProps} />;
-    }
+    const Icon = getCertificationIconComponent(key);
+    return <Icon size={size} strokeWidth={1.5} />;
 };
