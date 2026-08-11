@@ -178,6 +178,11 @@ export const savePerformanceToStorage = (
     localStorage.setItem(key, JSON.stringify(serialized));
 };
 
+/** Clears all saved progress for a single certification bank. */
+export const clearPerformanceFromStorage = (bankKey: string) => {
+    localStorage.removeItem(`flashcard-performance-${bankKey}`);
+};
+
 export const loadPerformanceFromStorage = (
     bankKey?: string
 ): Map<string, QuestionPerformance> => {

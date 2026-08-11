@@ -1,5 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Container, LinearProgress, Stack, Typography } from '@mui/material';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+    Button,
+    Container,
+    LinearProgress,
+    Stack,
+    Typography,
+} from '@mui/material';
+import { RotateCcw } from 'lucide-react';
 import type {
     Question,
     QuestionPerformance,
@@ -7,6 +14,7 @@ import type {
 } from '../../lib/banks';
 import { loadQuestionsFromJSON } from '../../lib/questionParser';
 import {
+    clearPerformanceFromStorage,
     createInitialPerformance,
     getPerformanceStats,
     getQuestionsForReview,
@@ -14,6 +22,7 @@ import {
 } from '../../lib/performance';
 import { ReactProviders } from './ReactProviders';
 import { ModePickerCards } from './ModePicker';
+import { ConfirmModal } from './ConfirmModal';
 
 interface BankHomeProps {
     bank: QuestionBank;
@@ -25,6 +34,7 @@ function BankHomeContent({ bank }: BankHomeProps) {
         Map<string, QuestionPerformance>
     >(new Map());
     const [isLoading, setIsLoading] = useState(true);
+    const [confirmResetOpen, setConfirmResetOpen] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -65,6 +75,23 @@ function BankHomeContent({ bank }: BankHomeProps) {
         questions.length > 0
             ? (stats.totalAnswered / questions.length) * 100
             : 0;
+    const hasProgress =
+        stats.totalAnswered > 0 ||
+        stats.totalCorrect > 0 ||
+        stats.totalIncorrect > 0;
+
+    const handleResetProgress = useCallback(() => {
+        clearPerformanceFromStorage(bank.key);
+        const resetPerformance = new Map<string, QuestionPerformance>();
+        questions.forEach(question => {
+            resetPerformance.set(
+                question.id,
+                createInitialPerformance(question.id)
+            );
+        });
+        setPerformance(resetPerformance);
+        setConfirmResetOpen(false);
+    }, [bank.key, questions]);
 
     return (
         <Container sx={{ flex: 1, py: 4, maxWidth: 1000 }} maxWidth={false}>
@@ -82,14 +109,40 @@ function BankHomeContent({ bank }: BankHomeProps) {
                             direction="row"
                             sx={{
                                 justifyContent: 'space-between',
-                                alignItems: 'baseline',
+                                alignItems: 'center',
                                 gap: 2,
                                 flexWrap: 'wrap',
                             }}
                         >
-                            <Typography variant="subtitle2">
-                                Progress
-                            </Typography>
+                            <Stack
+                                direction="row"
+                                spacing={1}
+                                sx={{ alignItems: 'center' }}
+                            >
+                                <Typography variant="subtitle2">
+                                    Progress
+                                </Typography>
+                                <Button
+                                    size="small"
+                                    color="inherit"
+                                    disabled={!hasProgress}
+                                    onClick={() => setConfirmResetOpen(true)}
+                                    startIcon={<RotateCcw size={14} />}
+                                    sx={{
+                                        color: 'text.secondary',
+                                        minWidth: 0,
+                                        px: 1,
+                                        py: 0.25,
+                                        fontSize: '0.75rem',
+                                        fontWeight: 400,
+                                        '&:hover': {
+                                            bgcolor: 'action.hover',
+                                        },
+                                    }}
+                                >
+                                    Reset
+                                </Button>
+                            </Stack>
                             <Typography variant="body2" color="text.secondary">
                                 {stats.totalAnswered} of {questions.length}{' '}
                                 answered · {stats.accuracy.toFixed(0)}% accuracy
@@ -115,6 +168,17 @@ function BankHomeContent({ bank }: BankHomeProps) {
                     reviewQuestionCount={reviewQuestionCount}
                 />
             </Stack>
+
+            <ConfirmModal
+                open={confirmResetOpen}
+                title="Reset progress?"
+                message={`This will clear all saved answers and accuracy for ${bank.name}. This cannot be undone.`}
+                confirmText="Reset progress"
+                cancelText="Cancel"
+                destructive
+                onConfirm={handleResetProgress}
+                onCancel={() => setConfirmResetOpen(false)}
+            />
         </Container>
     );
 }
