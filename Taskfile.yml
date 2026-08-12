@@ -17,6 +17,7 @@ tasks:
       - echo "Development:"
       - echo "  task dev            - Run the app in development mode"
       - echo "  task build          - Build the app for production"
+      - echo "  task validate       - Validate flashcard JSON datasets"
       - echo "  task test           - Run tests"
       - echo ""
       - echo "Code Quality:"
@@ -52,6 +53,11 @@ tasks:
     cmds:
       - "{{.NPM}} run build"
       - echo "Build complete! Static files are in the 'dist' directory."
+
+  validate:
+    desc: Validate flashcard JSON datasets
+    cmds:
+      - "{{.NPM}} run validate:flashcards"
 
   lint:
     desc: Run linting and formatting across all files
