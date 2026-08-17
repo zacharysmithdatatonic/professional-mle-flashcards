@@ -31,6 +31,9 @@ import {
 } from '../../lib/studyCardStyles';
 import { getOptionDisplayText } from '../../lib/textFormatting';
 import { FormattedText } from './FormattedText';
+import { CaseStudyCallout } from './CaseStudyCallout';
+import { ExplanationLinks } from './ExplanationLinks';
+import { ReportQuestionIssueButton } from './ReportQuestionIssueButton';
 import { hasOptionImages, OptionImagesGrid } from './OptionImagesGrid';
 import { resolveAssetPath } from '../../lib/assets';
 
@@ -64,6 +67,7 @@ interface QuizModeProps {
     onNext: () => void;
     onPrevious: () => void;
     performance: Map<string, QuestionPerformance>;
+    bankKey: string;
     variant?: 'quiz' | 'review';
 }
 
@@ -74,6 +78,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({
     onNext,
     onPrevious,
     performance,
+    bankKey,
     variant = 'quiz',
 }) => {
     const isReview = variant === 'review';
@@ -373,6 +378,11 @@ export const QuizMode: React.FC<QuizModeProps> = ({
                                     />
                                 </Stack>
                             )}
+                            {currentQuestion.caseStudy ? (
+                                <CaseStudyCallout
+                                    caseStudy={currentQuestion.caseStudy}
+                                />
+                            ) : null}
                             <FormattedText text={currentQuestion.question} />
                             {currentQuestion.questionImages?.length ? (
                                 <Stack
@@ -509,21 +519,40 @@ export const QuizMode: React.FC<QuizModeProps> = ({
                                 <>
                                     <Divider />
                                     <Stack spacing={1}>
-                                        <Stack direction="row" spacing={1}>
+                                        <Stack
+                                            direction="row"
+                                            spacing={1}
+                                            sx={{ alignItems: 'center' }}
+                                        >
                                             <CheckCircle size={18} />
                                             <Typography variant="subtitle1">
                                                 Explanation
                                             </Typography>
                                         </Stack>
-                                        <FormattedText
-                                            text={`Correct Answer: ${correctAnswerLabels}`}
-                                            variant="body1"
-                                            component="div"
-                                            sx={{ fontWeight: 700 }}
-                                        />
-                                        {hasExplanation(
+                                        <Stack
+                                            direction="row"
+                                            spacing={1}
+                                            sx={{
+                                                alignItems: 'center',
+                                                minWidth: 0,
+                                            }}
+                                        >
+                                            <FormattedText
+                                                text={`Correct Answer: ${correctAnswerLabels}`}
+                                                variant="body1"
+                                                component="div"
+                                                sx={{ fontWeight: 700 }}
+                                            />
+                                            <ReportQuestionIssueButton
+                                                bankKey={bankKey}
+                                                question={currentQuestion}
+                                            />
+                                        </Stack>
+                                        {(hasExplanation(
                                             currentQuestion.explanation
-                                        ) && (
+                                        ) ||
+                                            !!currentQuestion.explanationLinks
+                                                ?.length) && (
                                             <Box
                                                 sx={{
                                                     bgcolor: 'primary.light',
@@ -532,12 +561,27 @@ export const QuizMode: React.FC<QuizModeProps> = ({
                                                     overflow: 'hidden',
                                                 }}
                                             >
-                                                <FormattedText
-                                                    text={
+                                                <Stack spacing={1.5}>
+                                                    {hasExplanation(
                                                         currentQuestion.explanation
-                                                    }
-                                                    variant="body2"
-                                                />
+                                                    ) && (
+                                                        <FormattedText
+                                                            text={
+                                                                currentQuestion.explanation
+                                                            }
+                                                            variant="body2"
+                                                        />
+                                                    )}
+                                                    {currentQuestion
+                                                        .explanationLinks
+                                                        ?.length ? (
+                                                        <ExplanationLinks
+                                                            links={
+                                                                currentQuestion.explanationLinks
+                                                            }
+                                                        />
+                                                    ) : null}
+                                                </Stack>
                                             </Box>
                                         )}
                                         {selectedOptions.length > 0 && (

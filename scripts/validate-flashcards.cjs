@@ -55,6 +55,27 @@ const validateEntry = (entry, index, fileName) => {
     errors.push(`${fileName}[${index}].explanation must be a string.`);
   }
 
+  if ("caseStudy" in entry && entry.caseStudy != null) {
+    if (typeof entry.caseStudy !== "object" || Array.isArray(entry.caseStudy)) {
+      errors.push(`${fileName}[${index}].caseStudy must be an object.`);
+    } else {
+      if (typeof entry.caseStudy.name !== "string" || !entry.caseStudy.name.trim()) {
+        errors.push(`${fileName}[${index}].caseStudy.name must be a non-empty string.`);
+      }
+      if (typeof entry.caseStudy.url !== "string" || !entry.caseStudy.url.trim()) {
+        errors.push(`${fileName}[${index}].caseStudy.url must be a non-empty string.`);
+      }
+    }
+  }
+
+  if ("explanationLinks" in entry && entry.explanationLinks != null) {
+    if (!Array.isArray(entry.explanationLinks)) {
+      errors.push(`${fileName}[${index}].explanationLinks must be an array.`);
+    } else if (!entry.explanationLinks.every((link) => typeof link === "string")) {
+      errors.push(`${fileName}[${index}].explanationLinks must be strings.`);
+    }
+  }
+
   if (!Array.isArray(entry.questionImages)) {
     errors.push(`${fileName}[${index}].questionImages must be an array.`);
   }

@@ -32,6 +32,8 @@ import {
 } from '../../lib/studyCardStyles';
 import { formatText } from '../../lib/textFormatting';
 import { FormattedText, formattedTextSx } from './FormattedText';
+import { CaseStudyCallout } from './CaseStudyCallout';
+import { ReportQuestionIssueButton } from './ReportQuestionIssueButton';
 import { resolveAssetPath } from '../../lib/assets';
 
 // Technical keywords to target for blanks
@@ -172,6 +174,7 @@ interface FillInTheBlankModeProps {
     onNext: () => void;
     onPrevious: () => void;
     performance: Map<string, QuestionPerformance>;
+    bankKey: string;
 }
 
 interface Blank {
@@ -190,6 +193,7 @@ export const FillInTheBlankMode: React.FC<FillInTheBlankModeProps> = ({
     onNext,
     onPrevious,
     performance,
+    bankKey,
 }) => {
     const [blanks, setBlanks] = useState<Blank[]>([]);
     const [showAnswer, setShowAnswer] = useState(false);
@@ -622,6 +626,11 @@ export const FillInTheBlankMode: React.FC<FillInTheBlankModeProps> = ({
                                     />
                                 </Stack>
                             )}
+                            {currentQuestion.caseStudy ? (
+                                <CaseStudyCallout
+                                    caseStudy={currentQuestion.caseStudy}
+                                />
+                            ) : null}
                             <FormattedText text={currentQuestion.question} />
                             {currentQuestion.questionImages?.length ? (
                                 <Stack
@@ -649,7 +658,11 @@ export const FillInTheBlankMode: React.FC<FillInTheBlankModeProps> = ({
                             ) : null}
                             <Divider />
                             <Stack spacing={1}>
-                                <Stack direction="row" spacing={1}>
+                                <Stack
+                                    direction="row"
+                                    spacing={1}
+                                    sx={{ alignItems: 'center' }}
+                                >
                                     <Edit3 size={18} />
                                     <Typography variant="subtitle1">
                                         Fill in the Blanks
@@ -662,7 +675,24 @@ export const FillInTheBlankMode: React.FC<FillInTheBlankModeProps> = ({
                                     Complete the answer by selecting the correct
                                     words from the dropdowns:
                                 </Typography>
-                                {renderAnswerWithBlanks()}
+                                <Stack
+                                    direction="row"
+                                    spacing={1}
+                                    sx={{
+                                        alignItems: 'center',
+                                        minWidth: 0,
+                                    }}
+                                >
+                                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                                        {renderAnswerWithBlanks()}
+                                    </Box>
+                                    {showAnswer ? (
+                                        <ReportQuestionIssueButton
+                                            bankKey={bankKey}
+                                            question={currentQuestion}
+                                        />
+                                    ) : null}
+                                </Stack>
                             </Stack>
                             <Box>
                                 {!showAnswer ? (

@@ -1,9 +1,16 @@
+export interface CaseStudy {
+    name: string;
+    url: string;
+}
+
 export interface Question {
     id: string;
     question: string;
     options: string[];
     answer: string[];
     explanation: string;
+    caseStudy?: CaseStudy;
+    explanationLinks?: string[];
     questionImages?: string[];
     optionImages?: Array<string | null>;
 }
@@ -106,8 +113,8 @@ export const QUESTION_BANKS: QuestionBank[] = [
         name: 'Cloud Architect',
         shortName: 'PCA',
         tier: 'professional',
-        dataset: null,
-        available: false,
+        dataset: '/pca.json',
+        available: true,
         color: '#4285F4',
     },
     {

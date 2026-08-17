@@ -9,6 +9,7 @@ interface ReviewModeProps {
     onNext: () => void;
     onPrevious: () => void;
     performance: Map<string, QuestionPerformance>;
+    bankKey: string;
 }
 
 export const ReviewMode: React.FC<ReviewModeProps> = props => (

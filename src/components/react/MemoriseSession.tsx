@@ -76,7 +76,11 @@ function MemoriseSessionContent({ bankKey, dataset }: MemoriseSessionProps) {
 
     return (
         <Box sx={{ flex: 1 }}>
-            <MemoriseMode questions={questions} performance={performance} />
+            <MemoriseMode
+                questions={questions}
+                performance={performance}
+                bankKey={bankKey}
+            />
         </Box>
     );
 }

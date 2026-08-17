@@ -1,0 +1,69 @@
+name: UI / UX Issue
+description: Report a layout, accessibility, navigation, or usability problem in the study tool.
+title: '[UI/UX]: '
+labels: ['ui-ux']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the feedback. Describe what you saw and what you expected so we can reproduce it.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area of the app
+      options:
+        - Home / certification picker
+        - Quiz mode
+        - Review mode
+        - Memorise mode
+        - Fill-in-Blank mode
+        - Theme / dark mode
+        - Navigation / URLs
+        - Mobile layout
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: page-url
+    attributes:
+      label: Page URL
+      description: Where you saw the problem.
+      placeholder: https://...
+    validations:
+      required: false
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Steps to reproduce and the actual result.
+      placeholder: 1. Go to… 2. Click… 3. See…
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: Browser / device
+      multiple: true
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Edge
+        - Mobile Safari (iOS)
+        - Chrome Android
+        - Other
+    validations:
+      required: false
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots or extra context
+      description: Paste links to screenshots, or describe viewport size / OS.
+    validations:
+      required: false

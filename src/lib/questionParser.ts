@@ -7,14 +7,39 @@ interface RawQuestionLegacy {
     'Correct answer & Explanation': string;
 }
 
+interface RawCaseStudy {
+    name?: string;
+    url?: string;
+}
+
 interface RawQuestionNormalized {
     question: string;
     options: string[];
     answer: string[] | string;
     explanation: string;
+    caseStudy?: RawCaseStudy | null;
+    explanationLinks?: string[];
     questionImages?: string[];
     optionImages?: Array<string | null>;
 }
+
+const normalizeCaseStudy = (
+    caseStudy?: RawCaseStudy | null
+): Question['caseStudy'] | undefined => {
+    if (!caseStudy) return undefined;
+    const name = caseStudy.name?.trim();
+    const url = caseStudy.url?.trim();
+    if (!name || !url) return undefined;
+    return { name, url };
+};
+
+const normalizeExplanationLinks = (links?: string[]): string[] | undefined => {
+    if (!Array.isArray(links)) return undefined;
+    const normalized = links
+        .map(link => (typeof link === 'string' ? link.trim() : ''))
+        .filter(Boolean);
+    return normalized.length > 0 ? normalized : undefined;
+};
 
 const parseOptions = (possibleAnswers: string): string[] => {
     const lines = possibleAnswers.split('\n').filter(line => line.trim());
@@ -141,6 +166,10 @@ export const parseJSON = (
                     options: rawQuestion.options,
                     answer: normalizedAnswer,
                     explanation: rawQuestion.explanation || '',
+                    caseStudy: normalizeCaseStudy(rawQuestion.caseStudy),
+                    explanationLinks: normalizeExplanationLinks(
+                        rawQuestion.explanationLinks
+                    ),
                     questionImages: rawQuestion.questionImages,
                     optionImages: rawQuestion.optionImages,
                 });

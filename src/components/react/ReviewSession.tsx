@@ -195,6 +195,7 @@ function ReviewSessionContent({
                 onNext={handleNext}
                 onPrevious={handlePrevious}
                 performance={performance}
+                bankKey={bankKey}
             />
         </Container>
     );

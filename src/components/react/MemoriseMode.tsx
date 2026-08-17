@@ -32,6 +32,9 @@ import {
 import { memoriseCardContentSx } from '../../lib/studyCardStyles';
 import { formatText, getOptionDisplayText } from '../../lib/textFormatting';
 import { FormattedText } from './FormattedText';
+import { CaseStudyCallout } from './CaseStudyCallout';
+import { ExplanationLinks } from './ExplanationLinks';
+import { ReportQuestionIssueButton } from './ReportQuestionIssueButton';
 import { hasOptionImages, OptionImagesGrid } from './OptionImagesGrid';
 import { resolveAssetPath } from '../../lib/assets';
 
@@ -43,11 +46,13 @@ const hasExplanation = (explanation: string): boolean => {
 interface MemoriseModeProps {
     questions: Question[];
     performance: Map<string, QuestionPerformance>;
+    bankKey: string;
 }
 
 export const MemoriseMode: React.FC<MemoriseModeProps> = ({
     questions,
     performance,
+    bankKey,
 }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [showAnswers, setShowAnswers] = useState(true);
@@ -65,18 +70,15 @@ export const MemoriseMode: React.FC<MemoriseModeProps> = ({
         }
     };
 
-    const filteredQuestions = questions.filter(
-        q =>
-            formatText(q.question)
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase()) ||
-            formatText(q.answer.join(', '))
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase()) ||
-            formatText(q.explanation)
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase())
-    );
+    const filteredQuestions = questions.filter(q => {
+        const term = searchTerm.toLowerCase();
+        return (
+            formatText(q.question).toLowerCase().includes(term) ||
+            formatText(q.answer.join(', ')).toLowerCase().includes(term) ||
+            formatText(q.explanation).toLowerCase().includes(term) ||
+            (q.caseStudy?.name.toLowerCase().includes(term) ?? false)
+        );
+    });
 
     const sortedQuestions = [...filteredQuestions].sort((a, b) => {
         const perfA = performance.get(a.id);
@@ -285,6 +287,13 @@ export const MemoriseMode: React.FC<MemoriseModeProps> = ({
                                                     Question
                                                 </Typography>
                                             </Stack>
+                                            {question.caseStudy ? (
+                                                <CaseStudyCallout
+                                                    caseStudy={
+                                                        question.caseStudy
+                                                    }
+                                                />
+                                            ) : null}
                                             <FormattedText
                                                 text={question.question}
                                             />
@@ -425,15 +434,34 @@ export const MemoriseMode: React.FC<MemoriseModeProps> = ({
                                                             Answer & Explanation
                                                         </Typography>
                                                     </Stack>
-                                                    <FormattedText
-                                                        text={`Correct Answer: ${question.answer.join(', ')}`}
-                                                        variant="body1"
-                                                        component="div"
-                                                        sx={{ fontWeight: 700 }}
-                                                    />
-                                                    {hasExplanation(
+                                                    <Stack
+                                                        direction="row"
+                                                        spacing={1}
+                                                        sx={{
+                                                            alignItems:
+                                                                'center',
+                                                            minWidth: 0,
+                                                        }}
+                                                    >
+                                                        <FormattedText
+                                                            text={`Correct Answer: ${question.answer.join(', ')}`}
+                                                            variant="body1"
+                                                            component="div"
+                                                            sx={{
+                                                                fontWeight: 700,
+                                                            }}
+                                                        />
+                                                        <ReportQuestionIssueButton
+                                                            bankKey={bankKey}
+                                                            question={question}
+                                                        />
+                                                    </Stack>
+                                                    {(hasExplanation(
                                                         question.explanation
-                                                    ) && (
+                                                    ) ||
+                                                        !!question
+                                                            .explanationLinks
+                                                            ?.length) && (
                                                         <Box
                                                             sx={{
                                                                 bgcolor:
@@ -444,12 +472,29 @@ export const MemoriseMode: React.FC<MemoriseModeProps> = ({
                                                                     'hidden',
                                                             }}
                                                         >
-                                                            <FormattedText
-                                                                text={
+                                                            <Stack
+                                                                spacing={1.5}
+                                                            >
+                                                                {hasExplanation(
                                                                     question.explanation
-                                                                }
-                                                                variant="body2"
-                                                            />
+                                                                ) && (
+                                                                    <FormattedText
+                                                                        text={
+                                                                            question.explanation
+                                                                        }
+                                                                        variant="body2"
+                                                                    />
+                                                                )}
+                                                                {question
+                                                                    .explanationLinks
+                                                                    ?.length ? (
+                                                                    <ExplanationLinks
+                                                                        links={
+                                                                            question.explanationLinks
+                                                                        }
+                                                                    />
+                                                                ) : null}
+                                                            </Stack>
                                                         </Box>
                                                     )}
                                                 </Stack>

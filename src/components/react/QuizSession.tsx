@@ -176,6 +176,7 @@ function QuizSessionContent({ bankKey, dataset }: QuizSessionProps) {
                 onNext={handleNext}
                 onPrevious={handlePrevious}
                 performance={performance}
+                bankKey={bankKey}
             />
         </Container>
     );

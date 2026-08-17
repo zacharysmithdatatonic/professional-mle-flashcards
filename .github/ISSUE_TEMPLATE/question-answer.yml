@@ -1,0 +1,70 @@
+name: Question / Answer Issue
+description: Report an incorrect question, answer, explanation, or case study reference.
+title: '[Q&A]: '
+labels: ['question-answer']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping keep the flashcards accurate. Prefill fields when opened from the study tool; add any missing detail below.
+  - type: input
+    id: certification
+    attributes:
+      label: Certification
+      description: Exam / question bank this relates to.
+      placeholder: e.g. Cloud Architect (PCA)
+    validations:
+      required: true
+  - type: input
+    id: question-id
+    attributes:
+      label: Question ID
+      description: Stable id from the dataset (e.g. pca-q-3).
+      placeholder: e.g. pca-q-3
+    validations:
+      required: true
+  - type: textarea
+    id: question-prompt
+    attributes:
+      label: Question prompt
+      description: The question text as shown in the app (may be truncated when prefilled).
+      render: markdown
+    validations:
+      required: true
+  - type: input
+    id: recorded-answer
+    attributes:
+      label: Recorded correct answer(s)
+      description: Letter(s) currently marked correct in the app.
+      placeholder: e.g. B or A, C
+    validations:
+      required: true
+  - type: input
+    id: page-url
+    attributes:
+      label: Page URL
+      description: Browser URL when you spotted the issue (helps reproduce context).
+      placeholder: https://...
+    validations:
+      required: false
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: What is wrong?
+      options:
+        - Incorrect answer
+        - Incorrect or incomplete explanation
+        - Ambiguous or poorly worded question
+        - Missing or broken case study / supporting link
+        - Options / images issue
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: What should be changed, and why? Include sources if you have them.
+      placeholder: Expected answer, suggested wording, links to docs, etc.
+    validations:
+      required: true

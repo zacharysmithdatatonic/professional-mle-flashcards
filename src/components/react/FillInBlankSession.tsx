@@ -179,6 +179,7 @@ function FillInBlankSessionContent({
                 onNext={handleNext}
                 onPrevious={handlePrevious}
                 performance={performance}
+                bankKey={bankKey}
             />
         </Container>
     );
