@@ -1,0 +1,383 @@
+[
+  {
+    "question": "Anonymous users from all over the world access a public health information website hosted in an on-premises EHR data center. The servers that host this website are older, and users are complaining about sluggish response times. There has also been a recent increase of distributed denial-of-service attacks toward the website. The attacks always come from the same IP address ranges. EHR management has identified the public health information website as an easy, low risk application to migrate to Google Cloud. You need to improve access latency and provide a security solution that will prevent the denial-of-service traffic from entering your Virtual Private Cloud (VPC) network. What should you do?",
+    "options": [
+      "Deploy an external HTTP(S) load balancer, configure VPC firewall rules, and move the applications onto Compute Engine virtual machines.",
+      "Deploy an external HTTP(S) load balancer, configure Google Cloud Armor, and move the application onto Compute Engine virtual machines.",
+      "Containerize the application and move it into Google Kubernetes Engine (GKE). Create a GKE service to expose the pods within the cluster, and set up a GKE network policy.",
+      "Containerize the application and move it into Google Kubernetes Engine (GKE). Create an internal load balancer to expose the pods outside the cluster, and configure Identity-Aware Proxy (IAP) for access."
+    ],
+    "answer": ["B"],
+    "explanation": "A is not correct because firewall rules do not block malicious traffic into a VPC but rather block it at the VM level.\n\nB is correct because the external HTTP(s) load balancer will improve access latency and Cloud Armor can be configured to block the Distributed Denial-of-Service (DDoS) attack.\n\nC is not correct because a GKE service does not expose a set of pods outside of a cluster and a GKE network policy only filters traffic between pods and services.\n\nD is not correct because a GKE internal load balancer will not load balance external traffic and anonymous users need access to the website so IAP is not a fit.",
+    "caseStudy": {
+      "name": "EHR Healthcare",
+      "url": "https://services.google.com/fh/files/blogs/master_case_study_ehr_healthcare.pdf"
+    },
+    "explanationLinks": [
+      "https://cloud.google.com/vpc/docs/firewalls",
+      "https://cloud.google.com/load-balancing/docs/tutorials/optimize-app-latency",
+      "https://cloud.google.com/armor/docs/security-policy-concepts",
+      "https://cloud.google.com/kubernetes-engine/docs/concepts/service",
+      "https://cloud.google.com/kubernetes-engine/docs/how-to/network-policy",
+      "https://cloud.google.com/kubernetes-engine/docs/concepts/ingress-ilb",
+      "https://cloud.google.com/iap/docs/concepts-overview#when_to_use_iap"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null]
+  },
+  {
+    "question": "EHR wants to connect one of their data centers to Google Cloud. The data center is in a remote location over 100 kilometers from a Google-owned point of presence. They can't afford new hardware, but their existing firewall can accommodate future throughput growth. They also shared these data points:\n\n• Servers in their on-premises data center need to talk to Google Kubernetes Engine (GKE) resources in the cloud.\n• Both on-premises servers and cloud resources are configured with private RFC 1918 IP addresses.\n• The service provider has informed the customer that basic Internet connectivity is a best-effort service with no SLA.\n\nYou need to recommend a connectivity option. What should you recommend?",
+    "options": [
+      "Provision Carrier Peering.",
+      "Provision a new Internet connection.",
+      "Provision a Partner Interconnect connection.",
+      "Provision a Dedicated Interconnect connection."
+    ],
+    "answer": ["C"],
+    "explanation": "A is not correct because it does not give private IP addressing across the connection.\n\nB is not correct because an additional Internet connection will not provide RFC1918 communications by itself.\n\nC is correct because it allows the customer to lower latency by connecting directly to a partner network that is directly connected to Google. This option will also allow the customer to use the lower bandwidth interfaces that they have on their current firewall.\n\nD is not correct because Dedicated Interconnect would require the customer to buy new hardware to get a 10 gig interface for their firewall.",
+    "caseStudy": {
+      "name": "EHR Healthcare",
+      "url": "https://services.google.com/fh/files/blogs/master_case_study_ehr_healthcare.pdf"
+    },
+    "explanationLinks": [
+      "https://cloud.google.com/blog/products/networking/google-cloud-network-connectivity-options-explained",
+      "https://cloud.google.com/interconnect/docs/how-to/carrier-peering#considerations",
+      "https://cloud.google.com/interconnect/docs/concepts/partner-overview",
+      "https://cloud.google.com/interconnect/docs/concepts/dedicated-overview#before_you_use"
+    ],
+    "questionImages": ["/assets/pca/q-2-question-1.png"],
+    "optionImages": [null, null, null, null]
+  },
+  {
+    "question": "One of EHR's healthcare customers is an internationally renowned research and hospital facility. Many of their patients are well-known public personalities. Sources both inside and outside have tried many times to obtain health information on these patients for malicious purposes. The hospital requires that patient information stored in Cloud Storage buckets not leave the geographic areas in which the buckets are hosted. You need to ensure that information stored in Cloud Storage buckets in the \"europe-west2\" region does not leave that area. What should you do?",
+    "options": [
+      "Encrypt the data in the application on-premises before the data is stored in the \"europe-west2\" region.",
+      "Enable Virtual Private Cloud Service Controls, and create a service perimeter around the Cloud Storage resources.",
+      "Assign the Identity and Access Management (IAM) \"storage.objectViewer\" role only to users and service accounts that need to use the data.",
+      "Create an access control list (ACL) that limits access to the bucket to authorized users only, and apply it to the buckets in the \"europe-west2\" region."
+    ],
+    "answer": ["B"],
+    "explanation": "A is not correct because encrypting the data does not stop data exfiltration.\n\nB is correct because VPC Service Controls improves your ability to mitigate the risk of data exfiltration from Google Cloud services.\n\nC is not correct because IAM roles deal with identity-based access control, not context-aware perimeter security.\n\nD is not correct because Cloud Storage ACLs are a mechanism you can use to define who has access to your buckets and objects, as well as their level of access. ACLs do not stop data exfiltration.",
+    "caseStudy": {
+      "name": "EHR Healthcare",
+      "url": "https://services.google.com/fh/files/blogs/master_case_study_ehr_healthcare.pdf"
+    },
+    "explanationLinks": [
+      "https://cloud.google.com/vpc-service-controls/docs/overview",
+      "https://cloud.google.com/storage/docs/access-control/lists"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null]
+  },
+  {
+    "question": "The EHR sales employees are a remote-based workforce that travels to different locations to do their jobs. Regardless of their location, the sales employees need to access web-based sales tools located in the EHR data center. EHR is retiring their current Virtual Private Network (VPN) infrastructure, and you need to move the web-based sales tools to a BeyondCorp access model. Each sales employee has a Google Workspace account and uses that account for single sign-on (SSO). What should you do?",
+    "options": [
+      "Create an Identity-Aware Proxy (IAP) connector that points to the sales tool application.",
+      "Create a Google group for the sales tool application, and upgrade that group to a security group.",
+      "Deploy an external HTTP(S) load balancer and create a custom Cloud Armor policy for the sales tool application.",
+      "For every sales employee who needs access to the sales tool application, give their Google Workspace user account the predefined AppEngine Viewer role."
+    ],
+    "answer": ["A"],
+    "explanation": "A is correct because Identity-Aware Proxy (IAP) connector allows you to manage access to HTTP-based apps outside of Google Cloud.\n\nB is not correct because Google groups by themselves do not grant access to an application nor do they move an application to a beyond corp model.\n\nC is not correct because Cloud Armor does not authenticate or authorize application access.\n\nD is not correct because the application is installed in the datacenter, not in the AppEngine environment.",
+    "caseStudy": {
+      "name": "EHR Healthcare",
+      "url": "https://services.google.com/fh/files/blogs/master_case_study_ehr_healthcare.pdf"
+    },
+    "explanationLinks": [
+      "https://cloud.google.com/iap/docs/cloud-iap-for-on-prem-apps-overview"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null]
+  },
+  {
+    "question": "You are the data compliance officer for Mountkirk Games and must protect customers' personally identifiable information (PII). Mountkirk Games wants to make sure they can generate anonymized usage reports about their new game and delete PII data after a specific period of time. The solution should have minimal cost. You need to ensure compliance while meeting business and technical requirements. What should you do?",
+    "options": [
+      "Archive audit logs in Cloud Storage, and manually generate reports.",
+      "Write a Cloud Logging filter to export specific date ranges to Pub/Sub.",
+      "Archive audit logs in BigQuery, and generate reports using Google Data Studio.",
+      "Archive user logs on a locally attached persistent disk, and cat them to a text file for auditing."
+    ],
+    "answer": ["C"],
+    "explanation": "A is not correct because Cloud Storage is an object store with no query language access for report generation.\n\nB is not correct because it does not address log storage for data retention.\n\nC is correct because BigQuery allows easy querying for report generation, with low storage costs.\n\nD is not correct because long term storage in persistent disks is expensive.",
+    "caseStudy": {
+      "name": "Mountkirk Games",
+      "url": "https://services.google.com/fh/files/blogs/master_case_study_mountkirk_games.pdf"
+    },
+    "explanationLinks": [
+      "https://cloud.google.com/security/compliance/soc-2",
+      "https://cloud.google.com/logging/docs/audit",
+      "https://cloud.google.com/bigquery/docs/cached-results",
+      "https://cloud.google.com/logging/docs/view/available-logs"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null]
+  },
+  {
+    "question": "Mountkirk Games wants you to make sure their new gaming platform is being operated according to Google best practices. You want to verify that Google-recommended security best practices are being met while also providing the operations teams with the metrics they need. What should you do? (Choose two)",
+    "options": [
+      "Ensure that you aren't running privileged containers.",
+      "Ensure that you are using obfuscated Tags on workloads.",
+      "Ensure that you are using the native logging mechanisms.",
+      "Ensure that workloads are not using securityContext to run as a group.",
+      "Ensure that each cluster is running GKE metering so each team can be charged for their usage."
+    ],
+    "answer": ["A", "C"],
+    "explanation": "A is correct because this is High Priority according to Google best practices.\n\nB is not correct because tags should be readable and useful to the operations teams when they are working on the clusters.\n\nC is correct because this is High Priority according to Google best practices.\n\nD is not correct because this may be required for some workloads.\n\nE is not correct because although from a business process this may be useful it won't impact the operations or security of the cluster.",
+    "caseStudy": {
+      "name": "Mountkirk Games",
+      "url": "https://services.google.com/fh/files/blogs/master_case_study_mountkirk_games.pdf"
+    },
+    "explanationLinks": [
+      "https://cloud.google.com/solutions/best-practices-for-operating-containers"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null, null]
+  },
+  {
+    "question": "You need to implement Virtual Private Cloud (VPC) Service Controls for Mountkirk Games. Mountkirk Games wants to allow Cloud Shell usage by its developers. Developers should not have full access to managed services. You need to balance these conflicting goals with Mountkirk Games' business requirements. What should you do?",
+    "options": [
+      "Use VPC Service Controls for the entire platform.",
+      "Prioritize VPC Service Controls implementation over Cloud Shell usage for the entire platform.",
+      "Include all developers in an access level associated with the service perimeter, and allow them to use Cloud Shell.",
+      "Create a service perimeter around only the projects that handle sensitive data, and do not grant your developers access to it."
+    ],
+    "answer": ["D"],
+    "explanation": "A is not correct because VPC Service Controls do not directly affect scaling of Google Cloud architecture.\n\nB is not correct because a security perimeter is not a business requirement, but rapid iteration is.\n\nC is not correct because it works but does not scale, and we do not want to give users this much access.\n\nD is correct because VPC Service Controls protects data, and Cloud Shell facilitates rapid iteration of Google Cloud architecture changes.",
+    "caseStudy": {
+      "name": "Mountkirk Games",
+      "url": "https://services.google.com/fh/files/blogs/master_case_study_mountkirk_games.pdf"
+    },
+    "explanationLinks": [
+      "https://cloud.google.com/vpc-service-controls/docs/supported-products#shell",
+      "https://cloud.google.com/vpc-service-controls"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null]
+  },
+  {
+    "question": "Your new game running on Google Cloud is in public beta, and you want to design meaningful service level objectives (SLOs) before the game becomes generally available. What should you do?",
+    "options": [
+      "Define one SLO as 99.9% game server availability. Define the other SLO as less than 100-ms latency.",
+      "Define one SLO as service availability that is the same as Google Cloud's availability. Define the other SLO as 100-ms latency.",
+      "Define one SLO as 99% HTTP requests return the 2xx status code. Define the other SLO as 99% requests return within 100 ms.",
+      "Define one SLO as total uptime of the game server within a week. Define the other SLO as the mean response time of all HTTP requests that are less than 100 ms."
+    ],
+    "answer": ["C"],
+    "explanation": "A is incorrect because it doesn't clearly define how to measure both the availability and latency.\n\nB is incorrect because Google Cloud availability has an impact on customer availability but it is only one factor. Also, for different Google Cloud products, the availability could be different.\n\nC is correct because it clearly defines the service level indicators and how to measure them.\n\nD is incorrect because there is no objective for the server uptime.",
+    "caseStudy": {
+      "name": "Mountkirk Games",
+      "url": "https://services.google.com/fh/files/blogs/master_case_study_mountkirk_games.pdf"
+    },
+    "explanationLinks": [
+      "https://landing.google.com/sre/workbook/chapters/implementing-slos/"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null]
+  },
+  {
+    "question": "HRL wants you to help them bring existing recorded video content to new fans in emerging regions. Considering the HRL business and technical requirements, what should you do?",
+    "options": [
+      "Serve the video content directly from a multi-region Cloud Storage bucket.",
+      "Use Cloud CDN to cache the video content from HRL's existing public cloud provider.",
+      "Use Apigee Edge to cache the video content from HRL's existing public cloud provider.",
+      "Replicate the video content in Google Kubernetes Engine clusters in regions close to the fans."
+    ],
+    "answer": ["B"],
+    "explanation": "A is not correct because a multi-region bucket does not serve all global areas with similar latency.\n\nB is correct because Cloud CDN can be used to cache data hosted on other cloud providers and supports large objects such as video.\n\nC is not correct because Apigee Edge is not designed to cache data larger than 512 KB.\n\nD is not correct because replicating the video content introduces unnecessary complexity.",
+    "caseStudy": {
+      "name": "Helicopter Racing League (HRL)",
+      "url": "https://services.google.com/fh/files/blogs/master_case_study_helicopter_racing_league.pdf"
+    },
+    "explanationLinks": [
+      "https://cloud.google.com/storage/docs/locations#considerations",
+      "https://cloud.google.com/cdn/docs/caching#maximum-size",
+      "https://cloud.google.com/cdn/docs/custom-origins-overview#hybrid_and_multi-cloud_architectures",
+      "https://docs.apigee.com/api-platform/antipatterns/caching-large",
+      "https://cloud.google.com/solutions/building-a-multi-cluster-service-mesh-on-gke-using-replicated-control-plane-architecture"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null]
+  },
+  {
+    "question": "You are the data compliance officer for TerramEarth and must protect customers' personally identifiable information (PII), like credit card information. TerramEarth wants to personalize product recommendations for its large industrial customers. You need to respect data privacy and deliver a solution. What should you do?",
+    "options": [
+      "Use AutoML to provide data to the recommendation service.",
+      "Process PII data on-premises to keep the private information more secure.",
+      "Use the Cloud Data Loss Prevention (DLP) API to provide data to the recommendation service.",
+      "Manually build, train, and test machine learning models to provide product recommendations anonymously."
+    ],
+    "answer": ["C"],
+    "explanation": "A is not correct because AutoML does not inherently provide data de-identification.\n\nB is not correct because TerramEarth's requirements are to go into the cloud, not stay on-premises.\n\nC is correct because Cloud DLP was specifically designed for this use case.\n\nD is not correct because developing machine learning models is an excessive way to de-identify data.",
+    "caseStudy": {
+      "name": "TerramEarth",
+      "url": "https://services.google.com/fh/files/blogs/master_case_study_terramearth.pdf"
+    },
+    "explanationLinks": [
+      "https://cloud.google.com/dlp/docs/deidentify-sensitive-data",
+      "https://cloud.google.com/automl"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null]
+  },
+  {
+    "question": "You are designing a future-proof hybrid environment that will require network connectivity between Google Cloud and your on-premises environment. You want to ensure that the Google Cloud environment you are designing is compatible with your on-premises networking environment. What should you do?",
+    "options": [
+      "Use the default VPC in your Google Cloud project. Use a Cloud VPN connection between your on-premises environment and Google Cloud.",
+      "Create a custom VPC in Google Cloud in auto mode. Use a Cloud VPN connection between your on-premises environment and Google Cloud.",
+      "Create a network plan for your VPC in Google Cloud that uses CIDR ranges that overlap with your on-premises environment. Use a Cloud Interconnect connection between your on-premises environment and Google Cloud.",
+      "Create a network plan for your VPC in Google Cloud that uses non-overlapping CIDR ranges with your on-premises environment. Use a Cloud Interconnect connection between your on-premises environment and Google Cloud."
+    ],
+    "answer": ["D"],
+    "explanation": "A is not correct because the default VPC is a VPC with Auto Mode IP ranges, which has the same problem as answer C.\n\nB is not correct because with Auto Mode IP Ranges there is no guarantee that the IP ranges will not overlap with your on premises environment, either now or in the future.\n\nC is not correct because to ensure correct routing, ranges cannot overlap between environments.\n\nD is correct because this ensures your on premises network is compatible with your Google Cloud VPC.",
+    "explanationLinks": [
+      "https://cloud.google.com/vpc/docs/vpc#ip-ranges"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null]
+  },
+  {
+    "question": "Your company wants to track whether someone is present in a meeting room reserved for a scheduled meeting. There are 1000 meeting rooms across 5 offices on 3 continents. Each room is equipped with a motion sensor that reports its status every second. You want to support the data ingestion needs of this sensor network. The receiving infrastructure needs to account for the possibility that the devices may have inconsistent connectivity. Which solution should you design?",
+    "options": [
+      "Have each device create a persistent connection to a Compute Engine instance and write messages to a custom application.",
+      "Have devices poll for connectivity to Cloud SQL and insert the latest messages on a regular interval to a device specific table.",
+      "Have devices poll for connectivity to Pub/Sub and publish the latest messages on a regular interval to a shared topic for all devices.",
+      "Have devices create a persistent connection to an App Engine application fronted by Cloud Endpoints, which ingest messages and write them to Datastore."
+    ],
+    "answer": ["C"],
+    "explanation": "A is not correct because having a persistent connection does not handle the case where the device is disconnected.\n\nB is not correct because Cloud SQL is a regional, relational database and not the best fit for sensor data. Additionally, the frequency of the writes has the potential to exceed the supported number of concurrent connections.\n\nC is correct because Pub/Sub can handle the frequency of this data, and consumers of the data can pull from the shared topic for further processing.\n\nD is not correct because having a persistent connection does not handle the case where the device is disconnected.",
+    "explanationLinks": [
+      "https://cloud.google.com/sql/",
+      "https://cloud.google.com/pubsub/"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null]
+  },
+  {
+    "question": "Your company wants to try out the cloud with low risk. They want to archive approximately 100 TB of their log data to the cloud and test the serverless analytics features available to them there, while also retaining that data as a long-term disaster recovery backup. Which two steps should they take? (Choose two)",
+    "options": [
+      "Load logs into BigQuery.",
+      "Load logs into Cloud SQL.",
+      "Import logs into Cloud Logging.",
+      "Insert logs into Cloud Bigtable.",
+      "Upload log files into Cloud Storage."
+    ],
+    "answer": ["A", "E"],
+    "explanation": "A is correct because BigQuery is a serverless cloud data warehouse for analytics and supports the volume and analytics requirement.\n\nB is not correct because Cloud SQL does not support the expected 100 TB. Additionally, Cloud SQL is a relational database and not the best fit for time-series log data formats.\n\nC is not correct because Cloud Logging is optimized for monitoring, error reporting, and debugging instead of analytics queries.\n\nD is not correct because Cloud Bigtable is optimized for read-write latency and analytics throughput, not analytics querying and reporting.\n\nE is correct because Cloud Storage provides the Coldline and Archive storage classes to support long-term storage with infrequent access, which would support the long-term disaster recovery backup requirement.",
+    "explanationLinks": [
+      "https://cloud.google.com/storage/docs/storage-classes",
+      "https://cloud.google.com/bigtable/",
+      "https://cloud.google.com/products/operations",
+      "https://cloud.google.com/sql/",
+      "https://cloud.google.com/bigquery/"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null, null]
+  },
+  {
+    "question": "You set up an autoscaling managed instance group to serve web traffic for an upcoming launch. After configuring the instance group as a backend service to an HTTP(S) load balancer, you notice that virtual machine (VM) instances are being terminated and re-launched every minute. The instances do not have a public IP address. You have verified that the appropriate web response is coming from each instance using the curl command. You want to ensure that the backend is configured correctly. What should you do?",
+    "options": [
+      "Ensure that a firewall rule exists to allow source traffic on HTTP/HTTPS to reach the load balancer.",
+      "Assign a public IP to each instance, and configure a firewall rule to allow the load balancer to reach the instance public IP.",
+      "Ensure that a firewall rule exists to allow load balancer health checks to reach the instances in the instance group.",
+      "Create a tag on each instance with the name of the load balancer. Configure a firewall rule with the name of the load balancer as the source and the instance tag as the destination."
+    ],
+    "answer": ["C"],
+    "explanation": "A is not correct because the issue to resolve is the VMs being terminated, not access to the load balancer.\n\nB is not correct because this introduces a security vulnerability without addressing the primary concern of the VM termination.\n\nC is correct because health check failures lead to a VM being marked unhealthy and can result in termination if the health check continues to fail. Because you have already verified that the instances are functioning properly, the next step would be to determine why the health check is continuously failing.\n\nD is not correct because the source of the firewall rule that allows load balancer and health check access to instances is defined IP ranges, and not a named load balancer. Tagging the instances for the purpose of firewall rules is appropriate but would probably be a descriptor of the application, and not the load balancer.",
+    "explanationLinks": [
+      "https://cloud.google.com/load-balancing/docs/https/",
+      "https://cloud.google.com/load-balancing/docs/health-check-concepts"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null]
+  },
+  {
+    "question": "Your organization has a 3-tier web application deployed in the same Google Cloud Virtual Private Cloud (VPC). Each tier (web, API, and database) scales independently of the others. Network traffic should flow through the web to the API tier, and then on to the database tier. Traffic should not flow between the web and the database tier. How should you configure the network with minimal steps?",
+    "options": [
+      "Add each tier to a different subnetwork.",
+      "Set up software-based firewalls on individual VMs.",
+      "Add tags to each tier and set up routes to allow the desired traffic flow.",
+      "Add tags to each tier and set up firewall rules to allow the desired traffic flow."
+    ],
+    "answer": ["D"],
+    "explanation": "A is not correct because the subnetwork alone will not allow and restrict traffic as required without firewall rules.\n\nB is not correct because this adds complexity to the architecture and the instance configuration.\n\nC is not correct because routes still require firewall rules to allow traffic as requests. Additionally, the tags are used for defining the instances the route applies to, and not for identifying the next hop. The next hop is either an IP range or instance name, but in the proposed solution the tiers are only identified by tags.\n\nD is correct because as instances scale, they will all have the same tag to identify the tier. These tags can then be leveraged in firewall rules to allow and restrict traffic as required, because tags can be used for both the target and source.",
+    "explanationLinks": [
+      "https://cloud.google.com/vpc/docs/using-vpc",
+      "https://cloud.google.com/vpc/docs/routes",
+      "https://cloud.google.com/vpc/docs/add-remove-network-tags"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null]
+  },
+  {
+    "question": "You are designing a large distributed application with 30 microservices. Each of your distributed microservices needs to connect to a database backend. You want to store the credentials securely. Where should you store the credentials?",
+    "options": [
+      "In the source code",
+      "In an environment variable",
+      "In a secret management system",
+      "In a config file that has restricted access through ACLs"
+    ],
+    "answer": ["C"],
+    "explanation": "A is not correct because storing credentials in source code and source control is discoverable, in plain text, by anyone with access to the source code. This also introduces the requirement to update code and do a deployment each time the credentials are rotated.\n\nB is not correct because consistently populating environment variables would require the credentials to be available, in plain text, when the session is started.\n\nC is correct because a secret management system such as Secret Manager is a secure and convenient storage system for API keys, passwords, certificates, and other sensitive data. Secret Manager provides a central place and single source of truth to manage, access, and audit secrets across Google Cloud.\n\nD is not correct because instead of managing access to the config file and updating manually as keys are rotated, it would be better to leverage a key management system. Additionally, there is increased risk if the config file contains the credentials in plain text.",
+    "explanationLinks": [
+      "https://cloud.google.com/kubernetes-engine/docs/concepts/secret",
+      "https://cloud.google.com/secret-manager"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null]
+  },
+  {
+    "question": "Your customer is moving their corporate applications to Google Cloud. The security team wants detailed visibility of all resources in the organization. You use Resource Manager to set yourself up as the Organization Administrator. Which Identity and Access Management (IAM) roles should you give to the security team while following Google recommended practices?",
+    "options": [
+      "Organization viewer, Project owner",
+      "Organization viewer, Project viewer",
+      "Organization administrator, Project browser",
+      "Project owner, Network administrator"
+    ],
+    "answer": ["B"],
+    "explanation": "A is not correct because Project owner is too broad. The security team does not need to be able to make changes to projects.\n\nB is correct because:\n- Organization viewer grants the security team permissions to view the organization's display name.\n- Project viewer grants the security team permissions to see the resources within projects.\n\nC is not correct because Organization Administrator is too broad. The security team does not need to be able to make changes to the organization.\n\nD is not correct because Project Owner is too broad. The security team does not need to be able to make changes to projects.",
+    "explanationLinks": [
+      "https://cloud.google.com/resource-manager/docs/access-control-org#using_predefined_roles"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null]
+  },
+  {
+    "question": "To reduce costs, the Director of Engineering has required all developers to move their development infrastructure resources from on-premises virtual machines (VMs) to Google Cloud. These resources go through multiple start/stop events during the day and require state to persist. You have been asked to design the process of running a development environment in Google Cloud while providing cost visibility to the finance department. Which two steps should you take? (Choose two)",
+    "options": [
+      "Use persistent disks to store the state. Start and stop the VM as needed.",
+      "Use the \"gcloud --auto-delete\" flag on all persistent disks before stopping the VM.",
+      "Apply VM CPU utilization label and include it in the BigQuery billing export.",
+      "Use BigQuery billing export and labels to relate cost to groups.",
+      "Store all state in a Local SSD, snapshot the persistent disks, and terminate the VM."
+    ],
+    "answer": ["A", "D"],
+    "explanation": "A is correct because persistent disks will not be deleted when an instance is stopped.\n\nB is not correct because the --auto-delete flag has no effect unless the instance is deleted. Stopping an instance does not delete the instance or the attached persistent disks.\n\nC is not correct because labels are used to organize instances, not to monitor metrics.\n\nD is correct because exporting daily usage and cost estimates automatically throughout the day to a BigQuery dataset is a good way of providing visibility to the finance department. Labels can then be used to group the costs based on team or cost center.\n\nE is not correct because the state stored in local SSDs will be lost when the instance is stopped.",
+    "explanationLinks": [
+      "https://cloud.google.com/compute/docs/instances/instance-life-cycle",
+      "https://cloud.google.com/sdk/gcloud/reference/compute/instances/set-disk-auto-delete#--auto-delete",
+      "https://cloud.google.com/sdk/gcloud/reference/compute/instances/create#--disk",
+      "https://cloud.google.com/compute/docs/disks/local-ssd#data_persistence",
+      "https://cloud.google.com/billing/docs/how-to/export-data-bigquery",
+      "https://cloud.google.com/resource-manager/docs/creating-managing-labels"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null, null]
+  },
+  {
+    "question": "The database administration team has asked you to help them improve the performance of their new database server running on Compute Engine. The database is used for importing and normalizing the company's performance statistics. It is built with MySQL running on Debian Linux. They have an n1-standard-8 virtual machine with 80 GB of SSD zonal persistent disk which they can't restart until the next maintenance event. What should they change to get better performance from this system as soon as possible and in a cost-effective manner?",
+    "options": [
+      "Increase the virtual machine's memory to 64 GB.",
+      "Create a new virtual machine running PostgreSQL.",
+      "Dynamically resize the SSD persistent disk to 500 GB.",
+      "Migrate their performance metrics warehouse to BigQuery."
+    ],
+    "answer": ["C"],
+    "explanation": "A is not correct because increasing the memory size requires a VM restart.\n\nB is not correct because the DB administration team is requesting help with their MySQL instance. Migration to a different product should not be the solution when other optimization techniques can still be applied first.\n\nC is correct because persistent disk performance is based on the total persistent disk capacity attached to an instance and the number of vCPUs that the instance has. Incrementing the persistent disk capacity will increment its throughput and IOPS, which in turn improve the performance of MySQL.\n\nD is not correct because the DB administration team is requesting help with their MySQL instance. Migration to a different product should not be the solution when other optimization techniques can still be applied first.",
+    "explanationLinks": [
+      "https://cloud.google.com/compute/docs/disks/#pdspecs",
+      "https://cloud.google.com/compute/docs/disks/performance"
+    ],
+    "questionImages": [],
+    "optionImages": [null, null, null, null]
+  }
+]

@@ -1,4 +1,4 @@
-import{d as r}from"./ReactProviders.CX4jkgfD.js";/**
+import{d as r}from"./banks.CVGzNSkI.js";/**
  * @license lucide-react v0.294.0 - ISC
  *
  * This source code is licensed under the ISC license.
