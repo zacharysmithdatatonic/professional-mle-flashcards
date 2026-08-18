@@ -24,19 +24,26 @@ const CertificationIcon = getCertificationIconComponent(bank.key);
 const ModeIcon = mode ? getStudyModeIconComponent(mode) : null;
 const backHref = mode ? bankHref : import.meta.env.BASE_URL;
 const backLabel = mode ? 'Back to menu' : 'Back to certifications';
+const hideDefaultBack = mode === 'exam';
 ---
 
 <BaseLayout title={pageTitle}>
     <div class="bank-layout">
         <header class="bank-header">
-            <a
-                class="bank-back"
-                href={backHref}
-                aria-label={backLabel}
-                title={backLabel}
-            >
-                <ArrowLeft size={18} strokeWidth={1.5} />
-            </a>
+            {
+                hideDefaultBack ? (
+                    <div class="bank-back" data-exam-exit />
+                ) : (
+                    <a
+                        class="bank-back"
+                        href={backHref}
+                        aria-label={backLabel}
+                        title={backLabel}
+                    >
+                        <ArrowLeft size={18} strokeWidth={1.5} />
+                    </a>
+                )
+            }
             <nav class="bank-breadcrumbs" aria-label="Breadcrumb">
                 <a class="crumb" href={import.meta.env.BASE_URL}>
                     <Home size={16} strokeWidth={1.5} />
@@ -141,6 +148,10 @@ const backLabel = mode ? 'Back to menu' : 'Back to certifications';
     .bank-back:hover {
         background: #f1f3f4;
         text-decoration: none;
+    }
+
+    [data-exam-exit] {
+        cursor: pointer;
     }
 
     .bank-main {

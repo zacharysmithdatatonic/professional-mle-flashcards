@@ -24,9 +24,21 @@ export interface QuestionPerformance {
     scheduledNext: number | null;
 }
 
-export type StudyMode = 'quiz' | 'review' | 'memorise' | 'fill-in-blank';
+export type StudyMode =
+    | 'quiz'
+    | 'exam'
+    | 'review'
+    | 'memorise'
+    | 'fill-in-blank';
 
 export type CertificationTier = 'foundational' | 'associate' | 'professional';
+
+/** Official standard-exam length (not the shorter renewal exam). */
+export interface ExamSpec {
+    durationMinutes: number;
+    questionCountMin: number;
+    questionCountMax: number;
+}
 
 export interface QuestionBank {
     key: string;
@@ -36,7 +48,26 @@ export interface QuestionBank {
     dataset: string | null;
     available: boolean;
     color: string;
+    exam: ExamSpec;
 }
+
+const EXAM_FOUNDATIONAL: ExamSpec = {
+    durationMinutes: 90,
+    questionCountMin: 50,
+    questionCountMax: 60,
+};
+
+const EXAM_STANDARD: ExamSpec = {
+    durationMinutes: 120,
+    questionCountMin: 50,
+    questionCountMax: 60,
+};
+
+const EXAM_PDE: ExamSpec = {
+    durationMinutes: 120,
+    questionCountMin: 40,
+    questionCountMax: 50,
+};
 
 export const CERTIFICATION_TIERS: Record<
     CertificationTier,
@@ -71,6 +102,7 @@ export const QUESTION_BANKS: QuestionBank[] = [
         dataset: '/cdl.json',
         available: true,
         color: '#34A853',
+        exam: EXAM_FOUNDATIONAL,
     },
     {
         key: 'genai',
@@ -80,6 +112,7 @@ export const QUESTION_BANKS: QuestionBank[] = [
         dataset: '/genai.json',
         available: true,
         color: '#34A853',
+        exam: EXAM_FOUNDATIONAL,
     },
     {
         key: 'ace',
@@ -89,6 +122,7 @@ export const QUESTION_BANKS: QuestionBank[] = [
         dataset: null,
         available: false,
         color: '#FBBC05',
+        exam: EXAM_STANDARD,
     },
     {
         key: 'adp',
@@ -98,6 +132,7 @@ export const QUESTION_BANKS: QuestionBank[] = [
         dataset: null,
         available: false,
         color: '#FBBC05',
+        exam: EXAM_STANDARD,
     },
     {
         key: 'agwa',
@@ -107,6 +142,7 @@ export const QUESTION_BANKS: QuestionBank[] = [
         dataset: null,
         available: false,
         color: '#FBBC05',
+        exam: EXAM_STANDARD,
     },
     {
         key: 'pca',
@@ -116,6 +152,7 @@ export const QUESTION_BANKS: QuestionBank[] = [
         dataset: '/pca.json',
         available: true,
         color: '#4285F4',
+        exam: EXAM_STANDARD,
     },
     {
         key: 'pcde',
@@ -125,6 +162,7 @@ export const QUESTION_BANKS: QuestionBank[] = [
         dataset: null,
         available: false,
         color: '#4285F4',
+        exam: EXAM_STANDARD,
     },
     {
         key: 'pcd',
@@ -134,6 +172,7 @@ export const QUESTION_BANKS: QuestionBank[] = [
         dataset: '/pcd.json',
         available: true,
         color: '#4285F4',
+        exam: EXAM_STANDARD,
     },
     {
         key: 'pde',
@@ -143,6 +182,7 @@ export const QUESTION_BANKS: QuestionBank[] = [
         dataset: '/pde.json',
         available: true,
         color: '#4285F4',
+        exam: EXAM_PDE,
     },
     {
         key: 'pcdo',
@@ -152,6 +192,7 @@ export const QUESTION_BANKS: QuestionBank[] = [
         dataset: null,
         available: false,
         color: '#4285F4',
+        exam: EXAM_STANDARD,
     },
     {
         key: 'pcse',
@@ -161,6 +202,7 @@ export const QUESTION_BANKS: QuestionBank[] = [
         dataset: null,
         available: false,
         color: '#4285F4',
+        exam: EXAM_STANDARD,
     },
     {
         key: 'pcne',
@@ -170,6 +212,7 @@ export const QUESTION_BANKS: QuestionBank[] = [
         dataset: null,
         available: false,
         color: '#4285F4',
+        exam: EXAM_STANDARD,
     },
     {
         key: 'pmle',
@@ -179,6 +222,7 @@ export const QUESTION_BANKS: QuestionBank[] = [
         dataset: '/pmle.json',
         available: true,
         color: '#4285F4',
+        exam: EXAM_STANDARD,
     },
     {
         key: 'psoe',
@@ -188,6 +232,7 @@ export const QUESTION_BANKS: QuestionBank[] = [
         dataset: null,
         available: false,
         color: '#4285F4',
+        exam: EXAM_STANDARD,
     },
 ];
 
@@ -239,6 +284,7 @@ export const getBanksByTier = (tier: CertificationTier) =>
 
 export const MODE_LABELS: Record<StudyMode, string> = {
     quiz: 'Quiz Mode',
+    exam: 'Exam Mode',
     review: 'Review Mode',
     memorise: 'Memorise Mode',
     'fill-in-blank': 'Fill-in-Blank Mode',
@@ -246,6 +292,7 @@ export const MODE_LABELS: Record<StudyMode, string> = {
 
 export const MODE_SHORT_LABELS: Record<StudyMode, string> = {
     quiz: 'Quiz',
+    exam: 'Exam',
     review: 'Review',
     memorise: 'Memorise',
     'fill-in-blank': 'Fill-in-Blank',

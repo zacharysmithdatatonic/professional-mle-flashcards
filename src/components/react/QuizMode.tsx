@@ -27,7 +27,6 @@ import {
     studyCardContentSx,
     studyCardSx,
     studyCardWrapperSx,
-    studyOptionPaddingSx,
 } from '../../lib/studyCardStyles';
 import { getOptionDisplayText } from '../../lib/textFormatting';
 import { FormattedText } from './FormattedText';
@@ -35,6 +34,7 @@ import { CaseStudyCallout } from './CaseStudyCallout';
 import { ExplanationLinks } from './ExplanationLinks';
 import { ReportQuestionIssueButton } from './ReportQuestionIssueButton';
 import { hasOptionImages, OptionImagesGrid } from './OptionImagesGrid';
+import { AnswerOptionButton } from './AnswerOptionButton';
 import { resolveAssetPath } from '../../lib/assets';
 
 // Helper function to check if explanation has meaningful content
@@ -83,6 +83,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({
 }) => {
     const isReview = variant === 'review';
     const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
+    const [struckOptions, setStruckOptions] = useState<number[]>([]);
     const [showAnswer, setShowAnswer] = useState(false);
 
     const currentQuestion = questions[currentIndex];
@@ -110,6 +111,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({
                 ? createShuffledOrder(currentQuestion.options.length)
                 : []
         );
+        setStruckOptions([]);
     }
 
     const originalCorrectIndexes = useMemo(() => {
@@ -186,6 +188,26 @@ export const QuizMode: React.FC<QuizModeProps> = ({
                 return;
             }
 
+            if (struckOptions.includes(optionIndex)) {
+                setStruckOptions(prev =>
+                    prev.filter(option => option !== optionIndex)
+                );
+                if (isMultiAnswer) {
+                    setSelectedOptions(prev => {
+                        if (prev.includes(optionIndex)) {
+                            return prev;
+                        }
+                        if (prev.length >= requiredCount) {
+                            return prev;
+                        }
+                        return [...prev, optionIndex];
+                    });
+                } else {
+                    setSelectedOptions([optionIndex]);
+                }
+                return;
+            }
+
             if (isMultiAnswer) {
                 setSelectedOptions(prev => {
                     if (prev.includes(optionIndex)) {
@@ -200,7 +222,21 @@ export const QuizMode: React.FC<QuizModeProps> = ({
                 setSelectedOptions([optionIndex]);
             }
         },
-        [showAnswer, isMultiAnswer, requiredCount]
+        [showAnswer, isMultiAnswer, requiredCount, struckOptions]
+    );
+
+    const handleToggleStrike = useCallback(
+        (optionIndex: number) => {
+            if (showAnswer || selectedOptions.includes(optionIndex)) {
+                return;
+            }
+            setStruckOptions(prev =>
+                prev.includes(optionIndex)
+                    ? prev.filter(option => option !== optionIndex)
+                    : [...prev, optionIndex]
+            );
+        },
+        [showAnswer, selectedOptions]
     );
 
     const handleRevealAnswer = useCallback(() => {
@@ -264,6 +300,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({
     const handleNext = useCallback(() => {
         setShowAnswer(false);
         setSelectedOptions([]);
+        setStruckOptions([]);
         onNext();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [onNext]);
@@ -271,6 +308,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({
     const handlePrevious = useCallback(() => {
         setShowAnswer(false);
         setSelectedOptions([]);
+        setStruckOptions([]);
         onPrevious();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [onPrevious]);
@@ -440,77 +478,41 @@ export const QuizMode: React.FC<QuizModeProps> = ({
                                             !isCorrectOption;
                                         const isCorrectSelection =
                                             showAnswer && isCorrectOption;
+                                        const correctness = isCorrectSelection
+                                            ? 'correct'
+                                            : isIncorrectSelection
+                                              ? 'incorrect'
+                                              : 'none';
                                         return (
-                                            <Button
+                                            <AnswerOptionButton
                                                 key={
                                                     optionOrder[index] ?? index
                                                 }
-                                                onClick={() =>
+                                                letter={String.fromCharCode(
+                                                    65 + index
+                                                )}
+                                                selected={isSelected}
+                                                struck={struckOptions.includes(
+                                                    index
+                                                )}
+                                                disabled={showAnswer}
+                                                correctness={correctness}
+                                                onSelect={() =>
                                                     handleOptionSelect(index)
                                                 }
-                                                variant="outlined"
-                                                disabled={showAnswer}
-                                                sx={{
-                                                    ...studyOptionPaddingSx,
-                                                    justifyContent:
-                                                        'flex-start',
-                                                    textTransform: 'none',
-                                                    alignItems: 'flex-start',
-                                                    whiteSpace: 'normal',
-                                                    textAlign: 'left',
-                                                    width: '100%',
-                                                    borderColor:
-                                                        isCorrectSelection
-                                                            ? 'success.main'
-                                                            : isIncorrectSelection
-                                                              ? 'error.main'
-                                                              : isSelected
-                                                                ? 'primary.main'
-                                                                : 'divider',
-                                                    bgcolor: isCorrectSelection
-                                                        ? 'success.light'
-                                                        : isIncorrectSelection
-                                                          ? 'error.light'
-                                                          : isSelected
-                                                            ? 'primary.light'
-                                                            : 'transparent',
-                                                }}
-                                                title={`Select option ${String.fromCharCode(
-                                                    65 + index
-                                                )} (${index + 1})`}
+                                                onToggleStrike={() =>
+                                                    handleToggleStrike(index)
+                                                }
                                             >
-                                                <Chip
-                                                    label={String.fromCharCode(
-                                                        65 + index
+                                                <FormattedText
+                                                    text={getOptionDisplayText(
+                                                        option,
+                                                        index
                                                     )}
-                                                    size="small"
-                                                    sx={{
-                                                        flexShrink: 0,
-                                                        bgcolor: isSelected
-                                                            ? 'primary.main'
-                                                            : 'divider',
-                                                        color: isSelected
-                                                            ? 'common.white'
-                                                            : 'text.secondary',
-                                                    }}
+                                                    variant="body2"
+                                                    color="text.primary"
                                                 />
-                                                <Box
-                                                    sx={{
-                                                        minWidth: 0,
-                                                        flex: 1,
-                                                        width: '100%',
-                                                    }}
-                                                >
-                                                    <FormattedText
-                                                        text={getOptionDisplayText(
-                                                            option,
-                                                            index
-                                                        )}
-                                                        variant="body2"
-                                                        color="text.primary"
-                                                    />
-                                                </Box>
-                                            </Button>
+                                            </AnswerOptionButton>
                                         );
                                     })}
                                 </Stack>

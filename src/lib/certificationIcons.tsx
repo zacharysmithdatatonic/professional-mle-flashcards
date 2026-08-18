@@ -2,6 +2,7 @@ import React from 'react';
 import {
     BookOpen,
     Brain,
+    ClipboardCheck,
     Cloud,
     Code,
     Database,
@@ -36,6 +37,7 @@ const CERTIFICATION_ICONS: Record<string, LucideIcon> = {
 
 const STUDY_MODE_ICONS: Record<StudyMode, LucideIcon> = {
     quiz: Brain,
+    exam: ClipboardCheck,
     review: RotateCcw,
     memorise: List,
     'fill-in-blank': Edit3,

@@ -7,7 +7,7 @@ import {
     CardContent,
     CardActionArea,
 } from '@mui/material';
-import { Brain, Edit3, List, RotateCcw } from 'lucide-react';
+import { Brain, ClipboardCheck, Edit3, List, RotateCcw } from 'lucide-react';
 import type { QuestionBank, StudyMode } from '../../lib/banks';
 import { getBankModePath } from '../../lib/banks';
 import { ReactProviders } from './ReactProviders';
@@ -32,6 +32,14 @@ const MODES: Array<{
         description: 'Test your knowledge with multiple choice questions.',
         icon: <Brain size={28} />,
         color: '#1e8e3e',
+    },
+    {
+        key: 'exam',
+        label: 'Exam Mode',
+        description:
+            'Timed exam conditions: no instant feedback, flag questions, then review.',
+        icon: <ClipboardCheck size={28} />,
+        color: '#1a73e8',
     },
     {
         key: 'review',
