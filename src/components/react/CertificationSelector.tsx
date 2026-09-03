@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Container, Typography, Stack, Button } from '@mui/material';
+import { Box, Container, Typography, Stack, Button, Chip } from '@mui/material';
 import type { QuestionBank, CertificationTier } from '../../lib/banks';
 import {
     CERTIFICATION_TIERS,
@@ -44,9 +44,34 @@ const CertificationItem: React.FC<{ bank: QuestionBank }> = ({ bank }) => {
             }
         >
             <Stack spacing={0.25} sx={{ alignItems: 'flex-start' }}>
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {bank.name}
-                </Typography>
+                <Stack
+                    direction="row"
+                    spacing={0.75}
+                    sx={{ alignItems: 'center' }}
+                >
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                        {bank.name}
+                    </Typography>
+                    {bank.beta && (
+                        <Chip
+                            label="Beta"
+                            size="small"
+                            sx={{
+                                height: 18,
+                                fontSize: '0.625rem',
+                                fontWeight: 700,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.04em',
+                                bgcolor: '#e8f0fe',
+                                color: '#1a73e8',
+                                border: '1px solid #cce0ff',
+                                '& .MuiChip-label': {
+                                    px: 0.6,
+                                },
+                            }}
+                        />
+                    )}
+                </Stack>
                 {!bank.available && (
                     <Typography variant="caption" color="text.secondary">
                         <Lock size={12} /> Coming soon

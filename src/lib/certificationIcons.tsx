@@ -1,6 +1,7 @@
 import React from 'react';
 import {
     BookOpen,
+    Bot,
     Brain,
     ClipboardCheck,
     Cloud,
@@ -32,6 +33,7 @@ const CERTIFICATION_ICONS: Record<string, LucideIcon> = {
     pcse: Shield,
     pcne: Network,
     pmle: Brain,
+    paa: Bot,
     psoe: Shield,
 };
 

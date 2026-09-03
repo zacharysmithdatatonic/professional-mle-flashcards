@@ -25,6 +25,7 @@ const ModeIcon = mode ? getStudyModeIconComponent(mode) : null;
 const backHref = mode ? bankHref : import.meta.env.BASE_URL;
 const backLabel = mode ? 'Back to menu' : 'Back to certifications';
 const hideDefaultBack = mode === 'exam';
+const showModeSettings = mode === 'quiz' || mode === 'review';
 ---
 
 <BaseLayout title={pageTitle}>
@@ -55,11 +56,17 @@ const hideDefaultBack = mode === 'exam';
                         <a class="crumb" href={bankHref}>
                             <CertificationIcon size={16} strokeWidth={1.5} />
                             <span>{bank.name}</span>
+                            {bank.beta ? (
+                                <span class="beta-badge">Beta</span>
+                            ) : null}
                         </a>
                     ) : (
                         <span class="crumb" aria-current="page">
                             <CertificationIcon size={16} strokeWidth={1.5} />
                             <span>{bank.name}</span>
+                            {bank.beta ? (
+                                <span class="beta-badge">Beta</span>
+                            ) : null}
                         </span>
                     )
                 }
@@ -77,6 +84,11 @@ const hideDefaultBack = mode === 'exam';
                     ) : null
                 }
             </nav>
+            {
+                showModeSettings ? (
+                    <div class="bank-settings" data-mode-settings />
+                ) : null
+            }
         </header>
         <main class:list={['bank-main', { wide }]}>
             <slot />
@@ -125,6 +137,19 @@ const hideDefaultBack = mode === 'exam';
         flex-shrink: 0;
     }
 
+    .beta-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.1rem 0.35rem;
+        border-radius: 4px;
+        background: #e8f0fe;
+        color: #1a73e8;
+        border: 1px solid #cce0ff;
+        line-height: 1.2;
+    }
+
     .crumb-separator {
         color: #dadce0;
     }
@@ -154,6 +179,17 @@ const hideDefaultBack = mode === 'exam';
         cursor: pointer;
     }
 
+    .bank-settings {
+        grid-column: 3;
+        justify-self: end;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.75rem;
+        height: 1.75rem;
+        color: #5f6368;
+    }
+
     .bank-main {
         flex: 1;
         width: 100%;
@@ -169,7 +205,7 @@ const hideDefaultBack = mode === 'exam';
 
     @media (max-width: 600px) {
         .bank-header {
-            grid-template-columns: auto 1fr;
+            grid-template-columns: auto 1fr auto;
         }
 
         .bank-breadcrumbs {

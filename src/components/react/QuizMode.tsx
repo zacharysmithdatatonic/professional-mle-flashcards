@@ -22,13 +22,21 @@ import {
     Trophy,
     RotateCcw,
 } from 'lucide-react';
-import { getQuestionTotals, createShuffledOrder } from '../../lib/performance';
+import { getQuestionTotals } from '../../lib/performance';
 import {
     studyCardContentSx,
     studyCardSx,
     studyCardWrapperSx,
 } from '../../lib/studyCardStyles';
 import { getOptionDisplayText } from '../../lib/textFormatting';
+import {
+    createDisplayOrder,
+    indexToLetter,
+    remapAnswerLabels,
+    remapOptionLetters,
+} from '../../lib/optionLetters';
+import { useStudySettings } from './useStudySettings';
+import { StudySettingsMenu } from './StudySettingsMenu';
 import { FormattedText } from './FormattedText';
 import { CaseStudyCallout } from './CaseStudyCallout';
 import { ExplanationLinks } from './ExplanationLinks';
@@ -82,6 +90,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({
     variant = 'quiz',
 }) => {
     const isReview = variant === 'review';
+    const { settings: studySettings } = useStudySettings();
     const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
     const [struckOptions, setStruckOptions] = useState<number[]>([]);
     const [showAnswer, setShowAnswer] = useState(false);
@@ -93,24 +102,32 @@ export const QuizMode: React.FC<QuizModeProps> = ({
         [questions]
     );
 
+    // Toggling the shuffle setting mid-session has to rebuild the order too,
+    // since selections are tracked by display position.
     const questionKey = currentQuestion
-        ? `${currentIndex}:${currentQuestion.id}`
+        ? `${currentIndex}:${currentQuestion.id}:${studySettings.shuffleOptions}`
         : '';
     const [orderKey, setOrderKey] = useState(questionKey);
     const [optionOrder, setOptionOrder] = useState<number[]>(() =>
         currentQuestion
-            ? createShuffledOrder(currentQuestion.options.length)
+            ? createDisplayOrder(
+                  currentQuestion.options.length,
+                  studySettings.shuffleOptions
+              )
             : []
     );
 
-    // Reshuffle options whenever the active question changes (including repeats).
     if (questionKey !== orderKey) {
         setOrderKey(questionKey);
         setOptionOrder(
             currentQuestion
-                ? createShuffledOrder(currentQuestion.options.length)
+                ? createDisplayOrder(
+                      currentQuestion.options.length,
+                      studySettings.shuffleOptions
+                  )
                 : []
         );
+        setSelectedOptions([]);
         setStruckOptions([]);
     }
 
@@ -151,8 +168,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({
         );
     }, [optionOrder, currentQuestion]);
 
-    // Correct options remapped into the shuffled display order.
-    const correctOptionIndexes = useMemo(
+    const correctDisplayIndexes = useMemo(
         () =>
             originalCorrectIndexes
                 .map(originalIndex => optionOrder.indexOf(originalIndex))
@@ -161,15 +177,18 @@ export const QuizMode: React.FC<QuizModeProps> = ({
     );
 
     const correctAnswerLabels = useMemo(
+        () => remapAnswerLabels(currentQuestion?.answer ?? [], optionOrder),
+        [currentQuestion, optionOrder]
+    );
+
+    const explanationText = useMemo(
         () =>
-            correctOptionIndexes
-                .map(index => String.fromCharCode(65 + index))
-                .join(', '),
-        [correctOptionIndexes]
+            remapOptionLetters(currentQuestion?.explanation ?? '', optionOrder),
+        [currentQuestion, optionOrder]
     );
 
     // Fall back to one so an unparseable answer key cannot lock the button.
-    const requiredCount = Math.max(correctOptionIndexes.length, 1);
+    const requiredCount = Math.max(originalCorrectIndexes.length, 1);
     const isMultiAnswer = requiredCount > 1;
     const remainingSelections = Math.max(
         requiredCount - selectedOptions.length,
@@ -240,18 +259,15 @@ export const QuizMode: React.FC<QuizModeProps> = ({
     );
 
     const handleRevealAnswer = useCallback(() => {
-        setShowAnswer(true);
-
-        // Automatically determine if the answer is correct
         const isCorrect =
-            selectedOptions.length === correctOptionIndexes.length &&
+            selectedOptions.length === correctDisplayIndexes.length &&
             selectedOptions.every(option =>
-                correctOptionIndexes.includes(option)
+                correctDisplayIndexes.includes(option)
             );
 
-        // Automatically call onAnswer with the result
+        setShowAnswer(true);
         onAnswer(isCorrect);
-    }, [correctOptionIndexes, selectedOptions, onAnswer]);
+    }, [correctDisplayIndexes, selectedOptions, onAnswer]);
 
     useEffect(() => {
         if (!currentQuestion) {
@@ -316,6 +332,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({
     if (!currentQuestion) {
         return (
             <Box sx={{ maxWidth: 720, mx: 'auto', px: 2 }}>
+                <StudySettingsMenu />
                 <Card>
                     <CardContent>
                         <Stack spacing={2} sx={{ alignItems: 'center' }}>
@@ -347,11 +364,12 @@ export const QuizMode: React.FC<QuizModeProps> = ({
     }
 
     const isCorrect =
-        selectedOptions.length === correctOptionIndexes.length &&
-        selectedOptions.every(option => correctOptionIndexes.includes(option));
+        selectedOptions.length === correctDisplayIndexes.length &&
+        selectedOptions.every(option => correctDisplayIndexes.includes(option));
 
     return (
         <Box sx={studyCardWrapperSx}>
+            <StudySettingsMenu />
             <Stack spacing={2}>
                 <Stack
                     direction="row"
@@ -469,7 +487,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({
                                         const isSelected =
                                             selectedOptions.includes(index);
                                         const isCorrectOption =
-                                            correctOptionIndexes.includes(
+                                            correctDisplayIndexes.includes(
                                                 index
                                             );
                                         const isIncorrectSelection =
@@ -483,14 +501,19 @@ export const QuizMode: React.FC<QuizModeProps> = ({
                                             : isIncorrectSelection
                                               ? 'incorrect'
                                               : 'none';
+                                        const showLetter =
+                                            showAnswer ||
+                                            !studySettings.hideOptionLabels;
                                         return (
                                             <AnswerOptionButton
                                                 key={
                                                     optionOrder[index] ?? index
                                                 }
-                                                letter={String.fromCharCode(
-                                                    65 + index
-                                                )}
+                                                letter={
+                                                    showLetter
+                                                        ? indexToLetter(index)
+                                                        : undefined
+                                                }
                                                 selected={isSelected}
                                                 struck={struckOptions.includes(
                                                     index
@@ -569,7 +592,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({
                                                     ) && (
                                                         <FormattedText
                                                             text={
-                                                                currentQuestion.explanation
+                                                                explanationText
                                                             }
                                                             variant="body2"
                                                         />

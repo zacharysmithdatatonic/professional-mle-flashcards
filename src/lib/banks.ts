@@ -47,6 +47,7 @@ export interface QuestionBank {
     tier: CertificationTier;
     dataset: string | null;
     available: boolean;
+    beta?: boolean;
     color: string;
     exam: ExamSpec;
 }
@@ -67,6 +68,12 @@ const EXAM_PDE: ExamSpec = {
     durationMinutes: 120,
     questionCountMin: 40,
     questionCountMax: 50,
+};
+
+const EXAM_PAA: ExamSpec = {
+    durationMinutes: 180,
+    questionCountMin: 50,
+    questionCountMax: 80,
 };
 
 export const CERTIFICATION_TIERS: Record<
@@ -223,6 +230,17 @@ export const QUESTION_BANKS: QuestionBank[] = [
         available: true,
         color: '#4285F4',
         exam: EXAM_STANDARD,
+    },
+    {
+        key: 'paa',
+        name: 'Agentic Architect',
+        shortName: 'PAA',
+        tier: 'professional',
+        dataset: '/paa.json',
+        available: true,
+        beta: true,
+        color: '#4285F4',
+        exam: EXAM_PAA,
     },
     {
         key: 'psoe',

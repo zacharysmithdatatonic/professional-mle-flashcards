@@ -27,6 +27,7 @@ import {
     getCorrectOriginalIndexes,
     getOptionIndexFromKey,
 } from '../../lib/exam';
+import { indexToLetter } from '../../lib/optionLetters';
 
 interface ExamModeProps {
     questions: Question[];
@@ -313,9 +314,7 @@ export const ExamMode: React.FC<ExamModeProps> = ({
                                     {displayOptions.map((option, index) => (
                                         <AnswerOptionButton
                                             key={optionOrder[index] ?? index}
-                                            letter={String.fromCharCode(
-                                                65 + index
-                                            )}
+                                            letter={indexToLetter(index)}
                                             selected={selectedDisplay.includes(
                                                 index
                                             )}

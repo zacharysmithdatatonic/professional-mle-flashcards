@@ -11,6 +11,7 @@ import {
     Button,
     Card,
     CardContent,
+    Chip,
     Container,
     IconButton,
     LinearProgress,
@@ -497,7 +498,28 @@ function ExamSessionContent({ bank, dataset, bankBasePath }: ExamSessionProps) {
                     <CardContent>
                         <Stack spacing={2} sx={{ alignItems: 'center' }}>
                             <ClipboardCheck size={40} />
-                            <Typography variant="h5">Exam Mode</Typography>
+                            <Stack
+                                direction="row"
+                                spacing={1}
+                                sx={{ alignItems: 'center' }}
+                            >
+                                <Typography variant="h5">Exam Mode</Typography>
+                                {bank.beta && (
+                                    <Chip
+                                        label="Beta"
+                                        size="small"
+                                        sx={{
+                                            fontWeight: 700,
+                                            fontSize: '0.6875rem',
+                                            height: 20,
+                                            textTransform: 'uppercase',
+                                            bgcolor: '#e8f0fe',
+                                            color: '#1a73e8',
+                                            border: '1px solid #cce0ff',
+                                        }}
+                                    />
+                                )}
+                            </Stack>
                             <Typography
                                 variant="body1"
                                 color="text.secondary"

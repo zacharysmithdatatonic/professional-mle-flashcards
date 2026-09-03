@@ -5,7 +5,7 @@ import { studyOptionPaddingSx } from '../../lib/studyCardStyles';
 export type OptionCorrectness = 'none' | 'correct' | 'incorrect';
 
 interface AnswerOptionButtonProps {
-    letter: string;
+    letter?: string;
     selected: boolean;
     struck?: boolean;
     disabled?: boolean;
@@ -69,17 +69,19 @@ export const AnswerOptionButton: React.FC<AnswerOptionButtonProps> = ({
                         ? 'primary.light'
                         : 'transparent',
             }}
-            title={`Select option ${letter}`}
+            title={letter ? `Select option ${letter}` : 'Select option'}
         >
-            <Chip
-                label={letter}
-                size="small"
-                sx={{
-                    flexShrink: 0,
-                    bgcolor: selected ? 'primary.main' : 'divider',
-                    color: selected ? 'common.white' : 'text.secondary',
-                }}
-            />
+            {letter ? (
+                <Chip
+                    label={letter}
+                    size="small"
+                    sx={{
+                        flexShrink: 0,
+                        bgcolor: selected ? 'primary.main' : 'divider',
+                        color: selected ? 'common.white' : 'text.secondary',
+                    }}
+                />
+            ) : null}
             <Box
                 sx={{
                     minWidth: 0,

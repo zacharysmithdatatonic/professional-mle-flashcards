@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
+    Box,
     Button,
+    Chip,
     Container,
     LinearProgress,
     Stack,
@@ -96,6 +98,38 @@ function BankHomeContent({ bank }: BankHomeProps) {
     return (
         <Container sx={{ flex: 1, py: 4, maxWidth: 1000 }} maxWidth={false}>
             <Stack spacing={4}>
+                {bank.beta && (
+                    <Box
+                        sx={{
+                            p: 2,
+                            borderRadius: 2,
+                            bgcolor: '#e8f0fe',
+                            border: '1px solid #cce0ff',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1.5,
+                        }}
+                    >
+                        <Chip
+                            label="Beta"
+                            size="small"
+                            sx={{
+                                fontWeight: 700,
+                                fontSize: '0.6875rem',
+                                height: 22,
+                                textTransform: 'uppercase',
+                                bgcolor: '#1a73e8',
+                                color: '#ffffff',
+                            }}
+                        />
+                        <Typography variant="body2" sx={{ color: '#174ea6' }}>
+                            This certification track is in Beta. Questions
+                            reflect the official exam guide and may evolve with
+                            future updates.
+                        </Typography>
+                    </Box>
+                )}
+
                 {isLoading ? (
                     <Stack spacing={2} sx={{ alignItems: 'center', py: 2 }}>
                         <LinearProgress sx={{ width: 200 }} />

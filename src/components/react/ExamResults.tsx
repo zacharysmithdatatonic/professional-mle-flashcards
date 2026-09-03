@@ -26,6 +26,12 @@ import {
     type ExamGrade,
     type ExamQuestionResult,
 } from '../../lib/exam';
+import {
+    identityOrder,
+    indexToLetter,
+    remapAnswerLabels,
+    remapOptionLetters,
+} from '../../lib/optionLetters';
 
 interface ExamResultsProps {
     grade: ExamGrade;
@@ -84,12 +90,12 @@ const IncorrectQuestionCard: React.FC<{
         [struckOriginal, optionOrder]
     );
     const correctAnswerLabels = useMemo(
-        () =>
-            [...correctDisplay]
-                .sort((a, b) => a - b)
-                .map(index => String.fromCharCode(65 + index))
-                .join(', '),
-        [correctDisplay]
+        () => remapAnswerLabels(question.answer ?? [], optionOrder),
+        [question, optionOrder]
+    );
+    const explanationText = useMemo(
+        () => remapOptionLetters(question.explanation ?? '', optionOrder),
+        [question, optionOrder]
     );
 
     return (
@@ -155,7 +161,7 @@ const IncorrectQuestionCard: React.FC<{
                                 return (
                                     <AnswerOptionButton
                                         key={optionOrder[index] ?? index}
-                                        letter={String.fromCharCode(65 + index)}
+                                        letter={indexToLetter(index)}
                                         selected={isSelected}
                                         struck={struckDisplay.has(index)}
                                         disabled
@@ -216,7 +222,7 @@ const IncorrectQuestionCard: React.FC<{
                                 <Stack spacing={1.5}>
                                     {hasExplanation(question.explanation) && (
                                         <FormattedText
-                                            text={question.explanation}
+                                            text={explanationText}
                                             variant="body2"
                                         />
                                     )}
@@ -295,8 +301,8 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                                 result={result}
                                 optionOrder={
                                     optionOrders[result.question.id] ??
-                                    result.question.options.map(
-                                        (_, index) => index
+                                    identityOrder(
+                                        result.question.options.length
                                     )
                                 }
                                 struckOriginal={

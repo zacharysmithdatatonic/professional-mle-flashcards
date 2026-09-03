@@ -1,7 +1,7 @@
 import type { ExamSpec, Question, QuestionPerformance } from './banks';
+import { identityOrder } from './optionLetters';
 import {
     createInitialPerformance,
-    createShuffledOrder,
     shuffleQuestions,
     updatePerformance,
 } from './performance';
@@ -99,12 +99,17 @@ export const selectExamQuestions = (
     count: number
 ): Question[] => shuffleQuestions(questions).slice(0, count);
 
+/**
+ * Exam mode presents options in the authored order to mirror the real exam;
+ * the map is still kept so persisted attempts can be graded and reviewed
+ * against whatever order they were taken in.
+ */
 export const createExamOptionOrders = (
     questions: Question[]
 ): Record<string, number[]> => {
     const orders: Record<string, number[]> = {};
     questions.forEach(question => {
-        orders[question.id] = createShuffledOrder(question.options.length);
+        orders[question.id] = identityOrder(question.options.length);
     });
     return orders;
 };
