@@ -1,53 +1,68 @@
-# This is a basic workflow to help you get started with Actions
+# Pull request and mainline checks. Publishing is handled by release.yml and
+# deploy.yml, so nothing here writes to GitHub Pages.
 
-name: CI/CD
+name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "master" branch
   push:
-    branches: [ "master" ]
+    branches: ['master', 'main']
   pull_request:
-    branches: [ "master" ]
-
-  # Allows you to run this workflow manually from the Actions tab
+    branches: ['master', 'main']
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build_and_deploy"
-  build_and_deploy:
-    # The type of runner that the job will run on
+  build:
+    name: Lint and build
     runs-on: ubuntu-latest
-    # Grant GITHUB_TOKEN write permissions to allow deployment to GitHub Pages
     permissions:
-      contents: write
+      contents: read
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Set up Node.js environment
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
-      # Install project dependencies
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      # Build the web application
+      - name: Lint
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format:check
+
       - name: Build web app
         run: npm run build
 
-      # Deploy to GitHub Pages
-      # This step will only run on push events to the 'master' branch
-      - name: Deploy to GitHub Pages
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: peaceiris/actions-gh-pages@v3
+  version:
+    name: Version bumped
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      # Full history so the base branch's package.json can be read.
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          fetch-depth: 0
+
+      - name: Check the version was raised
+        env:
+          BASE_REF: origin/${{ github.event.pull_request.base.ref }}
+        run: node scripts/check-version-bump.cjs
+
+      - name: Check the release tag is unused
+        run: |
+          tag="v$(node -p "require('./package.json').version")"
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists. Bump package.json to a new version." >&2
+            exit 1
+          fi
+          echo "Release tag $tag is available."

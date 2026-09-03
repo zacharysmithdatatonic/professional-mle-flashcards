@@ -1,0 +1,79 @@
+# Turns every mainline commit into a GitHub release named after the
+# package.json version, then hands off to deploy.yml.
+#
+# - Merging a pull request publishes a new release, because the CI version gate
+#   guarantees the branch raised the version.
+# - Pushing straight to the mainline (a hotfix) usually keeps the same version,
+#   so the existing release and tag are replaced in place and the site is
+#   rebuilt from the new commit.
+
+name: Release
+
+on:
+  push:
+    branches: ['master', 'main']
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Publish GitHub release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read the version
+        id: version
+        run: echo "tag=v$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Create or replace the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          set -euo pipefail
+
+          pr=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" \
+            --jq '[.[] | select(.merged_at != null)] | first | .number // empty')
+
+          if [ -n "$pr" ]; then
+            echo "Commit came from pull request #$pr."
+          else
+            echo "Commit was pushed straight to ${GITHUB_REF_NAME}."
+          fi
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            if [ -n "$pr" ]; then
+              echo "Release $TAG already exists but this is a pull request merge." >&2
+              echo "The version gate should have required a bump; refusing to overwrite." >&2
+              exit 1
+            fi
+            echo "Replacing release $TAG in place."
+            gh release delete "$TAG" --yes
+            git push origin ":refs/tags/$TAG" || true
+          fi
+
+          gh release create "$TAG" \
+            --target "$GITHUB_SHA" \
+            --title "$TAG" \
+            --generate-notes
+
+  deploy:
+    name: Deploy the release
+    needs: release
+    permissions:
+      contents: write
+    uses: ./.github/workflows/deploy.yml
+    with:
+      ref: ${{ needs.release.outputs.tag }}

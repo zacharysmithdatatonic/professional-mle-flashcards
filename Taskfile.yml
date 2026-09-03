@@ -26,6 +26,12 @@ tasks:
       - echo "  task format         - Format code with prettier"
       - echo "  task format-check   - Check formatting without fixing"
       - echo ""
+      - echo "Versioning:"
+      - echo "  task bump-patch     - Raise the patch version in package.json"
+      - echo "  task bump-minor     - Raise the minor version in package.json"
+      - echo "  task bump-major     - Raise the major version in package.json"
+      - echo "  task version-check  - Check the version was raised above the base branch"
+      - echo ""
       - echo "Setup:"
       - echo "  task install        - Install dependencies"
       - echo "  task setup          - Full setup (install deps + prepare git hooks)"
@@ -83,6 +89,26 @@ tasks:
     desc: Run production build as validation
     cmds:
       - "{{.NPM}} run build"
+
+  bump-patch:
+    desc: Raise the patch version in package.json
+    cmds:
+      - "{{.NPM}} run bump:patch"
+
+  bump-minor:
+    desc: Raise the minor version in package.json
+    cmds:
+      - "{{.NPM}} run bump:minor"
+
+  bump-major:
+    desc: Raise the major version in package.json
+    cmds:
+      - "{{.NPM}} run bump:major"
+
+  version-check:
+    desc: Check the version was raised above the base branch (override with BASE_REF)
+    cmds:
+      - "{{.NPM}} run check:version"
 
   clean:
     desc: Clean build artifacts and node_modules

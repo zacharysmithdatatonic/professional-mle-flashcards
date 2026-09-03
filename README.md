@@ -10,4 +10,8 @@ Study for Google Cloud certifications with focused flashcards for each exam. Pic
 
 Your progress is saved in the browser for that certification, so you can pick up where you left off. Reset it anytime from the certification page if you want a clean slate.
 
-For local development, see [DEVELOPER.md](DEVELOPER.md).
+## Versions
+
+The version in the bottom corner of the homepage links to the [GitHub release](https://github.com/zacharysmithdatatonic/google-cloud-certification-flashcards/releases) it was built from, so you can check whether you are on the latest one. Each merge publishes a release and redeploys the site.
+
+For local development and the release process, see [DEVELOPER.md](DEVELOPER.md).
