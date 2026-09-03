@@ -1,0 +1,1054 @@
+[
+    {
+        "question": "A benefits organization is building a low-code eligibility assistant. Users can revise household details, and an outage in a downstream system must send them to a recovery step without losing conversational context. Which design best satisfies the requirement?",
+        "options": [
+            "Model the process as pages with transition routes for revised details and an event handler for the outage in CX Agent Studio",
+            "Put all eligibility rules and outage behavior in one long system instruction",
+            "Create separate disconnected agents for every user utterance",
+            "Index the eligibility policy in Agent Search and rely on retrieval alone"
+        ],
+        "answer": ["A"],
+        "explanation": "A is correct because explicit pages, routes, and event handling preserve workflow state while providing deterministic recovery behavior. B leaves state and exception handling implicit in one prompt. C fragments continuity and shared state across agents. D supplies retrieved knowledge but does not orchestrate workflow state or exceptions.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A procurement team uses Gemini Enterprise Agent Designer to draft supplier-risk summaries. The agent sometimes ignores a required evidence table and invents headings. The team wants the lowest-effort configuration change that demonstrates the exact expected format. What should they do?",
+        "options": [
+            "Move supplier documents from Cloud Storage to BigQuery",
+            "Add an in-console prompt template with a few-shot example containing the required evidence table",
+            "Add more workflow pages without changing instructions",
+            "Replace the low-code agent with a custom ADK agent immediately"
+        ],
+        "answer": ["B"],
+        "explanation": "B is correct because a concrete few-shot example directly demonstrates the required structure and evidence table. A changes storage without teaching an output format. C adds workflow state but no formatting example. D adds development and operational effort before using the low-code prompt controls intended for this need.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A media company wants a Gemini Enterprise agent to answer questions across recorded briefings, screenshots, and written transcripts. Search results must reflect information contained in all three modalities. What should the architect configure?",
+        "options": [
+            "Extract only filenames into BigQuery and query those rows",
+            "Store the files in Cloud Storage without connecting them to Gemini Enterprise",
+            "Ingest and process the video, image, and text content as unstructured multimodal enterprise data connected to the agent",
+            "Create a page for each file extension and omit ingestion"
+        ],
+        "answer": ["C"],
+        "explanation": "C is correct because multimodal ingestion and processing make evidence from the video, image, and text content available for retrieval. A indexes only metadata and omits the substantive evidence. B stores the files but does not connect or process them for the agent. D uses conversation-state controls in place of content ingestion and indexing.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A legal operations team is connecting a low-code agent to contracts with document-level access restrictions. Search quality must remain high, but the agent must not retrieve a contract merely because it is semantically relevant to an employee's query. Which architecture is best?",
+        "options": [
+            "Copy permitted contract excerpts into separate prompt templates maintained for each department",
+            "Retrieve from one unrestricted index, then instruct the model to omit unauthorized citations",
+            "Create separate conversation pages for confidential and nonconfidential queries",
+            "Connect the governed source through Gemini Enterprise and Agent Search, and enforce source authorization during retrieval"
+        ],
+        "answer": ["D"],
+        "explanation": "D is correct because authorization must constrain which source content retrieval can return, while the enterprise connection provides grounded access to governed data. A creates duplicated, hard-to-maintain copies and can still expose content through prompt context. B retrieves unauthorized data before relying on a non-enforceable model instruction. C controls conversation flow, not document authorization.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A travel support workflow gathers destination, dates, and budget before proposing an itinerary. If the user changes the destination after reviewing a proposal, the workflow must recollect only destination-dependent fields. What should the designer use?",
+        "options": [
+            "Use pages for collection and review, with a transition route from review back to the relevant collection state",
+            "Repeat every field in the system instruction after each turn",
+            "Create a new enterprise data source for every destination",
+            "Use only an event handler for every normal user response"
+        ],
+        "answer": ["A"],
+        "explanation": "A is correct because explicit state routing supports selective re-entry into destination-dependent collection without restarting unrelated fields. B repeats text but does not reliably model state dependencies. C partitions data sources rather than conversation flow. D uses exception handling for ordinary state transitions and does not express the required dependency.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A finance team is tuning a low-code expense-policy agent. Auditors require a concise decision, the governing policy citation, and the key submitted facts, but not hidden model reasoning. Which instruction design is best?",
+        "options": [
+            "Ask the agent to reveal its full internal reasoning so auditors can reproduce the decision",
+            "Define a structured answer in system instructions and provide few-shot examples containing the decision, citation, and relevant submitted facts",
+            "Rely on retrieved policy passages to determine both the decision and response format",
+            "Use a retrieval score threshold to suppress any answer whose reasoning is not visible"
+        ],
+        "answer": ["B"],
+        "explanation": "B is correct because explicit output instructions and representative examples define an auditable rationale without requesting hidden reasoning. A asks for unnecessary internal reasoning rather than the required decision evidence. C can ground content but does not define the response contract. D uses a retrieval control to solve an output-format problem.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A customer service agent has a normal refund workflow. When a connector times out, it should apologize, retain collected order information, and offer escalation; invalid order numbers should instead return to order collection. Which configuration is best? (Choose two.)",
+        "options": [
+            "Configure an event handler for connector timeout and escalation",
+            "Configure a transition route for invalid order numbers back to the order-collection page",
+            "Put both conditions only in an example dialogue",
+            "Create an unrestricted enterprise search connector",
+            "Restart the entire workflow for every error"
+        ],
+        "answer": ["A", "B"],
+        "explanation": "A is correct because a connector timeout is an exceptional event requiring a dedicated recovery path. B is correct because invalid input is a state-dependent condition suited to an explicit transition route. C demonstrates behavior but does not configure deterministic handling. D adds retrieval connectivity, not recovery logic. E discards valid state and violates the retention requirement.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null, null]
+    },
+    {
+        "question": "A hospital communications team has two approved response styles: clinical staff receive terminology-rich answers, while patients receive plain-language answers. Both use the same connected knowledge. What is the most maintainable low-code design?",
+        "options": [
+            "Duplicate all enterprise content into two unrelated storage systems",
+            "Use a different workflow page for every possible medical term",
+            "Use role-aware system instructions or prompt templates that select the approved style while retaining one governed data connection",
+            "Lower the retrieval similarity score for patient questions"
+        ],
+        "answer": ["C"],
+        "explanation": "C is correct because role-aware instructions can vary terminology and tone while retaining one governed knowledge connection. A duplicates content, increasing drift without enforcing presentation style. B creates brittle workflow-state complexity for a response-style concern. D changes retrieval relevance, not audience-appropriate language.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "An operations agent connected to equipment manuals gives fluent answers that are not supported by the manuals. The workflow and document permissions are correct. Which low-code change most directly improves grounding behavior?",
+        "options": [
+            "Add unrelated multimodal files to broaden the corpus",
+            "Add a transition route that approves every generated answer",
+            "Move the same manuals to a different Cloud Storage bucket",
+            "Revise the system instructions and prompt template to require answers from retrieved enterprise evidence and to acknowledge insufficient evidence"
+        ],
+        "answer": ["D"],
+        "explanation": "D is correct because the instructions directly require the agent to use retrieved evidence and abstain when evidence is insufficient. A broadens the corpus with irrelevant content and may worsen retrieval. B approves output without checking support. C changes storage location but not how the model uses evidence.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A museum wants visitors to ask about objects by uploading photos while curators also query internal audio interviews. The organization prefers console configuration and minimal custom code. Which solution best aligns with the requirement?",
+        "options": [
+            "Use Gemini Enterprise low-code tools with multimodal ingestion for images and audio, and configure the conversational workflow in Agent Designer",
+            "Build a GKE-hosted custom vision stack before testing low-code capabilities",
+            "Convert all media to filenames and use state routes as the search index",
+            "Use Cloud SQL alone to store binary objects and generate answers"
+        ],
+        "answer": ["A"],
+        "explanation": "A is correct because low-code workflow configuration and multimodal processing jointly address the visitor interaction and curator content requirements. B adds custom infrastructure before testing the supported low-code path. C treats routes as an index, although they manage conversation state. D provides storage but neither multimodal processing nor agent behavior.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A coding agent diagnoses failures by reading repositories and inspecting a managed database schema. The platform team needs explicit tool contracts, separate authorization for each capability, and the ability to remove database inspection without changing the agent's core prompt. Which configuration is best?",
+        "options": [
+            "Provide a sandboxed shell with a shared credential that can access both systems",
+            "Expose approved repository and schema-inspection operations through scoped MCP tools and authorize only those tools",
+            "Package database credentials and query examples in a reusable custom skill",
+            "Allow network access to both systems and use repository rules to describe permitted operations"
+        ],
+        "answer": ["B"],
+        "explanation": "B is correct because scoped MCP tools provide explicit contracts and let the platform authorize or remove capabilities independently. A combines access behind a broad shared credential, weakening attribution and revocation. C places secrets in instructional content and does not enforce operation boundaries. D treats behavioral guidance as authorization.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A bank wants a coding agent to patch application-layer vulnerabilities in an untrusted branch. The agent must run tests but cannot reach production networks or developer laptops. Where should execution occur?",
+        "options": [
+            "Run the agent directly on a production deployment",
+            "Run it on a developer laptop with inherited credentials",
+            "Use an isolated Cloud Workstations or GKE sandbox with restricted credentials and network access",
+            "Grant the agent read-write access to every repository to reduce failures"
+        ],
+        "answer": ["C"],
+        "explanation": "C is correct because a controlled Cloud Workstations or GKE sandbox can execute tests while restricting credentials and network reach. A runs unreviewed code against live systems. B inherits local access and may expose developer or production credentials. D expands repository permissions without providing execution isolation.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A platform team repeatedly asks its coding agent to apply the same internal logging pattern across services. The pattern includes steps, examples, and verification commands. Which Antigravity customization is most appropriate?",
+        "options": [
+            "Add another production database MCP server",
+            "Create a separate sandbox for each logging statement",
+            "Place the pattern only in an engineer’s one-time chat message",
+            "Create a reusable custom skill that captures the logging procedure and verification workflow"
+        ],
+        "answer": ["D"],
+        "explanation": "D is correct because a custom skill packages repeatable instructions, examples, and verification steps for consistent reuse. A adds a database capability unrelated to the coding pattern. B addresses execution isolation rather than reusable behavior. C depends on one-time context and is less consistent and maintainable.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A coding agent proposes a runtime optimization that changes concurrency behavior. The team wants fast assistance but must prevent the agent from silently merging a regression. Which workflow is best?",
+        "options": [
+            "Let the agent profile, refactor, and run tests in a sandbox, then require human review before integration",
+            "Allow automatic deployment because the agent reported lower latency",
+            "Disable tests to avoid masking profiling results",
+            "Give the agent production write access but ask it not to use it"
+        ],
+        "answer": ["A"],
+        "explanation": "A is correct because sandboxed profiling and tests provide evidence, while human review controls integration risk for a concurrency-sensitive change. B treats the agent's claim as sufficient evidence. C removes tests that could detect semantic and concurrency regressions. D grants production capability and relies on non-enforceable restraint.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "An enterprise wants the coding agent to enforce repository naming conventions before it begins tasks, invoke a compliance check after edits, and delegate dependency analysis to a specialized worker. Which customizations should be combined? (Choose two.)",
+        "options": [
+            "Use rules and hooks to apply conventions and trigger the compliance check",
+            "Use one unrestricted MCP server for all responsibilities",
+            "Use a subagent specialized for dependency analysis",
+            "Use only a larger sandbox",
+            "Replace repository conventions with prompt examples on every task"
+        ],
+        "answer": ["A", "C"],
+        "explanation": "A is correct because rules encode persistent conventions and hooks trigger the compliance check at a lifecycle event. C is correct because a specialized subagent cleanly separates dependency analysis. B exposes capabilities but does not encode conventions or specialization. D changes capacity, not workflow policy. E relies on repeated ad hoc context instead of managed customization.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null, null]
+    },
+    {
+        "question": "A team has proven an Antigravity coding workflow interactively. It now needs to package the workflow as a deployed agent, apply organization-wide governance, scale it for multiple teams, and optimize it using production evidence. What should augment Antigravity?",
+        "options": [
+            "Agent Registry alone, with each team continuing to run the workflow interactively",
+            "Agents CLI in Agent Platform",
+            "A custom MCP server that also acts as the deployment control plane",
+            "A CX Agent Studio workflow that invokes the coding agent's repository tools"
+        ],
+        "answer": ["B"],
+        "explanation": "B is correct because the guide identifies Agents CLI as the way to augment Antigravity for building, scaling, governing, and optimizing deployed agents. A supports governed discovery but does not by itself package and operate the workflow. C defines tool access, not the deployment lifecycle. D is a low-code conversation design approach and does not supply the requested coding-agent operations.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A security team asks a coding agent to remediate a vulnerable request parser. What is the most defensible sequence?",
+        "options": [
+            "Grant temporary production access so the agent can patch the running process",
+            "Ask the agent to suppress the vulnerability scanner finding",
+            "Have the agent inspect the vulnerable path, patch it in a restricted sandbox, add regression tests, and submit the change for review",
+            "Refactor the entire repository before reproducing the issue"
+        ],
+        "answer": ["C"],
+        "explanation": "C is correct because the sequence combines targeted diagnosis, contained execution, regression evidence, and accountable integration. A patches a live process without controlled validation. B suppresses a finding without remediating the flaw. D expands scope and can obscure whether the specific vulnerability was fixed.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A custom MCP server used by a coding agent exposes both schema inspection and destructive database administration. Developers need inspection, but administration is never required. What should the architect do?",
+        "options": [
+            "Keep all tools and add a prompt saying not to call administration",
+            "Run the MCP server outside a sandbox to improve performance",
+            "Create more subagents that share the same unrestricted server",
+            "Expose or authorize only the schema-inspection tools for the agent and remove destructive capabilities from its scope"
+        ],
+        "answer": ["D"],
+        "explanation": "D is correct because removing or withholding destructive tools enforces least privilege at the capability boundary. A leaves the dangerous operation available and relies on guidance. B weakens isolation without reducing permission. C exposes the same excessive capability to more agents.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A coding agent refactors a CPU-intensive service and unit tests pass, but the claimed speedup is based only on generated reasoning. What should the team require before accepting the change?",
+        "options": [
+            "Run representative benchmarks and regression tests in the controlled execution environment and compare results",
+            "Accept the change because refactoring is a supported coding-agent task",
+            "Increase the agent context window and skip measurement",
+            "Deploy both versions randomly without observability"
+        ],
+        "answer": ["A"],
+        "explanation": "A is correct because representative benchmarks and regression tests measure both performance and behavior in a controlled environment. B assumes that a supported task guarantees this change is correct. C substitutes more context for runtime evidence. D introduces production risk while omitting the observability needed to establish improvement or diagnose harm.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A company wants a coding agent extension to query an internal ticket system. The integration must be reusable across projects and hide the ticket API details behind a defined tool contract. Which approach is best?",
+        "options": [
+            "Copy ticket exports into every repository",
+            "Implement the approved ticket operations behind an MCP server and configure the coding agent to use it",
+            "Put API-specific instructions in a global rule without a tool",
+            "Give each project a direct unrestricted ticket-system token"
+        ],
+        "answer": ["B"],
+        "explanation": "B is correct because MCP provides a reusable, explicit contract for the approved ticket operations while hiding API details. A creates stale copies and cannot perform governed live operations. C supplies behavioral guidance but no callable integration. D duplicates broad credentials and exposes private API details across projects.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "An Antigravity agent must run an organization-specific check whenever it finishes changing infrastructure code. Engineers should not need to remember to request the check. Which mechanism best fits?",
+        "options": [
+            "Create a passive skill that engineers may optionally mention",
+            "Add the check output to an MCP server description",
+            "Configure an extension hook tied to the relevant edit or completion event",
+            "Use a larger language model to infer when checking matters"
+        ],
+        "answer": ["C"],
+        "explanation": "C is correct because an extension hook triggers the required check at the relevant edit or completion event. A remains optional and depends on engineers remembering it. B describes a capability but does not invoke it. D relies on model inference instead of deterministic lifecycle automation.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A team uses multiple specialized coding agents: one diagnoses performance, one patches code, and one reviews tests. They must not all inherit the same broad credentials. Which controls are most important? (Choose two.)",
+        "options": [
+            "Run their code execution in secure sandboxes with constrained network and credentials",
+            "Put all credentials in a shared rule file",
+            "Let the reviewing agent deploy directly to production",
+            "Grant each agent only the MCP tools required for its assigned role",
+            "Use one shared administrator identity to simplify debugging"
+        ],
+        "answer": ["A", "D"],
+        "explanation": "A is correct because sandbox isolation limits the impact of generated or untrusted execution. D is correct because role-scoped MCP access prevents unnecessary capabilities from propagating across agents. B places secrets in a guidance file. C grants production mutation to a review role that does not require it. E destroys least privilege and per-agent attribution.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null, null]
+    },
+    {
+        "question": "A coding agent works well interactively, but enterprise teams receive inconsistent results because every repository supplies different ad hoc instructions. The desired standards are stable and organization-specific. What should the platform team create?",
+        "options": [
+            "A separate production cluster for each prompt variation",
+            "An unrestricted plugin that rewrites standards at runtime",
+            "A larger source repository with copied chat transcripts",
+            "Managed Antigravity rules and reusable skills for the standards and repeatable procedures"
+        ],
+        "answer": ["D"],
+        "explanation": "D is correct because managed rules provide stable guidance and reusable skills package repeatable procedures across repositories. A duplicates infrastructure without standardizing behavior. B introduces uncontrolled mutation and harms reproducibility. C copies noisy, stale transcripts rather than defining structured customizations.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A development organization wants to scale a proven Antigravity coding workflow into a governed service while continuing to refine its reusable capabilities. Which combination best supports that lifecycle?",
+        "options": [
+            "Maintain capabilities as Antigravity skills or plugins and use Agents CLI for deployed-agent scaling and governance",
+            "Encode capabilities only in Cloud Logging filters",
+            "Use Agent Search as the execution sandbox",
+            "Replace all tools with a single system prompt"
+        ],
+        "answer": ["A"],
+        "explanation": "A is correct because Antigravity skills or plugins preserve reusable behavior, while Agents CLI supports the deployed-agent lifecycle. B observes selected events but does not define or deploy capabilities. C is a retrieval service, not an execution sandbox. D cannot replace executable integrations or production lifecycle controls.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A mobile field assistant must classify short equipment codes offline on constrained hardware, while complex repair planning can call a managed service. Which model strategy is best?",
+        "options": [
+            "Use the largest SaaS LLM for every offline and online task",
+            "Use an SLM for the constrained local classification and a SaaS LLM for complex planning when connectivity is available",
+            "Self-host one large model on every mobile device",
+            "Use only similarity scoring with no language model for repair planning"
+        ],
+        "answer": ["B"],
+        "explanation": "B is correct because the split matches model resources and connectivity to each task: local bounded classification and managed complex planning. A cannot satisfy offline operation and overuses a large model for a simple task. C is impractical on constrained devices. D cannot perform the requested multi-step planning.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A regulated company requires full control of model hosting and data flow, accepts higher operations effort, and can evaluate an open model from Model Garden. Which choice best fits?",
+        "options": [
+            "Use any SaaS model because hosting has no security implications",
+            "Choose an SLM solely because it has fewer parameters",
+            "Select an appropriate OSS model and self-host it within the controlled environment after evaluating quality and cost",
+            "Use Agent Search as a replacement for the generative model"
+        ],
+        "answer": ["C"],
+        "explanation": "C is correct because a validated self-hosted OSS model provides the required hosting and data-path control while accepting operational responsibility. A ignores the explicit control boundary. B chooses by parameter count without establishing deployment control or task quality. D replaces generation with retrieval, which does not satisfy the workload.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A custom ADK support agent must remember the current case across turns but must not treat every prior customer interaction as durable user preference. What should the architect configure?",
+        "options": [
+            "Write every turn permanently to Memory Bank",
+            "Create a new stateless agent on every turn",
+            "Store case state only in the system instruction",
+            "Use a managed session for case-scoped conversational state and reserve Memory Bank for selected durable memories"
+        ],
+        "answer": ["D"],
+        "explanation": "D is correct because a managed session fits case-scoped conversational state, while Memory Bank should hold selected durable information. A persists every turn and can retain noisy or inappropriate case details. B loses required continuity. C uses behavioral instructions as if they were a per-session state store.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "An agent needs current product facts from a large corpus. Retrieval returns semantically related documents, but the most authoritative answer is often ranked fourth. Which pipeline improvement is most direct?",
+        "options": [
+            "Retrieve candidates with embeddings and similarity scoring, then apply reranking that incorporates relevance and authority",
+            "Increase conversation memory indefinitely",
+            "Replace retrieval with a longer system prompt containing no documents",
+            "Use parallel agents to return the same unranked results"
+        ],
+        "answer": ["A"],
+        "explanation": "A is correct because reranking can reorder retrieved candidates using relevance and authority signals beyond initial vector similarity. B expands conversational memory but does not change document ranking. C replaces a current corpus with static prompt content. D duplicates the same unranked retrieval behavior.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A marketplace agent searches a vector corpus containing public listings and seller-confidential drafts. One retrieval service supports many sellers. Which controls are required to prevent relevant but unauthorized drafts from reaching another seller's agent? (Choose two.)",
+        "options": [
+            "Use a separate similarity threshold for each seller and treat distance as the isolation boundary",
+            "Enforce tenant-aware authorization and metadata filtering at retrieval using the calling agent's identity",
+            "Test authorized tenant-specific queries and adversarial cross-tenant queries, including assertions that forbidden documents are absent",
+            "Retrieve broadly, then provide the seller identifier to the model for post-retrieval filtering",
+            "Use a shared service identity and rely on application logs to detect cross-tenant retrieval"
+        ],
+        "answer": ["B", "C"],
+        "explanation": "B is correct because authorization and tenant filtering must prevent forbidden candidates from entering agent context. C is correct because positive and adversarial retrieval tests verify both usefulness and isolation. A confuses semantic relevance with authorization. D filters only after sensitive content has been retrieved. E grants excessive access and makes detection a substitute for prevention.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null, null]
+    },
+    {
+        "question": "A fulfillment workflow must first verify inventory, then reserve stock, then arrange shipping. Later steps must not run if an earlier step fails. Which multiagent coordination pattern is best?",
+        "options": [
+            "Run all three agents in parallel",
+            "Use a sequential agent workflow with explicit success-dependent handoffs",
+            "Use independent agents with no orchestration",
+            "Use vector reranking to decide execution order"
+        ],
+        "answer": ["B"],
+        "explanation": "B is correct because strict dependencies and failure gating map to a sequential workflow with explicit handoffs. A can reserve or ship before verification completes. C cannot enforce order or stop conditions. D applies retrieval ranking to a transactional execution problem.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A research coordinator can have three agents independently inspect market, patent, and standards sources, then send results to a synthesizer. Which pattern minimizes elapsed research time?",
+        "options": [
+            "Run every researcher sequentially regardless of dependencies",
+            "Give all work to Memory Bank",
+            "Run the three independent research agents in parallel and hand their outputs to a synthesis step",
+            "Use only an MCP server without an orchestrator"
+        ],
+        "answer": ["C"],
+        "explanation": "C is correct because parallel fan-out exploits the independence of the three research tasks, and a synthesis step combines their outputs. A adds unnecessary elapsed time. B stores context but does not perform research. D provides tool interfaces without coordinating fan-out and synthesis.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "Teams publish independently deployed specialist agents and reusable tools. Consumers must discover only approved capabilities, delegate work to remote agents through stable contracts, and invoke non-agent tools without depending on private implementations. Which two design choices best satisfy the requirement? (Choose two.)",
+        "options": [
+            "Maintain approved endpoint URLs in each consumer's deployment configuration",
+            "Publish approved agents and capabilities through Agent Registry",
+            "Expose every specialist as an MCP tool, including long-running agent delegation",
+            "Use A2A for remote agent collaboration and MCP for tool interfaces",
+            "Use a shared orchestration prompt as the contract for agents and tools"
+        ],
+        "answer": ["B", "D"],
+        "explanation": "B is correct because Agent Registry supplies governed discovery of approved reusable capabilities. D is correct because A2A fits remote agent collaboration while MCP defines tool interfaces. A can avoid source-code coupling but still fragments discovery and approval across consumers. C collapses agent collaboration into a tool abstraction and does not meet the stated remote-agent contract need. E is neither a governed catalog nor an invocation protocol.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null, null]
+    },
+    {
+        "question": "A database assistant needs approved access to Cloud SQL and a third-party ticketing SaaS. The team wants standard tool contracts and minimal custom integration where managed capabilities exist. What should they do?",
+        "options": [
+            "Expose raw database and SaaS credentials in the agent prompt",
+            "Replicate both systems into Memory Bank",
+            "Use A2A for every database query",
+            "Use Google Cloud MCP Servers for supported Google Cloud access and a scoped custom MCP server for the third-party SaaS"
+        ],
+        "answer": ["D"],
+        "explanation": "D is correct because a Google Cloud MCP server can cover supported cloud access while a scoped custom MCP server provides a consistent contract for the third-party SaaS. A exposes credentials and lacks controlled operation contracts. B creates stale copies instead of live integrations. C uses an agent collaboration protocol for direct database access.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A sales workflow uses an Agents CLI skill to prepare discount proposals. Standard discounts may proceed autonomously, but policy exceptions must pause for a sales manager. Which skill configuration most directly addresses this distinction?",
+        "options": [
+            "Configure the skill's plugin behavior and agent-versus-human mode so exception handling requires human participation",
+            "Implement two autonomous plugins and let a confidence score select between them",
+            "Store the policy threshold in managed session state and allow the same autonomous execution path",
+            "Use a larger model for exceptions while retaining autonomous execution"
+        ],
+        "answer": ["A"],
+        "explanation": "A is correct because the in-scope Agents CLI skill modes distinguish autonomous plugin behavior from a path that involves a person. B still delegates the policy exception to autonomous components. C records workflow context but does not create an approval boundary. D changes model capability, not decision authority.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A RAG agent has high document recall but answers cite passages that only share vocabulary with the question. What should the architect tune first?",
+        "options": [
+            "Add more unrelated tools to the agent",
+            "Review the embedding and chunking choices, similarity scoring, and reranking using a labeled retrieval set",
+            "Move the vector data to Cloud SQL without evaluating retrieval behavior",
+            "Increase permanent memory retention"
+        ],
+        "answer": ["B"],
+        "explanation": "B is correct because embedding choice, chunking, similarity scoring, and reranking directly determine candidate relevance and final ordering; a labeled set makes tuning measurable. A adds unrelated capabilities. C changes storage without diagnosing retrieval behavior. D changes user memory, not corpus passage matching.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A global support agent must use proprietary internal procedures but cannot send those procedures to a third-party SaaS model. The organization can operate infrastructure and has validated a suitable model. Which model architecture is best?",
+        "options": [
+            "Use the third-party SaaS model and add a prompt asking it not to retain data",
+            "Remove retrieval and let the model guess procedures",
+            "Self-host the validated model within the organization’s controlled boundary and connect governed retrieval to it",
+            "Use a larger proprietary SaaS model because quality overrides policy"
+        ],
+        "answer": ["C"],
+        "explanation": "C is correct because the validated self-hosted model and governed retrieval remain within the required data boundary. A uses a prompt to address a boundary that is set by deployment and data flow. B sacrifices grounding and the required use of internal procedures. D lets model quality override an explicit policy constraint.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A claims workflow sometimes branches back for missing evidence, can run fraud and coverage checks concurrently, and joins before adjudication. Which orchestration pattern best represents it?",
+        "options": [
+            "Use a fixed sequential list with no conditional edges",
+            "Use only independent parallel agents",
+            "Use Memory Bank as the workflow engine",
+            "Use a graph workflow with branch, parallel, loop-back, and join nodes"
+        ],
+        "answer": ["D"],
+        "explanation": "D is correct because a graph represents conditional branches, parallel checks, loop-back for rework, and a controlled join. A cannot represent concurrency or cycles. B omits conditional rework and the adjudication join. C stores information but does not define execution topology.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A parent agent delegates payment analysis to a remote specialist owned by another team. The specialist’s implementation may change, but its task contract should remain stable. Which protocol is the best fit?",
+        "options": [
+            "Use A2A for the agent-to-agent delegation and handoff",
+            "Use embedding similarity as the invocation protocol",
+            "Share the specialist’s source repository with the parent at runtime",
+            "Store delegation instructions only in Memory Bank"
+        ],
+        "answer": ["A"],
+        "explanation": "A is correct because A2A supports interoperable remote agent delegation through a stable collaboration contract. B ranks content rather than defining handoffs. C couples the parent to the specialist's implementation. D stores context but does not provide remote communication.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A custom analytics agent queries BigQuery and will be reused by other teams. The platform must provide governed discovery, a standard contract for the approved BigQuery operations, and a distinct runtime principal for authorization and audit. Which components should be combined? (Choose two.)",
+        "options": [
+            "Embed a shared user credential in the ADK source",
+            "Use Memory Bank to store BigQuery authorization decisions",
+            "Register the approved agent in Agent Registry and expose approved BigQuery operations through a Google Cloud MCP server",
+            "Assign the Agent Identity only the BigQuery permissions required by those operations",
+            "Allow any discovered agent to inherit project-owner access"
+        ],
+        "answer": ["C", "D"],
+        "explanation": "C is correct because the registry provides governed discovery and the MCP server supplies a standard interface for approved BigQuery operations. D is correct because a distinct, least-privilege identity enables authorization and attribution. A embeds a shared credential and weakens rotation and audit. B is not an authorization system. E incorrectly treats discovery as entitlement to broad access.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null, null]
+    },
+    {
+        "question": "An architect must choose between an LLM and an SLM for a high-volume routing agent that maps well-formed requests to a small set of tools. Quality tests show both meet the target. What should drive the decision?",
+        "options": [
+            "Always choose the LLM because parameter count guarantees better routing",
+            "Prefer the SLM when it meets quality, latency, security, and integration requirements because its lower resource cost suits the bounded task",
+            "Choose based only on whether the model is proprietary",
+            "Replace the router with long-term memory"
+        ],
+        "answer": ["B"],
+        "explanation": "B is correct because measured fitness on quality, latency, security, and integration justifies using the lower-resource model for the bounded, high-volume task. A assumes parameter count guarantees task value. C considers ownership alone and omits operational criteria. D substitutes storage for routing behavior.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "An agent retrieving policy paragraphs performs well for exact terms but poorly for paraphrased employee questions. Which change most directly targets the problem?",
+        "options": [
+            "Increase the number of workflow pages",
+            "Use OAuth scopes with more permissions",
+            "Evaluate and select an embedding model that better captures semantic similarity for the organization’s language",
+            "Run all retrieval calls sequentially"
+        ],
+        "answer": ["C"],
+        "explanation": "C is correct because an embedding model validated on the organization's language directly targets semantic matching between paraphrases and policy passages. A changes conversation state, not retrieval representation. B broadens authorization without improving relevance. D changes call ordering, not vector semantics.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A logistics agent invokes a rate tool repeatedly because it misreads an ambiguous result, creating a loop. The rate tool itself is correct. Which design improvement is best?",
+        "options": [
+            "Increase Memory Bank retention for rate results indefinitely",
+            "Add more rate agents in parallel",
+            "Replace Agent Identity with a shared credential",
+            "Define a clear tool contract and termination or retry policy in the agent workflow, including how to handle ambiguous results"
+        ],
+        "answer": ["D"],
+        "explanation": "D is correct because a clear result contract and bounded retry or termination policy address both the ambiguous interpretation and the loop. A retains results but does not clarify them or stop retries. B can amplify duplicate calls. C weakens security without affecting tool semantics.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A company wants to use a proprietary SaaS LLM for public marketing copy and a controlled self-hosted model for confidential contract analysis. Is this a valid architecture?",
+        "options": [
+            "Yes; route tasks by data sensitivity and quality requirements while governing each model boundary separately",
+            "No; every agent platform must use exactly one model provider",
+            "Yes, but only if both agents share the same unrestricted memory",
+            "No; self-hosted models cannot participate in custom agents"
+        ],
+        "answer": ["A"],
+        "explanation": "A is correct because routing by data sensitivity and validated quality can use different model boundaries for different workloads. B imposes a nonexistent single-provider constraint. C creates a path for confidential context to cross boundaries. D incorrectly excludes self-hosted models from custom-agent architectures.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A multiagent workflow must ensure only approved agent versions receive delegated tax calculations. Teams also need to find the specialist without hard-coded endpoints. Which component is central?",
+        "options": [
+            "Cloud Trace alone",
+            "Agent Registry with governance metadata and approved discoverable entries",
+            "A public unauthenticated MCP endpoint",
+            "A prompt listing remembered endpoint URLs"
+        ],
+        "answer": ["B"],
+        "explanation": "B is correct because Agent Registry provides a governed source for discovering approved agent versions and capabilities. A observes configured calls but does not govern discovery. C exposes an unauthenticated endpoint and does not enforce approval. D maintains stale endpoint data in non-policy-controlled prompt text.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A customer agent uses managed sessions for active cases and Memory Bank for selected preferences. After one user signs out, another user on the same device receives the prior user's preference. What architectural issue is most likely?",
+        "options": [
+            "The embedding model produces vectors with too few dimensions",
+            "The workflow uses sequential rather than parallel agents",
+            "Session and memory records are keyed to the device or shared runtime instead of the authenticated user's identity",
+            "The agent uses a SaaS rather than OSS model"
+        ],
+        "answer": ["C"],
+        "explanation": "C is correct because per-user state must be associated with and authorized for the authenticated user, not a device or shared runtime. A affects vector representation, not state ownership. B changes execution order without isolating principals. D changes model licensing and hosting, not session or memory keys.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A custom integration exposes a third-party payroll action. The agent may read pay dates automatically, but changing bank details requires a person. Which design is best? (Choose two.)",
+        "options": [
+            "Expose separate least-privilege MCP tools for reading pay dates and requesting a bank-detail change",
+            "Configure the high-risk change path in human mode so a person approves before execution",
+            "Expose one administrator tool and describe restrictions in its name",
+            "Store the payroll administrator password in Memory Bank",
+            "Use a parallel agent to approve every request automatically"
+        ],
+        "answer": ["A", "B"],
+        "explanation": "A is correct because separate least-privilege contracts permit safe reads without granting an autonomous bank-change operation. B is correct because human mode creates the required approval boundary before sensitive mutation. C exposes excessive privilege and relies on naming. D stores a powerful secret in memory. E uses another autonomous agent and therefore does not satisfy the human requirement.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null, null]
+    },
+    {
+        "question": "A team is choosing between Vector Search and a relational lookup for product troubleshooting text. Queries are natural-language descriptions that rarely share exact keywords with articles. What is the best rationale for vector retrieval?",
+        "options": [
+            "Vector retrieval automatically authorizes every result",
+            "Vector Search guarantees factual answers without evaluation",
+            "Relational systems cannot store text",
+            "Embeddings and similarity scoring can retrieve semantically related articles despite vocabulary differences"
+        ],
+        "answer": ["D"],
+        "explanation": "D is correct because embeddings and similarity scoring directly address semantic matches when queries and articles use different vocabulary. A incorrectly treats retrieval as authorization. B assumes retrieval guarantees end-to-end factual quality. C is false because relational systems can store text; the relevant distinction is semantic retrieval behavior.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "An ADK agent uses several tools and a managed session. The team wants a reproducible package that other environments can configure without rewriting the orchestration logic. What should they do?",
+        "options": [
+            "Build the custom agent with ADK abstractions and externalize environment-specific tool endpoints, identities, and model configuration",
+            "Hard-code credentials and endpoints into every agent step",
+            "Replace the coded workflow with a corpus in Agent Search",
+            "Store deployment configuration as permanent user memory"
+        ],
+        "answer": ["A"],
+        "explanation": "A is correct because ADK captures the coded orchestration while external configuration preserves portability for endpoints, identities, and models. B duplicates hard-coded environment details and secrets. C replaces executable orchestration with retrieved content. D misuses user memory as deployment configuration.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A support graph delegates to billing or technical specialists based on intent. Occasionally both are needed, and their findings must be reconciled before response. Which design best handles this?",
+        "options": [
+            "Always invoke only the first specialist selected",
+            "Use conditional graph edges, allow parallel specialist execution when required, and add a reconciliation node",
+            "Run specialists without passing their outputs to any coordinator",
+            "Use a higher similarity threshold as the reconciliation mechanism"
+        ],
+        "answer": ["B"],
+        "explanation": "B is correct because conditional graph edges support dynamic routing, parallel specialists when needed, and an explicit reconciliation step. A cannot handle requests spanning both domains. C leaves outputs uncoordinated and potentially conflicting. D applies a retrieval threshold to an orchestration merge problem.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "An enterprise agent should query a remote inventory agent and also invoke a local shipment-label function. Which protocol mapping is most appropriate?",
+        "options": [
+            "Use MCP exclusively as durable user memory",
+            "Use A2A to rank document embeddings",
+            "Use A2A for collaboration with the remote inventory agent and MCP for the shipment-label tool interface",
+            "Use Agent Search as the protocol for both calls"
+        ],
+        "answer": ["C"],
+        "explanation": "C is correct because A2A fits collaboration with a remote specialist agent, while MCP fits a callable local tool interface. A mischaracterizes MCP as durable memory. B misuses A2A for retrieval ranking. D uses enterprise search in place of both interaction contracts.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A team evaluates a service agent using only typical successful conversations. Production failures occur when tools return empty results or time out. What should be added first?",
+        "options": [
+            "Remove tool calls from evaluation",
+            "Evaluate only response fluency",
+            "Increase production traffic before changing tests",
+            "Expand the evalset with golden prompts covering empty results, timeouts, malformed outputs, and expected recovery behavior"
+        ],
+        "answer": ["D"],
+        "explanation": "D is correct because golden cases for empty, timed-out, and malformed tool results directly test the missing recovery behavior. A removes the behavior that is failing from evaluation. B can reward fluent responses despite incorrect execution. C increases production exposure without improving preproduction evidence.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "An agent returns the right final text but calls a billing tool twice, causing duplicate charges. Which evaluation criterion is essential?",
+        "options": [
+            "Evaluate the tool-execution trajectory, including call count, arguments, ordering, and side effects, not only the final response",
+            "Measure only semantic similarity of the final text",
+            "Measure only retrieval recall",
+            "Measure model token count without success criteria"
+        ],
+        "answer": ["A"],
+        "explanation": "A is correct because the defect is in the execution trajectory and side effects, which final-text scoring cannot reveal. B can pass even when duplicate charges occur. C measures retrieval rather than tool behavior. D provides cost data without defining whether the call count, order, or arguments were correct.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A small ADK team wants fast, code-adjacent regression tests for deterministic scenarios before each commit. Which evaluation tooling best fits?",
+        "options": [
+            "Deploy directly and rely only on user complaints",
+            "Use ADK evaluation tooling with an evalset containing prompts and expected agent behavior",
+            "Use Cloud Trace as the sole pass/fail evaluator",
+            "Use Model Armor as a complete quality benchmark"
+        ],
+        "answer": ["B"],
+        "explanation": "B is correct because ADK evalsets provide code-adjacent, repeatable development-time evaluation of prompts and expected behavior. A detects regressions only after user impact. C supplies execution evidence but no pass/fail criteria by itself. D is a model security and policy control, not a general quality benchmark.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A platform team must run comparable evaluations across many agent applications. Most criteria are shared, but one regulated domain requires a specialized judgment rubric that experts can calibrate. Which approach best balances scale and domain validity?",
+        "options": [
+            "Use one manually reviewed conversation as the golden dataset",
+            "Let the production agent grade itself with no calibration",
+            "Use Agent Platform Gen AI evaluation service for shared evaluation and add a custom autorater validated against expert-labeled examples for the domain criterion",
+            "Replace evaluation with increased logging retention"
+        ],
+        "answer": ["C"],
+        "explanation": "C is correct because the managed service scales common evaluation and a calibrated custom autorater covers the specialized rubric. A is too small to represent application diversity or edge cases. B uses an uncalibrated judge with a conflict of interest. D preserves evidence but supplies no success criteria or scoring.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A RAG agent’s final answers worsened after a corpus update. The team needs to distinguish retrieval failure from generation failure. Which measures should be evaluated? (Choose two.)",
+        "options": [
+            "Measure whether golden relevant passages are retrieved and appropriately ranked",
+            "Measure only container CPU usage",
+            "Score answer correctness and groundedness against the golden dataset",
+            "Count registered agents",
+            "Measure OAuth token lifetime"
+        ],
+        "answer": ["A", "C"],
+        "explanation": "A is correct because retrieval metrics show whether relevant supporting evidence reaches the generator and is ranked well. C is correct because answer correctness and groundedness show whether generation uses that evidence properly. B measures resources, not content quality. D measures catalog size. E measures authorization lifetime; none of B, D, or E isolates this regression.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null, null]
+    },
+    {
+        "question": "A stateless HTTP agent has unpredictable traffic, short requests, and should scale to zero to minimize idle cost. Which deployment runtime is the best starting point?",
+        "options": [
+            "A permanently provisioned GKE cluster for one small service",
+            "Memory Bank as the execution runtime",
+            "Agent Search as the application server",
+            "Cloud Run"
+        ],
+        "answer": ["D"],
+        "explanation": "D is correct because Cloud Run is a managed fit for stateless request-driven HTTP workloads with variable demand and can minimize idle capacity. A adds dedicated cluster operations and capacity without a stated need. B is a memory service, not a runtime. C provides enterprise retrieval, not general application hosting.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A team is deploying an ADK agent that uses managed sessions and other Agent Platform capabilities. It wants a managed, agent-oriented runtime and does not require custom sidecars, pod scheduling, or cluster administration. Which target is most appropriate?",
+        "options": [
+            "Agent Runtime",
+            "Cloud Run, because every managed agent capability requires a general-purpose HTTP runtime",
+            "GKE Autopilot, to retain pod-level extensibility that the team does not currently need",
+            "A self-managed GKE cluster, to maximize infrastructure control for future possibilities"
+        ],
+        "answer": ["A"],
+        "explanation": "A is correct because Agent Runtime is the managed, agent-oriented deployment target aligned with Agent Platform capabilities. B is a general-purpose managed compute option but the claim that it is required is false, and it is less directly aligned with the stated preference. C and D add Kubernetes concerns without a current requirement; D also adds full cluster operations.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "An agent requires custom sidecars, specialized networking, and detailed pod scheduling controls shared with existing container workloads. Which runtime best fits?",
+        "options": [
+            "Cloud Run with assumptions of pod-level scheduling",
+            "GKE",
+            "Agent Search",
+            "CX Agent Studio pages"
+        ],
+        "answer": ["B"],
+        "explanation": "B is correct because GKE exposes the container orchestration, sidecar, networking, and pod-scheduling controls required by the workload. A abstracts pod scheduling and cannot satisfy the stated Kubernetes-level control. C serves retrieval rather than arbitrary application containers. D defines low-code conversation state, not container infrastructure.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "Production traces show long latency before a tool returns, while model generation time is stable. What should the team do first?",
+        "options": [
+            "Change the embedding model without examining retrieval",
+            "Increase Memory Bank retention",
+            "Use Cloud Trace and Cloud Logging to isolate the tool invocation span, correlate failures, and optimize or bound that dependency",
+            "Add more reasoning steps before each tool call"
+        ],
+        "answer": ["C"],
+        "explanation": "C is correct because the trace already points to the tool path; correlated spans and logs can localize latency and failures before the team optimizes or bounds the dependency. A targets retrieval without evidence of a retrieval issue. B cannot speed an external tool. D adds latency and does not repair the dependency.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "An agent repeatedly alternates between two tools without reaching a final state. Which production control and diagnosis are best?",
+        "options": [
+            "Allow unlimited calls so the model can eventually recover",
+            "Hide the repeated calls from logs",
+            "Scale the runtime horizontally only",
+            "Trace the repeated trajectory, identify the logic or tool-result ambiguity, and enforce bounded iterations with a defined fallback"
+        ],
+        "answer": ["D"],
+        "explanation": "D is correct because tracing identifies the ambiguous result or logic edge causing the cycle, while a bounded iteration policy and fallback contain reliability and cost risk. A permits unbounded cost without guaranteeing convergence. B removes diagnostic evidence. C scales the defective loop rather than correcting it.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A team changed the system prompt and wants to detect regressions before full rollout, then continue measuring real-world drift. Which two actions should the team take? (Choose two.)",
+        "options": [
+            "Run the candidate version against a fixed golden evalset before deployment.",
+            "Replace the golden set after every run with the candidate outputs.",
+            "Evaluate only after users report incidents.",
+            "Continuously evaluate representative sampled production interactions after deployment.",
+            "Compare infrastructure cost only."
+        ],
+        "answer": ["A", "D"],
+        "explanation": "A is correct because a fixed predeployment golden set detects regressions against known behavior. D is correct because continuous evaluation of representative production samples detects drift and unseen cases. B destroys the stable baseline by replacing labels with candidate output. C is reactive and misses silent degradation. E measures cost without establishing behavioral quality.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null, null]
+    },
+    {
+        "question": "An agent’s average latency is acceptable, but a small fraction of requests time out due to one optional enrichment tool. What optimization best preserves core reliability?",
+        "options": [
+            "Measure tail latency by tool, add an appropriate timeout and fallback for optional enrichment, and verify behavior in continuous evaluation",
+            "Increase the average-latency threshold",
+            "Make the optional tool mandatory and retry indefinitely",
+            "Remove all tracing to reduce negligible overhead"
+        ],
+        "answer": ["A"],
+        "explanation": "A is correct because tool-level tail-latency measurement, a bounded timeout, and graceful fallback address rare dependency delays without blocking core responses. B hides the problem in an average threshold. C makes an optional dependency mandatory and worsens tail behavior. D removes evidence needed for targeted reliability work.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A custom autorater agrees with experts on common cases but scores safety-critical edge cases inconsistently. What should the team do before relying on it?",
+        "options": [
+            "Use it immediately because automation is always more objective",
+            "Calibrate and validate the autorater against expert-labeled golden edge cases, then monitor agreement over time",
+            "Delete the edge cases from evaluation",
+            "Increase production replicas"
+        ],
+        "answer": ["B"],
+        "explanation": "B is correct because the autorater must demonstrate agreement with expert judgment on the safety-critical cases where its scores matter, and that agreement should be monitored. A assumes automation guarantees objectivity. C removes the cases needed to establish validity. D changes serving capacity, not evaluator reliability.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A production agent’s answer quality drops only for newly introduced product terminology, while tools and latency remain healthy. What is the most likely evaluation response?",
+        "options": [
+            "Replace the deployment runtime without quality tests",
+            "Disable retrieval to avoid stale terms",
+            "Add representative new terminology to the golden and continuous evaluation sets, then test retrieval and grounded response quality for drift",
+            "Judge success only by request count"
+        ],
+        "answer": ["C"],
+        "explanation": "C is correct because adding representative terminology to golden and continuous evaluation measures the observed distribution shift and separates retrieval from grounded-generation quality. A changes runtime despite healthy system behavior. B removes the domain source most likely to help. D measures volume rather than quality.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A workflow books travel and sends email. The team is constructing golden tests but cannot allow evaluation to create real bookings. Which design is best? (Choose two.)",
+        "options": [
+            "Run every evaluation against production with administrator credentials",
+            "Provide controlled test tools or environments with deterministic responses and no production side effects",
+            "Specify expected tool calls, arguments, ordering, and final responses in the evalset",
+            "Assess only whether the response sounds polite",
+            "Omit edge cases because test tools are controlled"
+        ],
+        "answer": ["B", "C"],
+        "explanation": "B is correct because controlled test tools make trajectories reproducible without production side effects. C is correct because expected calls, arguments, order, and responses verify both execution and user-visible behavior. A risks real mutations and cost. D evaluates style instead of booking logic. E omits necessary failure and boundary coverage.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null, null]
+    },
+    {
+        "question": "A company has steady high-volume agent traffic, existing Kubernetes operations, strict network controls, and predictable capacity reservations. Cost comparison shows dedicated capacity is favorable. Which deployment is reasonable?",
+        "options": [
+            "Choose Cloud Run solely because it can scale to zero",
+            "Use Agent Search as the runtime",
+            "Use ADK evalset as the production server",
+            "Deploy on GKE with the required controls and capacity management"
+        ],
+        "answer": ["D"],
+        "explanation": "D is correct because existing Kubernetes operations, strict controls, steady demand, and favorable dedicated-capacity economics justify GKE. A selects on scale-to-zero even though demand is steady and ignores control requirements. B is retrieval infrastructure, not workflow hosting. C is evaluation data, not a production runtime.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "An agent sometimes hallucinates a policy despite retrieving the correct passage. Logs capture prompts and responses, and traces show retrieval succeeded. What should the team change first?",
+        "options": [
+            "Evaluate groundedness on these cases and tighten the response policy to use retrieved evidence or abstain, then regression-test the change",
+            "Increase vector recall by returning the entire corpus",
+            "Scale the runtime to more replicas",
+            "Remove the golden dataset because production differs"
+        ],
+        "answer": ["A"],
+        "explanation": "A is correct because traces show retrieval succeeds, isolating the problem to how generation uses evidence; groundedness requirements and regression tests directly target that failure. B returns more context despite adequate retrieval and may add distraction. C changes capacity, not factual support. D removes rather than expands useful regression coverage.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A continuous evaluator flags a quality drop, but only after a tool schema changed. What should the incident investigation prioritize?",
+        "options": [
+            "Immediately replace the language model without checking tools",
+            "Compare traced tool arguments and outputs before and after the schema change, then update the integration contract and evalset",
+            "Delete historical traces to prevent confusion",
+            "Increase retrieval similarity thresholds"
+        ],
+        "answer": ["B"],
+        "explanation": "B is correct because the timing implicates contract drift; comparing traced arguments and outputs reveals the mismatch, and updating tests prevents recurrence. A ignores the strongest correlated change. C deletes the evidence needed for comparison. D tunes retrieval even though the changed component is a tool schema.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "An employee-facing agent calls a payroll API on behalf of the signed-in employee. The API must receive verifiable delegated authorization, limit calls to approved payroll scopes, and preserve user attribution. Which design is best?",
+        "options": [
+            "Embed one payroll administrator token in the agent",
+            "Put the employee ID in the prompt and trust the API call",
+            "Use OAuth 2.0 through Auth Manager and propagate the delegated user authorization to the payroll tool",
+            "Grant anonymous access and filter responses after generation"
+        ],
+        "answer": ["C"],
+        "explanation": "C is correct because delegated OAuth provides verifiable user context, scoped authorization, and attribution on the agent-to-tool call. A replaces user delegation with broad shared authority. B supplies an untrusted identifier rather than authorization. D allows unauthorized access before attempting to filter output.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "An agent has project-level roles for its workload. Security also requires a ceiling that prevents those permissions from taking effect outside an approved resource boundary, including if a broad role is granted later. Which control is most relevant?",
+        "options": [
+            "Add a system instruction describing the boundary",
+            "Use a larger model to classify resource names",
+            "Store allowed projects in conversational memory",
+            "Configure a principal access boundary policy for the Agent Identity"
+        ],
+        "answer": ["D"],
+        "explanation": "D is correct because a principal access boundary limits the resources on which the principal's permissions can take effect, complementing role grants. A is behavioral guidance, not IAM enforcement. B cannot override authorization decisions. C is mutable application context and does not constrain IAM.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "Several registered agents call protected services through different integrations. Security operations needs a central traffic control point that can identify agent callers and provide monitoring evidence across those calls. Which component should be configured?",
+        "options": [
+            "Agent Gateway",
+            "Agent Registry, used by itself as the runtime traffic path",
+            "Cloud Trace instrumentation without a governed agent traffic path",
+            "Model Armor applied only to model prompts and responses"
+        ],
+        "answer": ["A"],
+        "explanation": "A is correct because Agent Gateway is the in-scope control point for monitoring traffic and tracking agents. B governs discovery but is not, by itself, the traffic path. C can expose detailed spans when instrumented but does not replace centralized gateway controls and caller tracking. D protects model-facing content rather than monitoring all agent-to-service traffic.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A public support agent accepts untrusted text and can invoke account tools. The organization wants centrally managed inspection policies for prompt-injection attempts and unsafe model input or output, while tool authorization remains separately enforced. What should be placed in the model interaction path?",
+        "options": [
+            "Agent Gateway alone, with no model-content protection policy",
+            "Model Armor with policies applied to relevant prompts and responses",
+            "Sensitive Data Protection alone, configured only to classify stored records",
+            "A stricter system instruction combined with broader tool permissions"
+        ],
+        "answer": ["B"],
+        "explanation": "B is correct because Model Armor applies centrally managed safety and security policies to model-facing prompts and responses. A provides traffic governance but is not, by itself, the requested model-content inspection policy. C can discover and transform sensitive data but does not alone cover the stated prompt-attack and unsafe-content requirement. D relies on non-enforceable guidance and increases blast radius.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A purchasing agent may autonomously draft an order, but purchases above a threshold require accountable approval before the tool executes. Which safeguards are best? (Choose two.)",
+        "options": [
+            "Ask the model to approve its own high-value order",
+            "Insert a human-in-the-loop approval gate before the high-value execution",
+            "Use response reranking after the purchase",
+            "Limit the agent identity and tool authorization so it cannot bypass the approved purchase path",
+            "Store an approval phrase in Memory Bank"
+        ],
+        "answer": ["B", "D"],
+        "explanation": "B is correct because HITL supplies an accountable decision before the high-value action. D is correct because least-privilege identity and tool authorization prevent the agent from bypassing that path. A provides no independent approval. C occurs after execution. E treats remembered text as current transaction authorization.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null, null]
+    },
+    {
+        "question": "Agents move from development to production and are reused across business units. Governance requires a controlled catalog in which consumers discover approved versions and capabilities rather than arbitrary development endpoints. What should the architect do?",
+        "options": [
+            "Let each consuming team maintain an allowlist of endpoint URLs in its agent prompt",
+            "Register all development and production versions, then ask consumers to inspect names for approval status",
+            "Use Agent Registry as the governed catalog and publish only versions and capabilities that pass the organization's promotion controls",
+            "Use Agent Gateway traffic logs as the source from which consumers discover agents"
+        ],
+        "answer": ["C"],
+        "explanation": "C is correct because Agent Registry provides governed cataloging and discovery, while the organization's promotion controls determine what is published as approved. A fragments policy into stale, non-enforceable prompts. B exposes unapproved versions and relies on naming conventions. D uses operational evidence as a catalog and does not establish approval.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A customer-service agent needs access to support tickets but must not receive payment-card values embedded in ticket text. Which data control best complements least-privilege access?",
+        "options": [
+            "Grant the agent more permissions so it can decide what is sensitive",
+            "Put card values into Memory Bank for future fraud checks",
+            "Use A2A to send the unredacted ticket to another agent",
+            "Use Sensitive Data Protection to discover and de-identify the sensitive values before agent processing where appropriate"
+        ],
+        "answer": ["D"],
+        "explanation": "D is correct because Sensitive Data Protection can discover and de-identify payment-card values before agent processing while preserving necessary ticket content. A broadens access and delegates data policy to the model. B increases sensitive-data retention. C forwards the same unredacted data through another protocol.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A tool can delete customer records. The agent normally needs only read access, and rare deletion requests require a compliance officer. What is the best design?",
+        "options": [
+            "Expose a read-only tool to the agent and route deletion through a separately authorized HITL workflow",
+            "Expose deletion by default and instruct the agent to be careful",
+            "Use the same broad OAuth token for all tools",
+            "Rely on Agent Search citations before deletion"
+        ],
+        "answer": ["A"],
+        "explanation": "A is correct because separating read access from a separately authorized HITL deletion workflow enforces least privilege and independent approval. B leaves destructive capability available and relies on guidance. C uses broad shared authorization and weakens attribution. D treats retrieval evidence as authorization for an irreversible action.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A signed-in user delegates work through a coordinator agent to a specialist. When the specialist calls a downstream tool, the tool sees only a shared runtime principal and cannot enforce user-specific policy. What should be redesigned?",
+        "options": [
+            "Add the user name to the specialist’s natural-language response",
+            "Propagate verifiable user identity and delegated authorization through the governed agent chain and Agent Gateway to the tool",
+            "Give the shared runtime principal project-owner permissions",
+            "Disable registry tracking to simplify handoffs"
+        ],
+        "answer": ["B"],
+        "explanation": "B is correct because the downstream tool needs verifiable identity and delegated authorization, preserved across each handoff, to enforce user-specific policy and attribution. A passes an untrusted claim in content. C expands the shared principal's blast radius. D removes governance evidence without restoring identity.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A company needs both preventive controls against unsafe prompts and investigative evidence about agent and tool traffic. Which controls should be combined? (Choose two.)",
+        "options": [
+            "Use only a larger proprietary model",
+            "Store all secrets in prompts for easier investigations",
+            "Apply Model Armor policies to inspect and protect model interactions",
+            "Route governed traffic through Agent Gateway and retain appropriate monitoring records",
+            "Use vector similarity scores as an audit log"
+        ],
+        "answer": ["C", "D"],
+        "explanation": "C is correct because Model Armor supplies preventive policies for model-facing prompts and responses. D is correct because Agent Gateway provides centralized traffic visibility and agent tracking. A does not replace either control. B exposes secrets rather than creating evidence. E records retrieval relevance, not end-to-end agent and tool activity.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null, null]
+    },
+    {
+        "question": "An architect configures OAuth correctly, but an agent can still request scopes unrelated to its purpose. What additional principle should be applied?",
+        "options": [
+            "Assume authentication makes every authorized scope safe",
+            "Move the OAuth token into the system prompt",
+            "Restrict allowed scopes and tool operations to the minimum required by the Agent Identity and policy",
+            "Disable traffic monitoring because calls are authenticated"
+        ],
+        "answer": ["C"],
+        "explanation": "C is correct because OAuth establishes delegated authorization, while least-privilege scope and operation policy limit what the authenticated agent may request. A confuses authentication with appropriate authorization. B exposes the token in model context. D removes monitoring even though authenticated misuse remains possible.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    },
+    {
+        "question": "A high-impact benefits agent must use only approved releases, inspect model interactions for unsafe content, provide centralized traffic evidence, remain inside a resource boundary, and obtain accountable review for defined exceptions. Which layered design best satisfies all requirements?",
+        "options": [
+            "Use Agent Registry and continuous evaluation, with the model deciding whether an exception needs approval",
+            "Use GKE network policies and Model Armor, with one broadly privileged runtime identity",
+            "Use Agent Gateway and HITL, while allowing any registered development version to run",
+            "Combine governed Agent Registry publication, Model Armor, Agent Gateway, a least-privilege Agent Identity constrained by a PAB, and HITL for defined exceptions"
+        ],
+        "answer": ["D"],
+        "explanation": "D is correct because each control maps to a distinct requirement: registry publication to approved releases, Model Armor to model-content policy, Agent Gateway to traffic oversight, least privilege plus a PAB to authorization boundaries, and HITL to accountable exceptions. A lacks enforceable identity, traffic, and approval controls. B leaves excessive identity permissions and omits release governance and HITL. C omits content inspection and resource-boundary enforcement.",
+        "questionImages": [],
+        "optionImages": [null, null, null, null]
+    }
+]
